@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="256" viewBox="0 0 1024 256">
+<defs>
+ <linearGradient id="white" x1="0" x2="1"><stop stop-color="#f8fbff"/><stop offset="1" stop-color="#aebfd3"/></linearGradient>
+ <linearGradient id="gold" x1="0" x2="1"><stop stop-color="#fff1a6"/><stop offset=".5" stop-color="#e4aa38"/><stop offset="1" stop-color="#8b5520"/></linearGradient>
+ <linearGradient id="blue" x1="0" x2="1"><stop stop-color="#8eeaff"/><stop offset=".4" stop-color="#1479e6"/><stop offset="1" stop-color="#0b275d"/></linearGradient>
+ <linearGradient id="red" x1="0" x2="1"><stop stop-color="#df3d37"/><stop offset="1" stop-color="#5c141c"/></linearGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+
+<!-- frame 0 idle -->
+<g transform="translate(0 0)">
+ <path d="M74 84 L38 205 L92 180 L128 238 L164 180 L218 205 L182 84 Z" fill="url(#red)" opacity=".92"/>
+ <g stroke="#17243a" stroke-width="5" stroke-linejoin="round">
+  <path d="M91 116 L74 165 L98 207 L119 168 L113 119 Z" fill="url(#white)"/>
+  <path d="M165 116 L182 165 L158 207 L137 168 L143 119 Z" fill="url(#white)"/>
+  <path d="M93 90 L77 117 L89 156 L115 140 L112 96 Z" fill="url(#gold)"/>
+  <path d="M163 90 L179 117 L167 156 L141 140 L144 96 Z" fill="url(#gold)"/>
+  <path d="M102 62 L154 62 L170 112 L145 150 L111 150 L86 112 Z" fill="url(#white)"/>
+  <path d="M107 74 L149 74 L156 106 L140 130 L116 130 L100 106 Z" fill="#263952"/>
+  <path d="M110 20 L146 20 L157 49 L144 69 L112 69 L99 49 Z" fill="url(#white)"/>
+  <path d="M128 7 L137 31 L128 43 L119 31 Z" fill="url(#gold)"/>
+  <path d="M104 32 L84 18 L94 48 Z" fill="url(#gold)"/>
+  <path d="M152 32 L172 18 L162 48 Z" fill="url(#gold)"/>
+  <path d="M112 42 L124 39 L121 49 L112 50 Z" fill="#4cdfff" filter="url(#glow)"/>
+  <path d="M144 42 L132 39 L135 49 L144 50 Z" fill="#4cdfff" filter="url(#glow)"/>
+  <path d="M81 89 L45 102 L31 132 L64 145 L99 125 Z" fill="url(#blue)"/>
+  <circle cx="43" cy="124" r="15" fill="#59e4ff" filter="url(#glow)"/>
+  <path d="M175 90 L207 104 L222 130 L196 143 L158 125 Z" fill="url(#gold)"/>
+  <path d="M203 128 L238 64 L229 145 L205 164 L190 143 Z" fill="url(#gold)"/>
+ </g>
+</g>
+
+<!-- frame 1 step -->
+<g transform="translate(256 0)">
+ <path d="M70 88 L34 205 L92 177 L128 238 L166 174 L222 204 L184 85 Z" fill="url(#red)" opacity=".92"/>
+ <g stroke="#17243a" stroke-width="5" stroke-linejoin="round">
+  <path d="M90 117 L68 164 L90 211 L119 166 L113 119 Z" fill="url(#white)"/>
+  <path d="M165 116 L184 165 L164 199 L137 170 L143 119 Z" fill="url(#white)"/>
+  <path d="M92 91 L72 116 L87 153 L114 139 L111 96 Z" fill="url(#gold)"/>
+  <path d="M164 90 L183 116 L169 154 L141 140 L144 96 Z" fill="url(#gold)"/>
+  <path d="M102 62 L154 62 L170 112 L145 150 L111 150 L86 112 Z" fill="url(#white)"/>
+  <path d="M107 74 L149 74 L156 106 L140 130 L116 130 L100 106 Z" fill="#263952"/>
+  <path d="M110 20 L146 20 L157 49 L144 69 L112 69 L99 49 Z" fill="url(#white)"/>
+  <path d="M128 7 L137 31 L128 43 L119 31 Z" fill="url(#gold)"/>
+  <path d="M104 32 L84 18 L94 48 Z" fill="url(#gold)"/>
+  <path d="M152 32 L172 18 L162 48 Z" fill="url(#gold)"/>
+  <path d="M112 42 L124 39 L121 49 L112 50 Z" fill="#4cdfff" filter="url(#glow)"/>
+  <path d="M144 42 L132 39 L135 49 L144 50 Z" fill="#4cdfff" filter="url(#glow)"/>
+  <path d="M78 89 L42 101 L28 130 L60 144 L98 123 Z" fill="url(#blue)"/>
+  <circle cx="40" cy="122" r="15" fill="#59e4ff" filter="url(#glow)"/>
+  <path d="M176 88 L211 100 L228 124 L201 141 L159 122 Z" fill="url(#gold)"/>
+  <path d="M209 126 L244 60 L235 143 L210 163 L195 141 Z" fill="url(#gold)"/>
+ </g>
+</g>
+
+<!-- frame 2 grey sword -->
+<g transform="translate(512 0)">
+ <path d="M65 91 L29 207 L92 174 L128 239 L169 173 L229 205 L188 87 Z" fill="url(#red)" opacity=".92"/>
+ <g stroke="#17243a" stroke-width="5" stroke-linejoin="round">
+  <path d="M91 119 L74 166 L99 210 L119 169 L113 120 Z" fill="url(#white)"/>
+  <path d="M165 118 L181 164 L157 207 L137 168 L143 119 Z" fill="url(#white)"/>
+  <path d="M102 63 L154 63 L170 112 L145 150 L111 150 L86 112 Z" fill="url(#white)"/>
+  <path d="M107 75 L149 75 L156 107 L140 130 L116 130 L100 107 Z" fill="#263952"/>
+  <path d="M110 20 L146 20 L157 49 L144 69 L112 69 L99 49 Z" fill="url(#white)"/>
+  <path d="M128 7 L137 31 L128 43 L119 31 Z" fill="url(#gold)"/>
+  <path d="M104 32 L84 18 L94 48 Z" fill="url(#gold)"/>
+  <path d="M152 32 L172 18 L162 48 Z" fill="url(#gold)"/>
+  <path d="M112 42 L124 39 L121 49 L112 50 Z" fill="#4cdfff" filter="url(#glow)"/>
+  <path d="M144 42 L132 39 L135 49 L144 50 Z" fill="#4cdfff" filter="url(#glow)"/>
+  <path d="M80 89 L44 102 L29 132 L64 145 L100 124 Z" fill="url(#blue)"/>
+  <circle cx="42" cy="123" r="14" fill="#59e4ff" filter="url(#glow)"/>
+  <path d="M174 93 L205 104 L219 126 L195 142 L158 127 Z" fill="url(#gold)"/>
+  <path d="M195 129 L243 20 L230 151 L202 175 L184 146 Z" fill="#fff4b5" filter="url(#glow)"/>
+  <path d="M205 119 L242 37 L233 140 Z" fill="#ffc84a"/>
+ </g>
+</g>
+
+<!-- frame 3 garuru cannon -->
+<g transform="translate(768 0)">
+ <path d="M70 87 L34 205 L92 179 L128 238 L166 178 L221 205 L184 84 Z" fill="url(#red)" opacity=".92"/>
+ <g stroke="#17243a" stroke-width="5" stroke-linejoin="round">
+  <path d="M91 116 L74 165 L98 207 L119 168 L113 119 Z" fill="url(#white)"/>
+  <path d="M165 116 L182 165 L158 207 L137 168 L143 119 Z" fill="url(#white)"/>
+  <path d="M102 62 L154 62 L170 112 L145 150 L111 150 L86 112 Z" fill="url(#white)"/>
+  <path d="M107 74 L149 74 L156 106 L140 130 L116 130 L100 106 Z" fill="#263952"/>
+  <path d="M110 20 L146 20 L157 49 L144 69 L112 69 L99 49 Z" fill="url(#white)"/>
+  <path d="M128 7 L137 31 L128 43 L119 31 Z" fill="url(#gold)"/>
+  <path d="M104 32 L84 18 L94 48 Z" fill="url(#gold)"/>
+  <path d="M152 32 L172 18 L162 48 Z" fill="url(#gold)"/>
+  <path d="M112 42 L124 39 L121 49 L112 50 Z" fill="#4cdfff" filter="url(#glow)"/>
+  <path d="M144 42 L132 39 L135 49 L144 50 Z" fill="#4cdfff" filter="url(#glow)"/>
+  <path d="M80 88 L31 96 L12 124 L34 151 L96 128 Z" fill="url(#blue)"/>
+  <circle cx="25" cy="124" r="20" fill="#7cf2ff" filter="url(#glow)"/>
+  <circle cx="25" cy="124" r="9" fill="#ffffff"/>
+  <path d="M-10 124 L16 117 L16 131 Z" fill="#8eeaff" filter="url(#glow)"/>
+  <path d="M175 90 L207 104 L222 130 L196 143 L158 125 Z" fill="url(#gold)"/>
+  <path d="M203 128 L238 64 L229 145 L205 164 L190 143 Z" fill="url(#gold)"/>
+ </g>
+</g>
+</svg>
