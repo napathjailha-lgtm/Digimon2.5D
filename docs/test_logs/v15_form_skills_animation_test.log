@@ -1,0 +1,72 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: Tamer ใช้ AnimatedSprite2D
+PASS: Rookie สร้างปุ่มตามจำนวนสกิลจริง 2 ปุ่ม
+PASS: Resource rookie ถูกต้อง
+PASS: สกิล baby_flame มี ID/ไอคอนแยกจากทุกร่าง
+PASS: สกิล quick_bite มี ID/ไอคอนแยกจากทุกร่าง
+PASS: Resource champion ถูกต้อง
+PASS: สกิล mega_flame มี ID/ไอคอนแยกจากทุกร่าง
+PASS: สกิล champion_claw มี ID/ไอคอนแยกจากทุกร่าง
+PASS: สกิล champion_burst มี ID/ไอคอนแยกจากทุกร่าง
+PASS: สกิล champion_nova มี ID/ไอคอนแยกจากทุกร่าง
+PASS: Resource ultimate ถูกต้อง
+PASS: สกิล ultimate_lance มี ID/ไอคอนแยกจากทุกร่าง
+PASS: สกิล ultimate_wave มี ID/ไอคอนแยกจากทุกร่าง
+PASS: สกิล ultimate_claw มี ID/ไอคอนแยกจากทุกร่าง
+PASS: สกิล ultimate_nova มี ID/ไอคอนแยกจากทุกร่าง
+PASS: Resource mega ถูกต้อง
+PASS: สกิล mega_cannon มี ID/ไอคอนแยกจากทุกร่าง
+PASS: สกิล mega_wave มี ID/ไอคอนแยกจากทุกร่าง
+PASS: สกิล mega_claw มี ID/ไอคอนแยกจากทุกร่าง
+PASS: สกิล mega_nova มี ID/ไอคอนแยกจากทุกร่าง
+PASS: Baby Flame: 120%, CD 3s
+PASS: Mega Flame: 250%, CD 6s, AoE
+PASS: ดาเมจสุ่ม +/-5% ของ ATK*Multiplier
+PASS: ATK 0 ไม่สร้างดาเมจ
+PASS: เลือก walk_down โดยไม่ flip ซ้ำ
+PASS: ความเร็วครึ่งหนึ่ง = speed_scale 0.5
+PASS: หยุดแล้วจำทิศ down
+PASS: เลือก walk_right โดยไม่ flip ซ้ำ
+PASS: ความเร็วครึ่งหนึ่ง = speed_scale 0.5
+PASS: หยุดแล้วจำทิศ right
+PASS: เลือก walk_up โดยไม่ flip ซ้ำ
+PASS: ความเร็วครึ่งหนึ่ง = speed_scale 0.5
+PASS: หยุดแล้วจำทิศ up
+PASS: เลือก walk_left โดยไม่ flip ซ้ำ
+PASS: ความเร็วครึ่งหนึ่ง = speed_scale 0.5
+PASS: หยุดแล้วจำทิศ left
+PASS: เปลี่ยนทิศไม่รีเซ็ตเฟรมก้าว
+PASS: ทิศเฉียงเท่ากันรักษาแกนล่าสุด ลด jitter
+PASS: วิ่งเร็วสองเท่า = speed_scale 2
+PASS: เริ่ม Attack ทิศซ้าย
+PASS: Walk ไม่ทับ Attack และ Attack ไม่ใช้ความเร็วเดิน
+PASS: Attack จบปลด lock และกลับ Idle ล่าสุด
+PASS: ชนกำแพงแล้ว Idle แม้คำสั่งเดินยังเป็น RIGHT
+PASS: เปลี่ยน Champion สำเร็จ
+PASS: ปุ่ม Rookie ถูกถอดและแทนด้วย Champion 4 ปุ่มทันที
+PASS: ไอคอนใหม่ตรงกับ Mega Flame
+PASS: callback ของปุ่มเก่าไม่ส่งคำสั่งร่างใหม่
+PASS: แตะปุ่มสกิลใหม่ส่งคำสั่งครั้งเดียว
+PASS: พื้นที่สัมผัส Skill0 ไม่ซ้อน Main Attack
+PASS: พื้นที่สัมผัส Skill1 ไม่ซ้อน Main Attack
+PASS: พื้นที่สัมผัส Skill2 ไม่ซ้อน Main Attack
+PASS: พื้นที่สัมผัส Skill3 ไม่ซ้อน Main Attack
+PASS: ปุ่ม Skill0 อยู่ในจอ Landscape กว้าง
+PASS: ปุ่ม Skill1 อยู่ในจอ Landscape กว้าง
+PASS: ปุ่ม Skill2 อยู่ในจอ Landscape กว้าง
+PASS: ปุ่ม Skill3 อยู่ในจอ Landscape กว้าง
+PASS: Champion Lv2 ATK = ฐาน30+โบนัส5
+PASS: Ultimate Lv2 ATK = ฐาน50+โบนัส5
+PASS: Ultimate ใช้ไอคอนและชุดสกิลของตัวเอง
+PASS: กลับ Champion ไม่สะสมโบนัสซ้ำ
+PASS: cast Mega Flame สำเร็จ
+PASS: ลูกไฟยังไม่ชนจึงไม่ลงดาเมจตอน cast
+PASS: Mega Flame ใช้ ATK Lv2 35 * 2.5 พร้อมแกว่ง5%
+PASS: AoE โดนตัวใกล้ด้วยดาเมจเดียวกัน แต่ไม่โดนตัวนอกรัศมี
+PASS: AoE หัก DS และตั้ง CD เพียงครั้งเดียว
+PASS: กดซ้ำระหว่าง CD ไม่หัก DS ซ้ำ
+PASS: สลับร่างไม่รีเซ็ตคูลดาวน์สกิลเดิม
+PASS: ไข่เรียกสกิลตรงก็ไม่ได้
+PASS: Recover กลับชุดสกิล Rookie
+RESULT: 0 failure(s)

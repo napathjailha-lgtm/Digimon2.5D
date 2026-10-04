@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/skills_painted/claw.png" id="icon"]
+[resource]
+script = ExtResource("1")
+id = &"champion_claw"
+display_name = "Heavy Claw"
+icon = ExtResource("icon")
+multiplier = 2.0
+cast_range = 90.0
+cooldown = 4.0
+mp_cost = 8.0
+impact_radius = 0.0
+effect_color = Color(1.0, 0.8862745098039215, 0.5450980392156862, 1)
+effect_size = 20.0
+animation_prefix = &"attack"
+release_frame = 2
+
+vfx_style = "claw"

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/items/digital_fruit.svg" id="2"]
+[resource]
+script = ExtResource("1")
+item_id = "digital_fruit"
+item_name = "ผลไม้ดิจิตอล"
+item_type = 0
+item_texture = ExtResource("2")
+description = "อาหาร Tamer: อิ่ม +30, HP +25 และแรง +10 ใช้ได้แม้คู่หูเป็นไข่"
+effect_type = 1
+effect_value = 30
+tamer_hp_restore = 25
+tamer_stamina_restore = 10.0

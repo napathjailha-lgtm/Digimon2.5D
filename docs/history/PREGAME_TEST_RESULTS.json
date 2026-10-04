@@ -1,0 +1,120 @@
+{
+  "version": "0.16.0",
+  "engine": "Godot 4.4.1.stable Standard",
+  "platform": "Linux x86_64",
+  "suites": [
+    {
+      "suite": "art_integration_test",
+      "assertions": 12,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "classic_hud_test",
+      "assertions": 50,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "combat_actions_test",
+      "assertions": 66,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "damage_popup_test",
+      "assertions": 14,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "equipment_test",
+      "assertions": 58,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "form_skills_animation_test",
+      "assertions": 69,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "openworld_test",
+      "assertions": 21,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "pregame_flow_test",
+      "assertions": 75,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "projectile_upgrade_test",
+      "assertions": 32,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "recovery_progress_cutscene_test",
+      "assertions": 35,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "smoke_test",
+      "assertions": 30,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "smooth_walk_test",
+      "assertions": 31,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "spawner_test",
+      "assertions": 18,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "story_quest_test",
+      "assertions": 27,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "target_freed_test",
+      "assertions": 15,
+      "failures": 0,
+      "engine_errors": 0
+    }
+  ],
+  "total_assertions": 553,
+  "failures": 0,
+  "notes": [
+    "Login and server are simulated locally; password is never persisted",
+    "Native menus tested through ScreenTouch-to-mouse pipeline, world retains multi-finger touch",
+    "New model art/animations are SVG prototypes; imported v15 characters preserve their original sprites/stats",
+    "Android APK/device testing not performed"
+  ],
+  "clean_import": {
+    "status": "passed without .godot or .import metadata",
+    "flow_assertions": 75,
+    "openworld_assertions": 21,
+    "engine_errors": 0
+  },
+  "native_capture": {
+    "renderer": "X11 / OpenGL Compatibility / llvmpipe",
+    "screenshots": 5,
+    "frames": 253,
+    "fps": 20,
+    "seconds": 12.65,
+    "engine_errors": 0,
+    "video": "Pregame_v16.mp4 (separate download)"
+  }
+}

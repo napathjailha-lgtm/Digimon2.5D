@@ -1,0 +1,41 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: agumon_0_skill.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: agumon_1_skill.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: agumon_2_skill.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: gabumon_0_skill.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: gabumon_1_skill.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: gabumon_2_skill.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: piyomon_0_skill.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: piyomon_1_skill.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: piyomon_2_skill.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: tentomon_0_skill.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: tentomon_1_skill.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: tentomon_2_skill.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: palmon_0_skill.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: palmon_1_skill.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: palmon_2_skill.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: rookie_strike.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: rookie_bolt.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: champion_claw.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: champion_flare.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: champion_burst.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: champion_nova.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: ultimate_lance.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: ultimate_wave.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: ultimate_claw.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: ultimate_nova.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: mega_cannon.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: mega_wave.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: mega_claw.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: mega_nova.tres ใช้ภาพใหม่ที่จำกัดขนาด GPU และข้อมูลสกิลถูกต้อง
+PASS: แต่ละภาพลงดาเมจครั้งเดียวผ่าน HitResolver
+PASS: ทุกสไตล์สร้างเอฟเฟกต์ได้
+PASS: เอฟเฟกต์หยุดขณะ pause
+PASS: เอฟเฟกต์หมดอายุแล้วลบตัวเองทั้งหมด
+PASS: ระหว่างแอนิเมชันไม่มีดาเมจแฝงเพิ่ม
+PASS: โหมดเอฟเฟกต์น้อยจำกัด burst ไว้ 12 ภาพ
+PASS: แม้งบภาพเต็มยังลงดาเมจครบ 40 hit
+PASS: ภาพใหญ่ยังมีเลขคูลดาวน์ปัดขึ้น
+PASS: จบ CD ซ่อน overlay และชื่อยาวตัดบรรทัดในปุ่ม
+RESULT: 0 failure(s), 38 assertions

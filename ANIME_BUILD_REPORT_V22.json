@@ -1,0 +1,21 @@
+{
+  "engine": "Godot 4.4.1",
+  "source_version": "0.22.0",
+  "tamer_models": 5,
+  "starter_forms": 15,
+  "legacy_mega": "WarGreymon",
+  "new_atlases": 11,
+  "assertions_passed": 269,
+  "native_godot_capture_passed": true,
+  "android_device_tested": false,
+  "apk": "DigitalAdventure_v22_Anime_test.apk",
+  "apk_bytes": 116569761,
+  "apk_sha256": "47484cf24095dadad48a8577ab135a7ec76658aebe5d0056e63a3a204e5394bc",
+  "package": "org.digitaladventure.mobiletest",
+  "version_code": 22,
+  "version_name": "0.22.0-test1",
+  "signature_same_as_v21": true,
+  "apk_crc_passed": true,
+  "zipalign_passed": true,
+  "apk_signature_v1_v2_v3_passed": true
+}

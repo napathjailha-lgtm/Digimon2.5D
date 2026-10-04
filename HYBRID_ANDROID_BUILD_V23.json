@@ -1,0 +1,23 @@
+{
+  "godot": "4.4.1.stable",
+  "package": "org.digitaladventure.mobiletest",
+  "version_code": 23,
+  "version_name": "0.23.0-test1",
+  "sdk_minimum": 21,
+  "sdk_target": 34,
+  "architectures": [
+    "armeabi-v7a",
+    "arm64-v8a"
+  ],
+  "signature_schemes": [
+    "v1",
+    "v2",
+    "v3"
+  ],
+  "certificate_sha256": "b0231bee2b68050eb11ac4f1c5f82a3a5808fe8e899bfb2b2fa244f1a2aa373e",
+  "zipalign": true,
+  "crc": true,
+  "physical_android_tested": false,
+  "apk_sha256": "40bbc9fc1ba5719205e7596dd6cc5e5e1b8a7b0496848219c9e76d0d0e2b3cc1",
+  "apk_bytes": 116921317
+}

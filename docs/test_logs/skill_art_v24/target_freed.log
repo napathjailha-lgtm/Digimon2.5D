@@ -1,0 +1,18 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: ล็อกศัตรูแล้ว HUD แสดงหลอดเป้าหมาย
+PASS: ศัตรูตายแล้วล้าง Tamer.target แม้ AI หยุดทำงาน
+PASS: ศัตรูตายแล้วล้าง Partner.target
+PASS: ศัตรูตายแล้วซ่อนหลอดเป้าหมาย
+PASS: getter คืน null จริงที่ส่งเข้าฟังก์ชัน typed ได้
+PASS: HUD รับ freed reference โดยตรงแล้วซ่อนแถบได้
+PASS: HUD รับชนิดที่ไม่ใช่ศัตรูแล้วล้างแถบ
+PASS: getter ล้าง reference เก่าที่ระบบอื่นเขียนตรงได้
+PASS: set_target รับ freed reference แล้วเก็บ null จริง
+PASS: กดสกิลหลังเป้าหมายถูกลบไม่ส่ง freed Object ต่อ
+PASS: ศัตรูตัวเก่าออกจากฉากไม่ล้างเป้าที่เลือกใหม่
+PASS: เป้าหมายใหม่ยังอัปเดตเลือดได้
+PASS: Node รอ queue_free ถูกซ่อนก่อน free จริง
+PASS: ลบ Node ตรงโดยไม่ตายก็ล้าง Target
+PASS: remove_child ล้างเป้าก่อนศัตรูถูก free
+RESULT: 0 failure(s)

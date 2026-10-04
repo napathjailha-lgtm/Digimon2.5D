@@ -1,0 +1,94 @@
+[gd_resource type="Theme" load_steps=7 format=3]
+[ext_resource type="FontFile" path="res://assets/fonts/NotoSansThai.ttf" id="font"]
+[sub_resource type="StyleBoxFlat" id="normal"]
+bg_color = Color(0.025, 0.070, 0.115, 0.98)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.24, 0.52, 0.61, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+content_margin_left = 10.0
+content_margin_right = 10.0
+content_margin_top = 8.0
+content_margin_bottom = 8.0
+[sub_resource type="StyleBoxFlat" id="selected"]
+bg_color = Color(0.09, 0.28, 0.4, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.88, 0.75, 0.45, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+content_margin_left = 10.0
+content_margin_right = 10.0
+content_margin_top = 8.0
+content_margin_bottom = 8.0
+[sub_resource type="StyleBoxFlat" id="hover"]
+bg_color = Color(0.1, 0.24, 0.35, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.36, 0.77, 0.87, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+content_margin_left = 10.0
+content_margin_right = 10.0
+content_margin_top = 8.0
+content_margin_bottom = 8.0
+[sub_resource type="StyleBoxFlat" id="focus"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.31, 0.78, 0.9, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+[sub_resource type="StyleBoxFlat" id="disabled"]
+bg_color = Color(0.025, 0.08, 0.12, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.12, 0.25, 0.35, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+[resource]
+default_font = ExtResource("font")
+default_font_size = 17
+Label/constants/outline_size = 2
+Label/colors/font_outline_color = Color(0.02, 0.04, 0.07, 1)
+Button/colors/font_color = Color(0.9, 0.97, 1, 1)
+Button/colors/font_disabled_color = Color(0.45, 0.6, 0.68, 1)
+Button/styles/normal = SubResource("normal")
+Button/styles/pressed = SubResource("selected")
+Button/styles/hover_pressed = SubResource("selected")
+Button/styles/hover = SubResource("hover")
+Button/styles/disabled = SubResource("disabled")
+Button/styles/focus = SubResource("focus")
+PanelContainer/styles/panel = SubResource("normal")
+LineEdit/styles/normal = SubResource("normal")
+LineEdit/styles/focus = SubResource("focus")
+LineEdit/font_sizes/font_size = 20
+OptionButton/styles/normal = SubResource("normal")
+OptionButton/styles/hover = SubResource("hover")
+OptionButton/styles/pressed = SubResource("selected")
+Label/colors/font_color = Color(0.84, 0.93, 0.97, 1)
+VBoxContainer/constants/separation = 12
+HBoxContainer/constants/separation = 18
+GridContainer/constants/h_separation = 10
+GridContainer/constants/v_separation = 10

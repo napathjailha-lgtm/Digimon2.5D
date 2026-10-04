@@ -1,0 +1,27 @@
+{
+  "skill_art_vfx": {
+    "exit_code": 0,
+    "passes": 38,
+    "errors": []
+  },
+  "combat_actions": {
+    "exit_code": 0,
+    "passes": 66,
+    "errors": []
+  },
+  "hybrid_hud": {
+    "exit_code": 0,
+    "passes": 43,
+    "errors": []
+  },
+  "form_skills_animation": {
+    "exit_code": 0,
+    "passes": 69,
+    "errors": []
+  },
+  "target_freed": {
+    "exit_code": 0,
+    "passes": 15,
+    "errors": []
+  }
+}

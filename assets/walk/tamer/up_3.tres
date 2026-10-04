@@ -1,0 +1,7 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3]
+[ext_resource type="Texture2D" path="res://assets/walk/tamer_walk_v12.png" id="1"]
+[resource]
+atlas = ExtResource("1")
+region = Rect2(1013, 633, 185, 289)
+margin = Rect2(177.0, 223, 327, 223)
+filter_clip = true

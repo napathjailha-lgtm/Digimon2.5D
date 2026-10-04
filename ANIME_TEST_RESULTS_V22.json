@@ -1,0 +1,32 @@
+[
+  {
+    "suite": "pregame_flow_test",
+    "exit_code": 0,
+    "errors": [],
+    "passed_assertions": 75
+  },
+  {
+    "suite": "smooth_walk_test",
+    "exit_code": 0,
+    "errors": [],
+    "passed_assertions": 31
+  },
+  {
+    "suite": "combat_actions_test",
+    "exit_code": 0,
+    "errors": [],
+    "passed_assertions": 66
+  },
+  {
+    "suite": "survival_status_test",
+    "exit_code": 0,
+    "errors": [],
+    "passed_assertions": 66
+  },
+  {
+    "suite": "pseudo3d_test",
+    "exit_code": 0,
+    "errors": [],
+    "passed_assertions": 31
+  }
+]

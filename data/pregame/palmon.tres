@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="StarterPartnerData" load_steps=7 format=3]
+[ext_resource type="Script" path="res://scripts/pregame/starter_partner_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/anime_v22/palmon_portrait.tres" id="p"]
+[ext_resource type="Script" path="res://scripts/monster_data.gd" id="mt"]
+[ext_resource type="Resource" path="res://data/pregame/palmon_0.tres" id="f0"]
+[ext_resource type="Resource" path="res://data/pregame/palmon_1.tres" id="f1"]
+[ext_resource type="Resource" path="res://data/pregame/palmon_2.tres" id="f2"]
+[resource]
+script = ExtResource("s")
+id = &"palmon"
+display_name = "Palmon"
+attribute_name = "ข้อมูล"
+element_name = "พืช"
+description = "คู่หูธาตุพืช • ข้อมูลสเตตัสและชุดสกิลแยกตามแต่ละร่าง"
+portrait = ExtResource("p")
+forms = Array[ExtResource("mt")]([ExtResource("f0"), ExtResource("f1"), ExtResource("f2")])

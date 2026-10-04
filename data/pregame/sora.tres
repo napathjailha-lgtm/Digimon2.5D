@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="TamerModelData" load_steps=4 format=3]
+[ext_resource type="Script" path="res://scripts/pregame/tamer_model_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/anime_v22/sora_portrait.tres" id="p"]
+[ext_resource type="SpriteFrames" path="res://data/pregame/sora_frames.tres" id="f"]
+[resource]
+script = ExtResource("s")
+id = &"sora"
+display_name = "โซระ"
+gender = "หญิง"
+play_style = "สายซัพพอร์ต"
+description = "เด็กผู้ถูกเลือก • สายซัพพอร์ต เป็นค่าพื้นฐานเริ่มต้น ปรับแต่งอุปกรณ์และสกิลต่อได้"
+portrait = ExtResource("p")
+sprite_frames = ExtResource("f")
+sprite_scale = Vector2(0.246835, 0.246835)
+base_hp = 180
+base_ds = 130.0
+move_speed = 200.0

@@ -1,0 +1,79 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: ResourceLoader โหลด Login+Catalog เบื้องหลังถึง 100%
+PASS: TextureProgressBar และ Catalog พร้อมจริง
+PASS: โหลด Scene ไม่พบให้ Retry ไม่เปลี่ยนฉากวน
+PASS: มี 5 โมเดล Tamer และ 5 คู่หู
+PASS: ข้อมูลเพศของ Sora/Mimi ถูกต้อง
+PASS: Agumon มีสายร่างเฉพาะ 3 ร่าง
+PASS: Agumon มีสกิลและชุดเดิน/ตี/ร่าย 4 ทิศครบ
+PASS: Greymon มีสกิลและชุดเดิน/ตี/ร่าย 4 ทิศครบ
+PASS: MetalGreymon มีสกิลและชุดเดิน/ตี/ร่าย 4 ทิศครบ
+PASS: Gabumon มีสายร่างเฉพาะ 3 ร่าง
+PASS: Gabumon มีสกิลและชุดเดิน/ตี/ร่าย 4 ทิศครบ
+PASS: Garurumon มีสกิลและชุดเดิน/ตี/ร่าย 4 ทิศครบ
+PASS: WereGarurumon มีสกิลและชุดเดิน/ตี/ร่าย 4 ทิศครบ
+PASS: Piyomon มีสายร่างเฉพาะ 3 ร่าง
+PASS: Piyomon มีสกิลและชุดเดิน/ตี/ร่าย 4 ทิศครบ
+PASS: Birdramon มีสกิลและชุดเดิน/ตี/ร่าย 4 ทิศครบ
+PASS: Garudamon มีสกิลและชุดเดิน/ตี/ร่าย 4 ทิศครบ
+PASS: Tentomon มีสายร่างเฉพาะ 3 ร่าง
+PASS: Tentomon มีสกิลและชุดเดิน/ตี/ร่าย 4 ทิศครบ
+PASS: Kabuterimon มีสกิลและชุดเดิน/ตี/ร่าย 4 ทิศครบ
+PASS: MegaKabuterimon มีสกิลและชุดเดิน/ตี/ร่าย 4 ทิศครบ
+PASS: Palmon มีสายร่างเฉพาะ 3 ร่าง
+PASS: Palmon มีสกิลและชุดเดิน/ตี/ร่าย 4 ทิศครบ
+PASS: Togemon มีสกิลและชุดเดิน/ตี/ร่าย 4 ทิศครบ
+PASS: Lillymon มีสกิลและชุดเดิน/ตี/ร่าย 4 ทิศครบ
+PASS: Login ปฏิเสธ username สั้น
+PASS: Login ปฏิเสธ password ว่าง
+PASS: Login ปฏิเสธ server ID ที่ไม่มี
+PASS: Login ซ่อน Password และมี 2 Servers
+PASS: แตะ Login จริงเปลี่ยนไปหน้า Character
+PASS: Singleton เก็บ username แต่ไม่เก็บ password
+PASS: หน้า Character มี 5 slots และ 5 model cards
+PASS: touch Sora เปลี่ยน portrait/ข้อมูลพรีวิว
+PASS: ชื่อไม่ผ่านไม่ใช้ช่องหรือสร้าง draft
+PASS: Create ไป Starter โดยยังไม่ commit ช่อง
+PASS: touch Palmon แสดงสายพัฒนาตรงกับ Resource
+PASS: Back ยกเลิก draft ไม่กิน slot
+PASS: Back เก็บชื่อ/โมเดล draft สำหรับแก้ไขต่อ
+PASS: Gabumon พรีวิว HP/สายข้อมูล/น้ำแข็ง
+PASS: กดยืนยันซ้ำไม่สร้างตัวละครซ้ำ
+PASS: Starter confirm ผ่าน Loading แล้วเข้า world.tscn
+PASS: โมเดลใหม่มีสเกลต้นแบบตาม Resource ไม่ย่อจนเล็กเกิน
+PASS: ชื่อและสเตตัส Tamer ส่งถึง gameplay
+PASS: Tamer ในสนามใช้โมเดล Sora ที่เลือกจริง
+PASS: คู่หูจริงใช้สาย Gabumon ไม่ใช้สายเก่าร่วมกัน
+PASS: Starter เปลี่ยนร่าง Champion ตามสายที่เลือก
+PASS: Ultimate ของสายใหม่ยังล็อกตามเควสต์เดิม
+PASS: คู่หูสายใหม่แพ้แล้วคง Node เป็นไข่
+PASS: Recover ของสายใหม่กลับ Rookie ที่เลือก
+PASS: เข้าสนามคืนการรับ touch หลายนิ้วเดิม
+PASS: Progress เซฟใน account/server/slot ของตัวละคร
+PASS: Global level/form และ roster ตามสถานะจริง
+PASS: level/gear ไม่แก้ต้นแบบ shared Resource
+PASS: JSON ไม่เก็บ password
+PASS: กลับหน้า Character แล้วตัวเดิมใช้ปุ่มเข้าโลก
+PASS: ตัวเดิมข้าม Starter และคืน level/gear/ฐาน Sora
+PASS: เข้าโลกต่อไม่รีเซ็ต HP เป็นค่าเริ่มต้น
+PASS: ไม่สร้างทับช่องที่มีตัวละคร
+PASS: ปฏิเสธชื่อซ้ำในบัญชี/Server
+PASS: สร้าง slot2 โดยใช้ model/partner คนละชุด
+PASS: slot2 ไม่รับ HP/gear/quest ของ slot1
+PASS: แต่ละ slot มีไฟล์ Progress คนละพาธ
+PASS: Server 2 ไม่ใช้ตัวละครของ Server 1
+PASS: คนละ username มี roster แยก
+PASS: Login ใหม่ case ต่างกันคืน roster จาก disk เดิม
+PASS: สร้างช่อง 3
+PASS: สร้างช่อง 4
+PASS: สร้างช่อง 5
+PASS: ไม่เกิน 5 ช่อง
+PASS: Logout ล้าง session/draft
+PASS: ปุ่ม migration นำเข้า progress/gear v15 ได้
+PASS: migration เก็บต้นฉบับและคัดลอก byte ตรงกัน
+PASS: Legacy prepare ใช้ slot save ที่นำเข้า
+PASS: Legacy ใช้ฐาน HP200/DS100 เดิม ไม่สวมฐาน Taichi ใหม่
+PASS: Legacy เก็บสายร่าง/ภาพ/HP คู่หู v15 เดิม
+ASSERTIONS: 75
+RESULT: 0 failure(s)

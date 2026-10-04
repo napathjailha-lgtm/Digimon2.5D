@@ -1,0 +1,60 @@
+{
+  "engine": "Godot 4.4.1",
+  "mode": "headless / fixed-fps 60",
+  "scenes": [
+    {
+      "scene": "res://tests/projectile_upgrade_test.tscn",
+      "pass_checks": 31,
+      "result": "RESULT: 0 failure(s)",
+      "errors": []
+    },
+    {
+      "scene": "res://tests/form_skills_animation_test.tscn",
+      "pass_checks": 69,
+      "result": "RESULT: 0 failure(s)",
+      "errors": []
+    },
+    {
+      "scene": "res://tests/classic_hud_test.tscn",
+      "pass_checks": 50,
+      "result": "RESULT: 0 failure(s)",
+      "errors": []
+    },
+    {
+      "scene": "res://tests/smoke_test.tscn",
+      "pass_checks": 30,
+      "result": "RESULT: 0 failure(s)",
+      "errors": []
+    },
+    {
+      "scene": "res://tests/recovery_progress_cutscene_test.tscn",
+      "pass_checks": 35,
+      "result": "RESULT: 0 failure(s)",
+      "errors": []
+    },
+    {
+      "scene": "res://tests/story_quest_test.tscn",
+      "pass_checks": 27,
+      "result": "RESULT: 0 failure(s)",
+      "errors": []
+    },
+    {
+      "scene": "res://tests/spawner_test.tscn",
+      "pass_checks": 18,
+      "result": "RESULT: 0 failure(s)",
+      "errors": []
+    },
+    {
+      "scene": "res://tests/damage_popup_test.tscn",
+      "pass_checks": 14,
+      "result": "RESULT: 0 failure(s)",
+      "errors": []
+    },
+    {
+      "scene": "res://tests/art_integration_test.tscn",
+      "pass_checks": 12,
+      "result": "RESULT: 0 failure(s)",
+      "errors": []
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3]
+[ext_resource type="Texture2D" path="res://assets/walk/rookie_walk_v12.png" id="1"]
+[resource]
+atlas = ExtResource("1")
+region = Rect2(697, 41, 187, 268)
+margin = Rect2(162.0, 244, 325, 244)
+filter_clip = true

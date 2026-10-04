@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/depth/ground_skill_indicator.gd" id="1"]
+[node name="GroundWarning" type="Node2D"]
+script = ExtResource("1")
+radius = 110.0
+tint = Color(1, 0.29, 0.25, 1)
+fill_alpha = 0.12

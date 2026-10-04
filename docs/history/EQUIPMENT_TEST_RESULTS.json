@@ -1,0 +1,118 @@
+{
+  "version": "0.15.0",
+  "engine": "Godot 4.4.1.stable Standard",
+  "platform": "Linux x86_64 / headless regression + X11 Compatibility native UI",
+  "suites": [
+    {
+      "suite": "art_integration_test",
+      "assertions": 12,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "classic_hud_test",
+      "assertions": 50,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "combat_actions_test",
+      "assertions": 66,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "damage_popup_test",
+      "assertions": 14,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "equipment_test",
+      "assertions": 58,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "form_skills_animation_test",
+      "assertions": 69,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "openworld_test",
+      "assertions": 21,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "projectile_upgrade_test",
+      "assertions": 32,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "recovery_progress_cutscene_test",
+      "assertions": 35,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "smoke_test",
+      "assertions": 30,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "smooth_walk_test",
+      "assertions": 31,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "spawner_test",
+      "assertions": 18,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "story_quest_test",
+      "assertions": 27,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "target_freed_test",
+      "assertions": 15,
+      "failures": 0,
+      "engine_errors": 0
+    }
+  ],
+  "total_assertions": 478,
+  "failures": 0,
+  "notes": [
+    "58 equipment checks include real user:// save/load and touch event dispatch while paused",
+    "Legacy gameplay suites use the v13 arena fixture where applicable; openworld tests use the actual 5120x3200 map",
+    "Android APK/device testing not performed"
+  ],
+  "clean_import": {
+    "import": "passed without .godot or .import files",
+    "equipment_assertions": 58,
+    "failures": 0,
+    "engine_errors": 0
+  },
+  "native_ui": {
+    "renderer": "Godot 4.4.1 X11 gl_compatibility / Mesa llvmpipe",
+    "resolution": [
+      1280,
+      720
+    ],
+    "capture_frames": 260,
+    "video_seconds": 13,
+    "screenshots": [
+      "docs/screenshots/Equipment_Tamer_v15.png",
+      "docs/screenshots/Equipment_Digivice_v15.png"
+    ],
+    "engine_errors": 0
+  }
+}

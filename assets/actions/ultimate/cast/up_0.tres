@@ -1,0 +1,7 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3]
+[ext_resource type="Texture2D" path="res://assets/actions/ultimate_cast_v13.png" id="1"]
+[resource]
+atlas = ExtResource("1")
+region = Rect2(29, 666, 253, 230)
+margin = Rect2(100.0, 282, 259, 282)
+filter_clip = true

@@ -1,0 +1,92 @@
+[gd_scene load_steps=16 format=3]
+[ext_resource type="Script" path="res://scripts/story_world.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/tamer.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/partner.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/monster_spawner.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/mobile_hud.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/boss_devimon.tscn" id="boss"]
+[ext_resource type="PackedScene" path="res://scenes/story_portal.tscn" id="portal"]
+[ext_resource type="PackedScene" path="res://scenes/npc_agumon.tscn" id="npc"]
+[ext_resource type="PackedScene" path="res://scenes/reach_friends_reunion.tscn" id="reach"]
+[ext_resource type="Texture2D" path="res://assets/art/file_island.png" id="world_art"]
+[ext_resource type="PackedScene" path="res://scenes/wild_monster_crab.tscn" id="wild_crab"]
+[ext_resource type="PackedScene" path="res://scenes/safe_zone.tscn" id="safe_zone"]
+[sub_resource type="NavigationPolygon" id="nav"]
+vertices = PackedVector2Array(44, 44, 1236, 44, 1236, 676, 44, 676)
+polygons = [PackedInt32Array(0, 1, 2, 3)]
+[sub_resource type="RectangleShape2D" id="horizontal"]
+size = Vector2(1280, 24)
+[sub_resource type="RectangleShape2D" id="vertical"]
+size = Vector2(24, 720)
+[node name="World" type="Node2D"]
+script = ExtResource("1")
+zone_id = &"file_island"
+background_texture = ExtResource("world_art")
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+navigation_polygon = SubResource("nav")
+[node name="Actors" type="Node2D" parent="."]
+y_sort_enabled = true
+[node name="Tamer" parent="Actors" node_paths=PackedStringArray("partner") instance=ExtResource("2")]
+position = Vector2(480, 420)
+partner = NodePath("../Partner")
+[node name="Partner" parent="Actors" node_paths=PackedStringArray("tamer") instance=ExtResource("3")]
+position = Vector2(400, 420)
+tamer = NodePath("../Tamer")
+[node name="Spawners" type="Node2D" parent="."]
+[node name="SpawnerA" parent="Spawners" node_paths=PackedStringArray("monster_parent", "popup_layer") instance=ExtResource("4")]
+position = Vector2(760, 300)
+spawn_radius = 60.0
+monster_parent = NodePath("../../Actors")
+popup_layer = NodePath("../../DamagePopups")
+[node name="SpawnerB" parent="Spawners" node_paths=PackedStringArray("monster_parent", "popup_layer") instance=ExtResource("4")]
+monster_scene = ExtResource("wild_crab")
+position = Vector2(960, 400)
+spawn_radius = 80.0
+monster_parent = NodePath("../../Actors")
+popup_layer = NodePath("../../DamagePopups")
+[node name="SpawnerC" parent="Spawners" node_paths=PackedStringArray("monster_parent", "popup_layer") instance=ExtResource("4")]
+position = Vector2(680, 180)
+spawn_radius = 60.0
+monster_parent = NodePath("../../Actors")
+popup_layer = NodePath("../../DamagePopups")
+[node name="DamagePopups" type="Node2D" parent="."]
+z_index = 200
+
+[node name="Walls" type="StaticBody2D" parent="."]
+collision_layer = 1
+collision_mask = 0
+[node name="Top" type="CollisionShape2D" parent="Walls"]
+position = Vector2(640, 12)
+shape = SubResource("horizontal")
+[node name="Bottom" type="CollisionShape2D" parent="Walls"]
+position = Vector2(640, 708)
+shape = SubResource("horizontal")
+[node name="Left" type="CollisionShape2D" parent="Walls"]
+position = Vector2(12, 360)
+shape = SubResource("vertical")
+[node name="Right" type="CollisionShape2D" parent="Walls"]
+position = Vector2(1268, 360)
+shape = SubResource("vertical")
+[node name="MobileHUD" parent="." node_paths=PackedStringArray("tamer", "partner") instance=ExtResource("5")]
+tamer = NodePath("../Actors/Tamer")
+partner = NodePath("../Actors/Partner")
+[node name="BossSpawner" parent="Spawners" node_paths=PackedStringArray("monster_parent", "popup_layer") instance=ExtResource("4")]
+position = Vector2(900, 210)
+monster_scene = ExtResource("boss")
+spawn_radius = 40.0
+respawn_time = 8.0
+monster_parent = NodePath("../../Actors")
+popup_layer = NodePath("../../DamagePopups")
+[node name="StoryPoints" type="Node2D" parent="."]
+[node name="NPC" parent="StoryPoints" instance=ExtResource("npc")]
+position = Vector2(500, 300)
+[node name="ReachPoint" parent="StoryPoints" instance=ExtResource("reach")]
+position = Vector2(620, 300)
+[node name="NextPortal" parent="StoryPoints" instance=ExtResource("portal")]
+position = Vector2(1130, 360)
+required_quest = &"q03_devimon"
+destination_zone = &"server_continent"
+destination_scene = "res://scenes/server_continent.tscn"
+
+[node name="SafeZone" parent="." instance=ExtResource("safe_zone")]
+position = Vector2(460, 560)

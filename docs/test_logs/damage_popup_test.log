@@ -1,0 +1,17 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: damage ศูนย์/ติดลบไม่ลด HP และไม่สร้าง Popup
+PASS: take_damage แบบหนึ่ง argument ลด HP และสร้าง Popup
+PASS: ข้อความดาเมจถูกต้องและไม่บล็อก Touch Target
+PASS: เริ่มเหนือหัวถูกพิกัดแม้ layer มี transform
+PASS: ศัตรูเดินแล้ว Popup ไม่เคลื่อนตาม
+PASS: Tween ขยาย Pop และลอยขึ้นพร้อมกัน
+PASS: ยังไม่ Fade ก่อนถึงช่วงท้าย
+PASS: hit สุดท้ายแสดงดาเมจที่ได้รับแม้เกิน HP คงเหลือ
+PASS: ศัตรูถูกลบแต่ Popup ของ hit สุดท้ายยังอยู่
+PASS: โจมตีรัวสร้างหลาย Popup และคิด HP ครบทุก hit
+PASS: จุดเริ่ม Popup กระจายซ้าย/ขวา
+PASS: Fade เริ่มในช่วงท้ายของ lifetime
+PASS: Tween จบแล้ว queue_free ลบ Popup ทุกตัว
+PASS: ไม่มี Tween ค้างหลัง Popup ถูกลบ
+RESULT: 0 failure(s)

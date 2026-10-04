@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/skills_painted/fire.png" id="icon"]
+[resource]
+script = ExtResource("1")
+id = &"mega_flame"
+display_name = "Mega Flame"
+icon = ExtResource("icon")
+multiplier = 2.5
+cast_range = 230.0
+cooldown = 6.0
+mp_cost = 10.0
+impact_radius = 90.0
+effect_color = Color(1.0, 0.4549019607843137, 0.1843137254901961, 1)
+effect_size = 26.0
+projectile_speed = 360.0
+projectile_lifetime = 3.0
+animation_prefix = &"cast"
+release_frame = 2
+
+vfx_style = "fire"

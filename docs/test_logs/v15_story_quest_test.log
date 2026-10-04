@@ -1,0 +1,30 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: เริ่มเควสต์แรกและล็อกเควสต์ขั้นถัดไป
+PASS: ฆ่าบอสก่อน Active ไม่นับข้ามเควสต์
+PASS: ล็อกเฉพาะ Angemon และระดับ Ultimate ตั้งแต่เริ่ม
+PASS: รับความคืบหน้าที่ตรง Objective
+PASS: event id ซ้ำไม่นับซ้ำ
+PASS: บันทึกและโหลด partial progress
+PASS: โหลด Save แล้วยังจำ event ที่นับแล้ว
+PASS: ประตูและ direct form load เคารพเงื่อนไขเนื้อเรื่อง
+PASS: แตะ Tracker ผ่าน input pipeline เริ่ม Auto-Navigation
+PASS: นำทางถึง NPC และจบบทสนทนาตัวอย่าง
+PASS: Signal สำเร็จครั้งเดียวและ Tracker แสดงเควสต์ถัดไป
+PASS: Joystick ยกเลิก Auto-Navigation
+PASS: Reach Area นับเมื่อ Tamer เดินถึงจริง
+PASS: ฆ่า Devimon ปลดล็อก Angemon และประตู Server
+PASS: Devimon ไม่ปลดล็อก Ultimate โดยผิดขั้น
+PASS: บอสเดิมไม่แจก reward หรือ complete signal ซ้ำ
+PASS: เป้าหมายคนละโซนเลือกประตูที่เปิดแล้ว
+PASS: ประตูยอมให้ผ่านเมื่อเควสต์หลักสำเร็จ
+PASS: เปลี่ยน Scene แล้วยังเก็บ quest_manager และความคืบหน้า
+PASS: DS/HP/ร่างคู่หูคงอยู่ระหว่างเปลี่ยนโซน
+PASS: Etemon ส่ง signal ปลดล็อก Ultimate ถึง Partner
+PASS: หลังปลดล็อกสามารถ Digivolve Ultimate ได้จริง
+PASS: โหลด Save คืนเควสต์และคำนวณ unlock ใหม่จากเควสต์ที่จบ
+PASS: วาร์ปไป Odaiba หลังเคลียร์ Server
+PASS: จบ Odaiba เปิด Mega และ Spiral Mountain
+PASS: จบเควสต์ทั้งหมดและรับ flag สุดท้าย
+PASS: Tracker แสดงสถานะจบเนื้อเรื่อง
+RESULT: 0 failure(s)

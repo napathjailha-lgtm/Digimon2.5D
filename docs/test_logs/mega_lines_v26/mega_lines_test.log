@@ -1,0 +1,72 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: Agumon selection has all four forms
+PASS: Gabumon selection has all four forms
+PASS: Mega initially quest-locked: Agumon
+PASS: Valid animation/action/skill data: Agumon
+PASS: Valid animation/action/skill data: Greymon
+PASS: Valid animation/action/skill data: MetalGreymon
+PASS: Valid animation/action/skill data: WarGreymon
+PASS: Mega initially quest-locked: Gabumon
+PASS: Valid animation/action/skill data: Gabumon
+PASS: Valid animation/action/skill data: Garurumon
+PASS: Valid animation/action/skill data: WereGarurumon
+PASS: Valid animation/action/skill data: MetalGarurumon
+PASS: Agumon evolves to Greymon
+PASS: Ultimate blocked before Etemon quest
+PASS: Greymon evolves to MetalGreymon
+PASS: Mega blocked before Myotismon without spending DS
+PASS: Myotismon quest unlocks both Mega forms
+PASS: Insufficient DS blocks Mega
+PASS: WarGreymon reserved for cutscene
+PASS: Cutscene reserves DS once and preserves current form
+PASS: WarGreymon committed after cutscene
+PASS: Mega preserves HP ratio and MP
+PASS: WarGreymon is final form
+PASS: WarGreymon has the active Mega skill page
+PASS: Open Mega status
+PASS: Status shows correct Mega name/stage
+PASS: Status uses actual Mega art
+PASS: Status uses actual Mega skill icons
+PASS: Cast Terra Force
+PASS: Terra Force deals damage on impact
+PASS: Skill spends MP once and preserves DS
+PASS: Skill cooldown is active
+PASS: Cast Great Tornado
+PASS: Great Tornado deals damage on impact
+PASS: Skill spends MP once and preserves DS
+PASS: Skill cooldown is active
+PASS: Switch to Gabumon party member
+PASS: Gabumon evolves to Garurumon
+PASS: Gabumon evolves to WereGarurumon
+PASS: Gabumon evolves to MetalGarurumon
+PASS: MetalGarurumon is final form
+PASS: MetalGarurumon has the active Mega skill page
+PASS: Open Mega status
+PASS: Status shows correct Mega name/stage
+PASS: Status uses actual Mega art
+PASS: Status uses actual Mega skill icons
+PASS: MetalGarurumon party slot shows face portrait instead of tail
+PASS: Cast Cocytus Breath
+PASS: Cocytus Breath deals damage on impact
+PASS: Skill spends MP once and preserves DS
+PASS: Skill cooldown is active
+PASS: Cast Garuru Tomahawk
+PASS: Garuru Tomahawk deals damage on impact
+PASS: Skill spends MP once and preserves DS
+PASS: Skill cooldown is active
+PASS: Cast Grace Cross Freezer
+PASS: Grace Cross Freezer deals damage on impact
+PASS: Skill spends MP once and preserves DS
+PASS: Skill cooldown is active
+PASS: Party switch preserves WarGreymon HP/MP/form
+PASS: WarGreymon cooldown is separate
+PASS: Party switch preserves MetalGarurumon
+PASS: Read Mega save from disk
+PASS: Reload preserves active MetalGarurumon HP/MP
+PASS: Reload preserves reserve WarGreymon
+PASS: Low Tamer HP still reverts Mega to Rookie
+PASS: Old Ultimate form ID remains valid
+PASS: Load save containing old Ultimate ID
+PASS: Old Ultimate save gains Mega without recreating character
+RESULT: 0 failure(s), 69 assertions

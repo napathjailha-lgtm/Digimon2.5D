@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q02_friends"
+title = "ตามหาเพื่อนที่พลัดหลง"
+description = "เดินไปยังจุดนัดพบเพื่อตามหาเพื่อน"
+zone_id = &"file_island"
+objective = 2
+target_id = &"friends_reunion"
+required_count = 1
+unlock_flags = Array[StringName]([])
+unlock_zones = Array[StringName]([])
+unlock_stage = -1

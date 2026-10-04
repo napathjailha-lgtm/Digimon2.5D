@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="MonsterData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/monster_data.gd" id="1"]
+[ext_resource type="SpriteFrames" path="res://data/rookie_frames.tres" id="2"]
+[ext_resource type="Resource" path="res://data/rookie_strike.tres" id="3"]
+[ext_resource type="Resource" path="res://data/rookie_bolt.tres" id="4"]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="skill_type"]
+
+[resource]
+script = ExtResource("1")
+id = &"rookie"
+monster_name = "Rookie"
+evolution_stage = 0
+sprite_frames = ExtResource("2")
+sprite_scale = Vector2(0.427481, 0.427481)
+max_hp = 120
+attack = 15
+move_speed = 240.0
+attack_range = 58.0
+attack_interval = 0.8
+evolution_cost = 0.0
+ds_drain_per_second = 0.0
+skills = Array[ExtResource("skill_type")]([ExtResource("3"), ExtResource("4")])
+animation_reference_speed = 240.0
+require_directional_animations = true
+idle_animation = &"idle_down"
+walk_animation = &"walk_down"
+attack_animation = &"attack_down"
+animation_prefix = &"cast"
+release_frame = 2
+attack_sprite_scale = Vector2(0.427481, 0.427481)
+cast_sprite_scale = Vector2(0.427481, 0.427481)
+require_action_animations = true
+cast_animation = &"cast_down"
+attack_hit_frame = 2

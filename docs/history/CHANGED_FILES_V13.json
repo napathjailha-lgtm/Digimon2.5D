@@ -1,0 +1,1130 @@
+{
+  "base": "Godot4_SmoothWalk_v12.zip",
+  "version": "0.13.0",
+  "added": 153,
+  "modified": 34,
+  "files": [
+    {
+      "file": "ACTION_ATLAS_METADATA.json",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "026cf5b8b7f547719113dbd1a6486025732d4eac9091ac096aae3c0d8828ff81"
+    },
+    {
+      "file": "ACTION_IMAGE_PROMPTS.json",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "d099dfecb63b101a14dc201c41e6477b1e38508880a7f4021e985fc42974b426"
+    },
+    {
+      "file": "COMBAT_ACTION_TEST_RESULTS.json",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "02047259a58e94b70e962779100983dda7a5e3262030ff969d271baca9616480"
+    },
+    {
+      "file": "README_FIRST_V13_TH.md",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "c7a2d61bf5bfe4b5307dbb97e834ebe064ffb57a2373e0b2ef40763542bc4aca"
+    },
+    {
+      "file": "assets/actions/champion/attack/down_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "9c735c22af4085f4f8d0c3649cc77a0cc19d4d0637ca635d074441e37bd79510"
+    },
+    {
+      "file": "assets/actions/champion/attack/down_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "9eef5d71cf5c9519668b22f68d24b3daf19ca149d2c4b60a22c553f000e8117d"
+    },
+    {
+      "file": "assets/actions/champion/attack/down_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "df3a9d21f4bb3b3d8c3c07b5d9b6c716f4c616e0f2d5381d0a7dc688e1f74e75"
+    },
+    {
+      "file": "assets/actions/champion/attack/down_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "36773e1e5a0977100dddd9fae97368461bd7973439955d60b7ff4468b254b05d"
+    },
+    {
+      "file": "assets/actions/champion/attack/left_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "ae7d84cb842345eb33da59318a42ed3cb7d5f02bf3cf500a561882320ed8c047"
+    },
+    {
+      "file": "assets/actions/champion/attack/left_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "d95e16b838b0304ae160a51ed7776688be3a97164bfc685099e1b18b17f760a6"
+    },
+    {
+      "file": "assets/actions/champion/attack/left_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "ac4f6a33caef69767984aa2556d2afc7759a30ff3963af7de01ebf4ab8395342"
+    },
+    {
+      "file": "assets/actions/champion/attack/left_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "099827ef57cc7eb69a0fe0db778b58afd331a96d7fdbf0cb7956360e0c493d4a"
+    },
+    {
+      "file": "assets/actions/champion/attack/right_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "2fcf42f4a04064ba7315d71a3574ea04885258b2718de24d36c6cf32c44c6c9e"
+    },
+    {
+      "file": "assets/actions/champion/attack/right_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "6b141ac9f722198385e4f894788c4123079fede02024ef49b5c9c3d1963d5f48"
+    },
+    {
+      "file": "assets/actions/champion/attack/right_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "893ab002ce2ff0fab881736bf6ed7558cf46a09830aae860f70e05e4d48fb004"
+    },
+    {
+      "file": "assets/actions/champion/attack/right_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "4f799c597021a9ecb10a937254b58d113787736094e52bbbc64e57a6a2b2daf2"
+    },
+    {
+      "file": "assets/actions/champion/attack/up_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "3206005078b82866a885c2b4312f1d7d0c6a48c5dbe5a58f0b8779ade7cd4c9e"
+    },
+    {
+      "file": "assets/actions/champion/attack/up_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "05e2d39d9a9f750d6ce8c7ba5175959cae8912c79e064b6c16b107e6081a3bcb"
+    },
+    {
+      "file": "assets/actions/champion/attack/up_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "0aaa8721280dd003ed092bb89baada13c5beb9a7ebe3ceddd1f94ec0b168bcd5"
+    },
+    {
+      "file": "assets/actions/champion/attack/up_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "46854791efc3c5b1f7c9810f962eab81abfc8cf45c559a42143541c7bb0af87b"
+    },
+    {
+      "file": "assets/actions/champion/cast/down_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "52030cdc831a2250886663db4776c03a1a15d4855c79e9df9a15a3e7cb5e90f0"
+    },
+    {
+      "file": "assets/actions/champion/cast/down_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "cf0c8a455faa9c73874b64e8df886e851d65a413e7a96d780bd51e550864eac4"
+    },
+    {
+      "file": "assets/actions/champion/cast/down_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "a95ab9817e6a105a420dfb3b32ba746021bee3fb6a0a5fe11b12e69811c370a7"
+    },
+    {
+      "file": "assets/actions/champion/cast/down_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "3220237bb06e223d386ab6a0f6c010c09eb8739833c019d820bbd3f55c9b7549"
+    },
+    {
+      "file": "assets/actions/champion/cast/left_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "c85a10e91452bd51aefa93b1c86d66b61e91eccb0d4afae284eb178911f60ad6"
+    },
+    {
+      "file": "assets/actions/champion/cast/left_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "05a0982971bb861c8071a3f6b9d88dd260a1e7e2bb2efc5a570b0737b88b095c"
+    },
+    {
+      "file": "assets/actions/champion/cast/left_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "c35e244d38ad59cc5ada7d9b33151c2f0c6ed74995ff79c34adbb7a55af33800"
+    },
+    {
+      "file": "assets/actions/champion/cast/left_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "73a977b1257de0dae0520bd8ecf2bdd33118acac62812e93f10aa3a557ddd6d2"
+    },
+    {
+      "file": "assets/actions/champion/cast/right_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "2d87e1ca67329ee74d90439f605734f48c154df9666870e340f89b37f2c87568"
+    },
+    {
+      "file": "assets/actions/champion/cast/right_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "af5819cfc042a9460e37f2575291d9b39107aef68a9883ea4d1b596156444d0f"
+    },
+    {
+      "file": "assets/actions/champion/cast/right_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "84b1d2a48bf01798f5836e48e985ae253aa93567cae2a0a8db602410e1872bb3"
+    },
+    {
+      "file": "assets/actions/champion/cast/right_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "9a22dbbfa8a7175c9ec6ed140097be80e1ec3a9ffa5d7c47849b32c61eba11b4"
+    },
+    {
+      "file": "assets/actions/champion/cast/up_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "08b1f8cc23257bdc0849bc9ad07b752ce55389593d97cdaf674cb4b3b23e5f59"
+    },
+    {
+      "file": "assets/actions/champion/cast/up_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "f116dad9f87fa4f4ed210ab4c12b84a95e0372d2fcedf1420f07105db24a556b"
+    },
+    {
+      "file": "assets/actions/champion/cast/up_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "839512768a755e256350d62f3db5b88620dafcb93bf698a4e9d1e0a4323e775e"
+    },
+    {
+      "file": "assets/actions/champion/cast/up_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "2b8d33e448d79ffe17dc0746602ca0ef1552f88ab8362c6c6697bd664aba2f41"
+    },
+    {
+      "file": "assets/actions/champion_attack_v13.png",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "c5f291f482c8d37744a88aa64244055d611efa904c238e1b99d0344e8faa2ec1"
+    },
+    {
+      "file": "assets/actions/champion_cast_v13.png",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "144c314927fe53cc570b6ac285cb54fb46298214a5334113b801e09971b56415"
+    },
+    {
+      "file": "assets/actions/mega/attack/down_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "4858a2566875698236556ead8d815156262836d6f26cb524dea5415abaeaef63"
+    },
+    {
+      "file": "assets/actions/mega/attack/down_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "d6522f865f8a9b170e469e020d3b37f362af264ad02b2bbedb904282f45a5113"
+    },
+    {
+      "file": "assets/actions/mega/attack/down_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "9b3124110d26aaf63ce58e2828fb905c80050dec1949c2bbe34964bbb1c8e901"
+    },
+    {
+      "file": "assets/actions/mega/attack/down_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "01cd435b51ed5cf679274ed4c52ba6e2538168d8f23561441508ab3340782767"
+    },
+    {
+      "file": "assets/actions/mega/attack/left_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "7abe101bc5d34513cc944495d66a16cee2e4b0d5ddd187116254de6a9bb5210a"
+    },
+    {
+      "file": "assets/actions/mega/attack/left_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "0138dcbfd045939d9ed28ea2ffefbeaad2aa8331c08b7e65ad4f482bdf6b6b87"
+    },
+    {
+      "file": "assets/actions/mega/attack/left_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "8c950bb2d708f7f6ba09627428319499acb9f09f524d75326411b7d0a8e4130f"
+    },
+    {
+      "file": "assets/actions/mega/attack/left_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "fe38a721767c90e80d49ba45c7c6a6a00744ac4f6a3f4cd4f0b187f7a57644a9"
+    },
+    {
+      "file": "assets/actions/mega/attack/right_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "aefb73b994e00bb438e63b53689dd3239809114ff8df20953c5ff05fcd765e9f"
+    },
+    {
+      "file": "assets/actions/mega/attack/right_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "3b7af3f4cc1f16952b3efe307c7e50834933ba0181b97eb813d3cfdddfe98e6f"
+    },
+    {
+      "file": "assets/actions/mega/attack/right_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "b7b7ad3bb5d27c5cb82a7d7623a6a0212463a15f68de7cd253aa938a04378d15"
+    },
+    {
+      "file": "assets/actions/mega/attack/right_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "9f72e27416b20f382e01a114dea4631a49facef56c39867857a4f87211248004"
+    },
+    {
+      "file": "assets/actions/mega/attack/up_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "dfe9ee8afecc342c41991209418f9b44850b63d047ca678069126ebe737b4bda"
+    },
+    {
+      "file": "assets/actions/mega/attack/up_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "23039e0057de85d052b41a6d5a2b4686d319521c67b59fc050a47aff0d851e4b"
+    },
+    {
+      "file": "assets/actions/mega/attack/up_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "bf32ea67d83f7ffd2d4602f49e9c757d8a1378db09e2e772f2a036db656869aa"
+    },
+    {
+      "file": "assets/actions/mega/attack/up_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "b680979b8979e0a57ef751df353ec26f8557fdf0524e6bb4b1742a61057a385d"
+    },
+    {
+      "file": "assets/actions/mega/cast/down_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "24ca37456c9268e50ae92b65f9ce68279d2130a90c5530beaa8829f90eaa7569"
+    },
+    {
+      "file": "assets/actions/mega/cast/down_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "8db0953f946a885141b2302dd47fde7acba365bea6fde9c90476c606317f9037"
+    },
+    {
+      "file": "assets/actions/mega/cast/down_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "f72b37f05371f29208f3c201f579ae66e1be08ae12f90fa79a60a2a9fff83b8a"
+    },
+    {
+      "file": "assets/actions/mega/cast/down_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "2f2819e9c0c9d45831b38966b6260b4e33e0c67ee58a0a2f99751f5f3fdd4ce9"
+    },
+    {
+      "file": "assets/actions/mega/cast/left_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "d545adf4d99762d517d87567628f8619b0eda5633f07240a0b0f61b550043aca"
+    },
+    {
+      "file": "assets/actions/mega/cast/left_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "60ca14cd99ab09aeb73b1dc22259a78b24ce4565afbd47fde9f1d9d7ee31008c"
+    },
+    {
+      "file": "assets/actions/mega/cast/left_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "ee5f349fcd34be40599ce50548ca745d576f11efd85089182b240ef321efdaf6"
+    },
+    {
+      "file": "assets/actions/mega/cast/left_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "33834a5b1d56db3d9cfa6494a8264e9032972e003d26bfe9f693e23983fffb2f"
+    },
+    {
+      "file": "assets/actions/mega/cast/right_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "bcc9e636bc1ec083abf20b1f58a29b7bb00a77bc519cd7dcb25411c5a602c801"
+    },
+    {
+      "file": "assets/actions/mega/cast/right_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "a25915cc916f1442bb1ad9d0164068d8c763993ee5e540825a43cf21d3e0f100"
+    },
+    {
+      "file": "assets/actions/mega/cast/right_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "dd79b3a4b8dd54d85425541400245fab828afcd337fc455b802992ee89b94bb7"
+    },
+    {
+      "file": "assets/actions/mega/cast/right_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "9286a93d591431f9dcfccef21c95885e2a02065cdf291516cf3957d08c203a10"
+    },
+    {
+      "file": "assets/actions/mega/cast/up_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "1bb1d225a243b35d46a766f51e4f79ea5449e728069fe4dcaf57edf40286fc01"
+    },
+    {
+      "file": "assets/actions/mega/cast/up_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "3eb922807865c0967cc4ea3558893afaaf973678246f0af1c61abf56efa62598"
+    },
+    {
+      "file": "assets/actions/mega/cast/up_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "42369b0ad14e8a2043dfb597ddae2112d80a62d41a4a5e808450e5ca1236a737"
+    },
+    {
+      "file": "assets/actions/mega/cast/up_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "841065a7183d985ab69cfe98fad4f6288dfce05776187abcf5e537047fac6307"
+    },
+    {
+      "file": "assets/actions/mega_attack_v13.png",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "1c6da33196fee00a6cc5449169e52d82c1f97ba299984615d60d148db7344b29"
+    },
+    {
+      "file": "assets/actions/mega_cast_v13.png",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "075e50d7fc899dd1ce44fa2108c2f0beb044ab1336bbeb2a6e451a199777f1e6"
+    },
+    {
+      "file": "assets/actions/rookie/attack/down_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "79f7c37bee13a09ce6fe94a6591b538961525277657d046d5b7afa90b64753fa"
+    },
+    {
+      "file": "assets/actions/rookie/attack/down_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "bf00ae0acc164d4f03d6135d94c5aff465b785414c733960ee5099369d3b7c65"
+    },
+    {
+      "file": "assets/actions/rookie/attack/down_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "d169971775cdf2cee727eab9a9b01eb399758250ac371841dab49c3e79764406"
+    },
+    {
+      "file": "assets/actions/rookie/attack/down_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "071bb3f358b6a377496ebfb6ba0332e32fdea358514ab28b24bca464c525aea4"
+    },
+    {
+      "file": "assets/actions/rookie/attack/left_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "08844afa5dd4a07c6f07b8181491987b4e3a04e8facc5f567edffef34b114f65"
+    },
+    {
+      "file": "assets/actions/rookie/attack/left_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "cd943581f1f208aaaa3c1a39a8c71721236d91393f343cd2bdf4d7d4c2f45191"
+    },
+    {
+      "file": "assets/actions/rookie/attack/left_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "ef7854fe5b1075421f4c511d43377429107b620794351fc31bf0346096de774d"
+    },
+    {
+      "file": "assets/actions/rookie/attack/left_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "998771414af291b6194ac1e4f0fc21e902852c0b122c8e8306d86c2a7b089e60"
+    },
+    {
+      "file": "assets/actions/rookie/attack/right_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "b50f8bfce1508a13fb70b3accdc3f63fa06597535f1f17b4435dd379ffb54417"
+    },
+    {
+      "file": "assets/actions/rookie/attack/right_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "784059dc5b28d8f842eaa80782ea39e0edcea2ffcaf7031bc12ac2bdd0446fb7"
+    },
+    {
+      "file": "assets/actions/rookie/attack/right_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "f371f2d507d3a84724567c3d7737fb00f84967e8e78525e5ffa39385e97d9f34"
+    },
+    {
+      "file": "assets/actions/rookie/attack/right_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "a498d995db22bbb17a062e91ceb97f794a42c52db1e6868d2d82133916e337a2"
+    },
+    {
+      "file": "assets/actions/rookie/attack/up_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "ecf9f42d0830833e44dd1d534ac36f030beb5c8ef588a3f5788cff9ed36ec676"
+    },
+    {
+      "file": "assets/actions/rookie/attack/up_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "7401e3ec827b9457c3f2bc6bece6e74a9dbd03fd9baffef0f28e0c9379ad97f3"
+    },
+    {
+      "file": "assets/actions/rookie/attack/up_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "43911c8a0fa32e928be620b818317aa9732064957b2b949dc0d56771aa8d14c8"
+    },
+    {
+      "file": "assets/actions/rookie/attack/up_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "7369b72e843e6d9dee4986cd285800c6422adae327f2e602c9bcdc767f969461"
+    },
+    {
+      "file": "assets/actions/rookie/cast/down_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "3854ec0018592f570fb7e0b6e099ea066991f3b791428c2c386edb3caa2e0f9c"
+    },
+    {
+      "file": "assets/actions/rookie/cast/down_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "1a9ca08ef2a95089e3fc707bcc56cfaef5a982b2d72ecfdd530c97e16455592d"
+    },
+    {
+      "file": "assets/actions/rookie/cast/down_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "46ab28cae3894d75cbda0458178fd391d0517f8568379983d38501d948ea0433"
+    },
+    {
+      "file": "assets/actions/rookie/cast/down_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "4c3387927300e5c9362c841d6fcb4aa8470a9fcb9da76fbc08cf3e510af65783"
+    },
+    {
+      "file": "assets/actions/rookie/cast/left_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "f09c0485ba87ea52b12070843eff733fddb88ab377f3a1ddc035660aabebfc33"
+    },
+    {
+      "file": "assets/actions/rookie/cast/left_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "e2aca728136d8453f85d74635f7ec8dfbf81f05a3721ac03105798ea01af9580"
+    },
+    {
+      "file": "assets/actions/rookie/cast/left_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "cd39911aea6c2e655bdf45e2895471b28784c6df295e1908cb4cdafa018d752f"
+    },
+    {
+      "file": "assets/actions/rookie/cast/left_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "8b858523ed45f5ff13b69d06f771847723f2df9eaf99f667f0c83b3d08bf359f"
+    },
+    {
+      "file": "assets/actions/rookie/cast/right_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "0b8a4d3297ebd63a6bd7fe6e162e3a538a90e0052e10b7194ba716abdae7ac78"
+    },
+    {
+      "file": "assets/actions/rookie/cast/right_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "debcd1936c9f16e28c15a1d30fca2d838037368e2dfc75d01b324e3f5415aefa"
+    },
+    {
+      "file": "assets/actions/rookie/cast/right_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "5d199be28935aeb12b7d6325da674223c780398c760480acedebf3d920459584"
+    },
+    {
+      "file": "assets/actions/rookie/cast/right_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "d9d0bc9b6bdccccd76806b02bf7395ce44995f64809ab7bd1e5534d2c540dcec"
+    },
+    {
+      "file": "assets/actions/rookie/cast/up_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "e3f17c0cd89da6927283f7eae4cbb3a9ccf48c5510db9304df61abfd1365a2d8"
+    },
+    {
+      "file": "assets/actions/rookie/cast/up_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "d7c0ed88cb19cf4f849b510163b56759f51155e4c402c8f5564ab0f6307d247f"
+    },
+    {
+      "file": "assets/actions/rookie/cast/up_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "b49d811020b70d8ca7059378dded1aa12a719923c713c7c5e5f75d0d6a3df298"
+    },
+    {
+      "file": "assets/actions/rookie/cast/up_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "950e4f57bb87aa61909752fc0596b2c081da72012c5d3837cc475295927a3d8e"
+    },
+    {
+      "file": "assets/actions/rookie_attack_v13.png",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "b37a93b17c95454f7ee401a859f01f4a4a028e20f93dfc5d4277550442754860"
+    },
+    {
+      "file": "assets/actions/rookie_cast_v13.png",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "804583b01c3fef73b2a028358a3ff9cf0b73abbd3b1060c075c9c1cbcff93e31"
+    },
+    {
+      "file": "assets/actions/ultimate/attack/down_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "d299789b6ed28d5e03c4be38d2b1f4266a06bd28d4f00fe7e882c6e525d4885d"
+    },
+    {
+      "file": "assets/actions/ultimate/attack/down_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "a6d6627d2ece8e90c78f29c86643b3c7d061ae73ed30a857b305083a32e6b5db"
+    },
+    {
+      "file": "assets/actions/ultimate/attack/down_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "ef38f9b15fb3e3300ccf0b0d90b6484fd17454717cc6301061d796043605dcf4"
+    },
+    {
+      "file": "assets/actions/ultimate/attack/down_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "8b756b3a95467e9c3f309b0940c62335f6413feeb2a21cf1a165cfaf1b01961f"
+    },
+    {
+      "file": "assets/actions/ultimate/attack/left_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "1677d14cf7b811623a6f12ce3314f2c6c0e6dcb459c9585bcf107680dc731ccb"
+    },
+    {
+      "file": "assets/actions/ultimate/attack/left_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "2a94711d6d554ffe1b2e3be5b9c0dedc9c3f48cd79a03a0bde12df809f256c03"
+    },
+    {
+      "file": "assets/actions/ultimate/attack/left_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "63df8c282ee8fa6c476886ba486f234792a29af9569502bfbf4f10c0d83a03b4"
+    },
+    {
+      "file": "assets/actions/ultimate/attack/left_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "877db8d8c745cae82736a97d0a58a4fd2f7a40b5f14c6dbf42c5de8bbb9e2dfb"
+    },
+    {
+      "file": "assets/actions/ultimate/attack/right_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "c3eebed2b45906281046e38441ae94fd35037ab01b7f0563ff5e50319f68b4a0"
+    },
+    {
+      "file": "assets/actions/ultimate/attack/right_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "877ceeaeea68647d232e8a3438008dadb2f3c79979dbcf3e2c9d7c31261e2daa"
+    },
+    {
+      "file": "assets/actions/ultimate/attack/right_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "298a03c3ebfad8269ea5b7723c1f604e52a5a1416d5ed5c097dd1fef9637b187"
+    },
+    {
+      "file": "assets/actions/ultimate/attack/right_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "8dd85f6c7ef1e5db8979a23a46bb87918d987031353d2e67325210cd905f5558"
+    },
+    {
+      "file": "assets/actions/ultimate/attack/up_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "5b2c7a2c99706df0ed2d560984349c929a24b2e2f2224e249b6c07b3558b9f8f"
+    },
+    {
+      "file": "assets/actions/ultimate/attack/up_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "522ec9fb1a76c0565a986a0a5912101fc412f9f63009a470eb8351470ce3e395"
+    },
+    {
+      "file": "assets/actions/ultimate/attack/up_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "5ba6949fa1d1c920b607a0daa7c06018d6b5445836f000484435fa8183ec5bae"
+    },
+    {
+      "file": "assets/actions/ultimate/attack/up_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "9bba2c33665690af246850643fd870a43859be4c92b87fe9c1b96678b66dc3af"
+    },
+    {
+      "file": "assets/actions/ultimate/cast/down_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "066ad779b53ebd0580d33248ba3ba7f6af2fda333ac21e36c8b79dc2d45a5eda"
+    },
+    {
+      "file": "assets/actions/ultimate/cast/down_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "ccb59d6fbae90a9627cbcc101177f254a09ffb324d3f9910cefeed317b7386a1"
+    },
+    {
+      "file": "assets/actions/ultimate/cast/down_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "53a84817d95bec7c51f6ad85eae58ea3f49b3fab33fad1636c0a3f4a7cdd353f"
+    },
+    {
+      "file": "assets/actions/ultimate/cast/down_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "09fea9f2f622670f647bf62b9e8021891df14b68df0191fda521bc05799c2ca1"
+    },
+    {
+      "file": "assets/actions/ultimate/cast/left_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "65290237f1d0a4a38ab02ceb5e873571d822d7a9a18ed75a5596932bdf28a69c"
+    },
+    {
+      "file": "assets/actions/ultimate/cast/left_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "470023ab4a5b9027e8c3d25ca77e78fe67c01715a80a420a28d2800e2a9c7240"
+    },
+    {
+      "file": "assets/actions/ultimate/cast/left_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "79e1d4f27d2e381cbc27b76b9dd4bd195248d270b267c7e0a376b9b12237d7e4"
+    },
+    {
+      "file": "assets/actions/ultimate/cast/left_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "8b4d576fc515d3e0bcb58f1bf8640a95982e3bb95f477ff08631dc3d6d2f4e4f"
+    },
+    {
+      "file": "assets/actions/ultimate/cast/right_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "54f18631fa775d100e08805bb88f574ca3e09399ed9540259f64977fe2a69565"
+    },
+    {
+      "file": "assets/actions/ultimate/cast/right_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "f9d0bfd8d5185b85afc0c5b3573fd15e3885675928f0f7d95bd0cf194f5dc57b"
+    },
+    {
+      "file": "assets/actions/ultimate/cast/right_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "a0ebafbd32826e76ef381e49d6221391f5cc91a59762f133f3083802a478fabb"
+    },
+    {
+      "file": "assets/actions/ultimate/cast/right_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "86f1b3f522d1ad9c75bee8c58f902dfe84fbdbab1904215071de258c12bc866b"
+    },
+    {
+      "file": "assets/actions/ultimate/cast/up_0.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "c9157aa73ee9e7b3037af9c88d37b808916c16891dab9e256ca7b8e80125fe1a"
+    },
+    {
+      "file": "assets/actions/ultimate/cast/up_1.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "84cb6d8d9b44711f27769b331a238e6ab5ba348cf83ca7118bccb48bf6b4c7e7"
+    },
+    {
+      "file": "assets/actions/ultimate/cast/up_2.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "b4d3c5e8b79081b06f91cd9686a3c04e01b910de78f1c1fabd4a0b3930c139b8"
+    },
+    {
+      "file": "assets/actions/ultimate/cast/up_3.tres",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "14aed851d77658131c119258592c1993f4336ccf788ed361b51d12bf10fef224"
+    },
+    {
+      "file": "assets/actions/ultimate_attack_v13.png",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "3b22ed445132a516648c7edea3d9fb0b14b6249ec84b3191161a2147e5585a77"
+    },
+    {
+      "file": "assets/actions/ultimate_cast_v13.png",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "c6a0165a66cb7ec6d945165398fef91b9ba373937e7966f1f35479eb3e32297e"
+    },
+    {
+      "file": "data/angemon_example.tres",
+      "change": "modified",
+      "v12_sha256": "ac7097697bdc8b7eb0ab0f422e920a492a5712accb42b4e7b339f09de48b8666",
+      "v13_sha256": "e997c06332df7ebdb78a5d9497c06b8f622926aec18327dcad4a82f1ac08316d"
+    },
+    {
+      "file": "data/champion.tres",
+      "change": "modified",
+      "v12_sha256": "089d4822d79b84507529933da9ba1087fc7d1ceec3b0a6235ac620dbe3472c33",
+      "v13_sha256": "1db82be1ed7da3e17bcfd55bf12dc71c54a3e2558c369093eff8ef56d8fc3fbe"
+    },
+    {
+      "file": "data/champion_burst.tres",
+      "change": "modified",
+      "v12_sha256": "a02fe828dbc1ca22fdfa27485d3876a2c84d89d09d987a338a2fc46cc080c80c",
+      "v13_sha256": "40d5014c26d52e39fc38dbe401f1d85a5f05be20a62a27dd910486ce669f5cc6"
+    },
+    {
+      "file": "data/champion_claw.tres",
+      "change": "modified",
+      "v12_sha256": "df11b770ce2c22be6422ca41e8417774b9b6d80bc039826773736680472847b2",
+      "v13_sha256": "a8c7b1497c0dc60775f9c3d09031b37fd75a351efa802b4fd65984f3fb2dbed3"
+    },
+    {
+      "file": "data/champion_flare.tres",
+      "change": "modified",
+      "v12_sha256": "a833ba8b294e7098272a20ea8678442b730bfb1fee8762f6cf96fe27b4b66a68",
+      "v13_sha256": "a146a2dd76a943aab24c7b0064ea05b0bd9792e135fc7a6adc6d42443ed04f5d"
+    },
+    {
+      "file": "data/champion_frames.tres",
+      "change": "modified",
+      "v12_sha256": "e3497110d957bba4781f54f94f9543171a18d9056d8be6ea1959ddb6b1d61e71",
+      "v13_sha256": "1313886f372d16a7673a7ecc70ec4a7d005fe0df60b2392cc0816024ff66ca77"
+    },
+    {
+      "file": "data/champion_nova.tres",
+      "change": "modified",
+      "v12_sha256": "38de2fb9eea1455028ffbab71589a99ebb196e12eaf52ebfdac4b1686efa4358",
+      "v13_sha256": "29e8e985d87fdf6b5f56a75544df7c99313b8ce498e3980f6c92fc2dc0e074bf"
+    },
+    {
+      "file": "data/mega.tres",
+      "change": "modified",
+      "v12_sha256": "aa12df14ab5823b855d5ece2019fae6831fde262b64a1f4c573a8dab96fdcecf",
+      "v13_sha256": "e4119d406fa55a0d378335aadb68bcc581fb3e8966480098944134485a0fa5a8"
+    },
+    {
+      "file": "data/mega_cannon.tres",
+      "change": "modified",
+      "v12_sha256": "c47055ad2e86a3594baf0ee9167caad0c34fb8ba3d92a198c1cee8d227d9e716",
+      "v13_sha256": "34369eef8501f2e7d990890adfbb139aa0a156f16e3428ea804a1b9767f624d8"
+    },
+    {
+      "file": "data/mega_claw.tres",
+      "change": "modified",
+      "v12_sha256": "b1252bbe12aa39c6d764f78acf193fcb8969fa018ea52081231cc506a7213c1c",
+      "v13_sha256": "0734f8c803e574c67cabb2ecc6e48c15045e8633eb969c03895e9c05b6b6f599"
+    },
+    {
+      "file": "data/mega_frames.tres",
+      "change": "modified",
+      "v12_sha256": "1a750f71567292faa977c3ba5d17ee83251de84abb2224a013dac1cc08ecb327",
+      "v13_sha256": "5ba2436e3825f11abb02b8085cc820cb718a98a6eb8a916dfc2315485786c1f8"
+    },
+    {
+      "file": "data/mega_nova.tres",
+      "change": "modified",
+      "v12_sha256": "45f9f9cbaa090f722202a6fb210587989f14d3d50d8983f45444a1b9cfb17f42",
+      "v13_sha256": "b4da19b9c23b2bf23b8bd3b8f2abe82827e15285bf094e83b9c2f4262b43eda7"
+    },
+    {
+      "file": "data/mega_wave.tres",
+      "change": "modified",
+      "v12_sha256": "1f801986c84d817342c8790ffd94314bd4317c0659374d9f081e358cb7482ce7",
+      "v13_sha256": "5ee1627c517a06259588a01c072b1f856c5aa773ac58bc20555e4ca8b589f379"
+    },
+    {
+      "file": "data/rookie.tres",
+      "change": "modified",
+      "v12_sha256": "d9c8e2bc4093ec05ab14f0b08fcd06bef0b9ec60b3e0a1b105c0308846993abc",
+      "v13_sha256": "d137c4a5dc21375a19b15e4caf23692a5a7702326639f0b04913340ee430ec6c"
+    },
+    {
+      "file": "data/rookie_bolt.tres",
+      "change": "modified",
+      "v12_sha256": "342c2d007a172247125728315926bb8d8134a63fea48102a8e8929f834da2c40",
+      "v13_sha256": "2dabdb704c7997231d8ff57375f026022883775bd2d844d98bdff95f02049369"
+    },
+    {
+      "file": "data/rookie_frames.tres",
+      "change": "modified",
+      "v12_sha256": "f221c734e157a6f803e1d4d0002a1190f13501bd8a2028d785bd024461cb2684",
+      "v13_sha256": "b1e8aa4b96d89abf5dc071bec8e899d55693ba0d2ab2c6ddac4d04e4306615ab"
+    },
+    {
+      "file": "data/rookie_strike.tres",
+      "change": "modified",
+      "v12_sha256": "9c876253fd03fae76347cb307de057d7b648ef80d0d4779bdf010e54cb5ebdd1",
+      "v13_sha256": "a652bf3dddc3808096e79febef4f7ace019660db7e3c447ca24f59caf914ecb3"
+    },
+    {
+      "file": "data/ultimate.tres",
+      "change": "modified",
+      "v12_sha256": "9ef60ba42402e4d81574d431829d83277d45adc33dedb9731bb65c748b1a41ec",
+      "v13_sha256": "6734c52513e3a3fc1d50c2f773e63fd8d56ee4c92862c60a493218d9b2426788"
+    },
+    {
+      "file": "data/ultimate_claw.tres",
+      "change": "modified",
+      "v12_sha256": "4e322576635abee0603d46b43302ecdff01cc36ebd4a742d08637a84d1da7430",
+      "v13_sha256": "eee4d05ff6fa0785f47df69f711d78724e289567c6ab27397281609f6c539a2c"
+    },
+    {
+      "file": "data/ultimate_frames.tres",
+      "change": "modified",
+      "v12_sha256": "59efb244eb9e43d85bf584477f3547e0da5f6eb86621b186154f0b3f26fb12a9",
+      "v13_sha256": "999b1031da22add70b349cdec77a853f8999bd6cafb1ff9e9d0b3c7f98d81791"
+    },
+    {
+      "file": "data/ultimate_lance.tres",
+      "change": "modified",
+      "v12_sha256": "8e8ce144ba74c873e3a016df28697e3de9d19d3f6a084d7242e5705a9658ccc6",
+      "v13_sha256": "b03d21aad977a48b584826e0357676b76f31529bfc1f2576565aaeda681bae00"
+    },
+    {
+      "file": "data/ultimate_nova.tres",
+      "change": "modified",
+      "v12_sha256": "9e96aa94ed320e2e9d545101581b3b25ab7438e1a35cca2f0623222314056468",
+      "v13_sha256": "416a2a6c9a4380346938de6600b054e0ad9a371a2e941fe1f8bf0a0f802137c5"
+    },
+    {
+      "file": "data/ultimate_wave.tres",
+      "change": "modified",
+      "v12_sha256": "8b8fef0c1f6efba871443aee4ede19cf4f5df4ea7e598111ef4ca760510209df",
+      "v13_sha256": "edbd77869f8a50cdfc47091629c581e742279e06227709d9c27b66ce80eaca8d"
+    },
+    {
+      "file": "preview/Partner_CombatActions_v13.mp4",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "73e9520b1ef0d40146355a979d3854dc62d7ff9d1b393a13cfd7dce7a97a4e0d"
+    },
+    {
+      "file": "project.godot",
+      "change": "modified",
+      "v12_sha256": "86cf2f6efc14f35ec6e3fc57187d89cc600e0e4aead73e4c089b9bc98cca3d57",
+      "v13_sha256": "791b1b27069d5ff82c2ebb3b531482491cb7a5b515b3941babe9a5c4c5c5d8ab"
+    },
+    {
+      "file": "scenes/partner.tscn",
+      "change": "modified",
+      "v12_sha256": "0dfd8b0c543123ca9ca085e78e1fc180f65c42e05dfed3ae9c25cff73faca78c",
+      "v13_sha256": "ea567d84d47088379b1410f6db26bd290a0067ae68242069d40660a3e7e76125"
+    },
+    {
+      "file": "scripts/combat_action_effect.gd",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "c29580bd8cd23afffe1a2b8741ea2f78cbc06f19c716275071122321e98beba9"
+    },
+    {
+      "file": "scripts/combat_action_effect.gd.uid",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "e6b3e84c103979c7b0e36a6f4be5a35e62fa5dd002a7b6a042843876788e329d"
+    },
+    {
+      "file": "scripts/directional_animator.gd",
+      "change": "modified",
+      "v12_sha256": "6a47906abdc0628cb6b73b2a1b983b0347933e3a69270ad036d8ae200361cc01",
+      "v13_sha256": "4db62d1e545e76c5b3de0b831a112680a6f5d840e72bb625e97807935b983fe6"
+    },
+    {
+      "file": "scripts/monster_data.gd",
+      "change": "modified",
+      "v12_sha256": "660d8d7e2b6791027d1aee382cd959cdf1a6cc32c3eab90b4f34d975b8686a99",
+      "v13_sha256": "323580e01a1d43aea5c45f9bd8978f12f514658c2be0af8cfd57f6b645b45bff"
+    },
+    {
+      "file": "scripts/partner_combat_action.gd",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "1634f0506e6392e20c6a06636bb0533e08b6b1e9d02287ad744923256508c3dc"
+    },
+    {
+      "file": "scripts/partner_combat_action.gd.uid",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "753abb3b3b154b97f4a3ab8820e59de71bf1d5e1042c3136aae4925a3475f76c"
+    },
+    {
+      "file": "scripts/partner_monster.gd",
+      "change": "modified",
+      "v12_sha256": "7032c9483914be35371260d17d8781605343bc601546e331c4023a107fd2c727",
+      "v13_sha256": "3cc7317fcfc0beb3a73ce113e624a787844a3a80efe09cf8e9d5736197d990ec"
+    },
+    {
+      "file": "scripts/skill_data.gd",
+      "change": "modified",
+      "v12_sha256": "0ef48875a961afab9a357a29f15bf12db312ac28819032afe7a19ac64433f89c",
+      "v13_sha256": "5e526ddb7a98965b85c23c4a11b9a86cbaad31493fbae30247579900a47443f2"
+    },
+    {
+      "file": "scripts/skill_projectile.gd",
+      "change": "modified",
+      "v12_sha256": "ff7efe14d40c0c2aac7c24fc72a5ea5df4cddb59ae968fe4446317519d7d1718",
+      "v13_sha256": "25d3338c1391e86b932db1831b3b84da38a22d59ea5cb5b4af40ac52b832d014"
+    },
+    {
+      "file": "tests/combat_actions_test.gd",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "107a2b7a8e1e2a995bccefddc7f874458402eb543c1638c1cb2270b692dcece9"
+    },
+    {
+      "file": "tests/combat_actions_test.gd.uid",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "1f1f702e2c78b6db2aad84eeb331cc1a99beb6da8320f02eaad1481d6f3a1dc2"
+    },
+    {
+      "file": "tests/combat_actions_test.tscn",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "af98cea67e81722b37dbb218c0b83607681f6e5faaffa031175aecc587496197"
+    },
+    {
+      "file": "tests/form_skills_animation_test.gd",
+      "change": "modified",
+      "v12_sha256": "55c60d5877c75b421ed80d722fd8c6c691f0e1e8ab9b33bb3124f90cc361c313",
+      "v13_sha256": "414291770a5ed66e5fa472fbcccc60aa7a48a6b4fb7cff626e0812562bcdc3f5"
+    },
+    {
+      "file": "tests/projectile_upgrade_test.gd",
+      "change": "modified",
+      "v12_sha256": "b521a184ce5b6e3269e5dde45eb6bf2d1c33544db08de0b601b069c7ae21c9e0",
+      "v13_sha256": "523ae8c1185a1a247530229f4168932485e812e1de941415f03715ebce275de7"
+    },
+    {
+      "file": "tests/smoke_test.gd",
+      "change": "modified",
+      "v12_sha256": "b8974e183fd7ab8249774b143acda25fcf7a66db8c50a4ae16dc7bd67efaf6ee",
+      "v13_sha256": "97e9450372580d13b1fe3642c4ed57bf41130812a620acc12bc7d359b806221d"
+    },
+    {
+      "file": "tools/build_action_resources.py",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "0535a5cbb16e582e8b5e78a77d7f8974ec57ebee1cdcea8673adf83afc51726a"
+    },
+    {
+      "file": "tools/build_walk_resources.py",
+      "change": "modified",
+      "v12_sha256": "8e731ae5543fa115677c72fdbc1340ccfba0bd56c1265cb6925b772b7974329f",
+      "v13_sha256": "2df5687646827f258fa65fc3b19a6f3621887d66b12be3f93237eea40ce4b01b"
+    },
+    {
+      "file": "tools/combat_preview.gd",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "89d5dccc2f8afedb3ea1ba9864f4928ac715cda626ae102053ffb93289fe6208"
+    },
+    {
+      "file": "tools/combat_preview.gd.uid",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "474090f13064e7a46518420d9259564cfb115ff91826f5130ecb85f9896dc6c5"
+    },
+    {
+      "file": "tools/combat_preview.tscn",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "4efe4f34bc6822963d28a68eda5f70e81589a018784c8e6bad50db88f0a8617a"
+    },
+    {
+      "file": "tools/movement_preview.gd.uid",
+      "change": "added",
+      "v12_sha256": null,
+      "v13_sha256": "49f878b8cd4cbaaf855efb0b1f2b6065fabaa2bbaa5f6ee9d01c4f0899305e04"
+    }
+  ]
+}

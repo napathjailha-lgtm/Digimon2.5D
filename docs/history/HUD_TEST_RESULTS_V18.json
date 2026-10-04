@@ -1,0 +1,145 @@
+{
+  "engine": "Godot 4.4.1 stable Linux",
+  "suites": 17,
+  "assertions": 640,
+  "failures": 0,
+  "results": [
+    {
+      "name": "art_integration_test",
+      "exit": 0,
+      "passes": 12,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 1.1
+    },
+    {
+      "name": "classic_hud_test",
+      "exit": 0,
+      "passes": 42,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 1.1
+    },
+    {
+      "name": "clean_hud_test",
+      "exit": 0,
+      "passes": 42,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 1.1
+    },
+    {
+      "name": "combat_actions_test",
+      "exit": 0,
+      "passes": 66,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 1.1
+    },
+    {
+      "name": "damage_popup_test",
+      "exit": 0,
+      "passes": 14,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 1.1
+    },
+    {
+      "name": "equipment_test",
+      "exit": 0,
+      "passes": 58,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 2.1
+    },
+    {
+      "name": "form_skills_animation_test",
+      "exit": 0,
+      "passes": 69,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 1.1
+    },
+    {
+      "name": "inventory_loot_test",
+      "exit": 0,
+      "passes": 53,
+      "errors": [],
+      "result": "",
+      "seconds": 2.1
+    },
+    {
+      "name": "openworld_test",
+      "exit": 0,
+      "passes": 21,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 2.2
+    },
+    {
+      "name": "pregame_flow_test",
+      "exit": 0,
+      "passes": 75,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 3.1
+    },
+    {
+      "name": "projectile_upgrade_test",
+      "exit": 0,
+      "passes": 32,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 1.1
+    },
+    {
+      "name": "recovery_progress_cutscene_test",
+      "exit": 0,
+      "passes": 35,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 1.1
+    },
+    {
+      "name": "smoke_test",
+      "exit": 0,
+      "passes": 30,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 1.1
+    },
+    {
+      "name": "smooth_walk_test",
+      "exit": 0,
+      "passes": 31,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 1.1
+    },
+    {
+      "name": "spawner_test",
+      "exit": 0,
+      "passes": 18,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 1.1
+    },
+    {
+      "name": "story_quest_test",
+      "exit": 0,
+      "passes": 27,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 2.1
+    },
+    {
+      "name": "target_freed_test",
+      "exit": 0,
+      "passes": 15,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 1.1
+    }
+  ],
+  "visual_check": "Five native renderer screenshots; Compatibility/Mesa; 1280x720"
+}

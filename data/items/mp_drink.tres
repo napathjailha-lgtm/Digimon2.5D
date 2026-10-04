@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/items/mp_drink.svg" id="2"]
+[resource]
+script = ExtResource("1")
+item_id = "mp_drink"
+item_name = "น้ำพลังดิจิมอน"
+item_type = 0
+item_texture = ExtResource("2")
+description = "ฟื้น MP คู่หู 30 หน่วย ไม่ใช้ DS ของ Tamer"
+effect_type = 2
+effect_value = 30
+tamer_hp_restore = 0
+tamer_stamina_restore = 0.0

@@ -1,0 +1,120 @@
+{
+  "godot": "4.4.1.stable",
+  "rendering_method": "gl_compatibility",
+  "suites": [
+    {
+      "suite": "combat_actions",
+      "assertions": 66,
+      "passed": 66,
+      "errors": [],
+      "completed": true
+    },
+    {
+      "suite": "smooth_walk",
+      "assertions": 31,
+      "passed": 31,
+      "errors": [],
+      "completed": true
+    },
+    {
+      "suite": "target_freed",
+      "assertions": 15,
+      "passed": 15,
+      "errors": [],
+      "completed": true
+    },
+    {
+      "suite": "form_skills_animation",
+      "assertions": 69,
+      "passed": 69,
+      "errors": [],
+      "completed": true
+    },
+    {
+      "suite": "classic_hud",
+      "assertions": 50,
+      "passed": 50,
+      "errors": [],
+      "completed": true
+    },
+    {
+      "suite": "smoke",
+      "assertions": 30,
+      "passed": 30,
+      "errors": [],
+      "completed": true
+    },
+    {
+      "suite": "recovery_progress_cutscene",
+      "assertions": 35,
+      "passed": 35,
+      "errors": [],
+      "completed": true
+    },
+    {
+      "suite": "art_integration",
+      "assertions": 12,
+      "passed": 12,
+      "errors": [],
+      "completed": true
+    },
+    {
+      "suite": "projectile_upgrade",
+      "assertions": 32,
+      "passed": 32,
+      "errors": [],
+      "completed": true
+    },
+    {
+      "suite": "story_quest",
+      "assertions": 27,
+      "passed": 27,
+      "errors": [],
+      "completed": true
+    },
+    {
+      "suite": "spawner",
+      "assertions": 18,
+      "passed": 18,
+      "errors": [],
+      "completed": true
+    },
+    {
+      "suite": "damage_popup",
+      "assertions": 14,
+      "passed": 14,
+      "errors": [],
+      "completed": true
+    },
+    {
+      "suite": "openworld",
+      "assertions": 21,
+      "passed": 21,
+      "errors": [],
+      "completed": true
+    }
+  ],
+  "total_assertions": 420,
+  "native_visual_review": [
+    "village daylight",
+    "fields camera follow",
+    "bridge actual traversal",
+    "forest depth",
+    "village dusk with PointLight2D"
+  ],
+  "android_device_tested": false,
+  "all_passed": true,
+  "clean_project_validation": {
+    "fresh_editor_import": "passed",
+    "openworld_integration": "21 assertions passed",
+    "previous_godot_cache_used": false
+  },
+  "preview": {
+    "file": "OpenWorld_v14.mp4",
+    "width": 1280,
+    "height": 720,
+    "fps": 20,
+    "duration_seconds": 24.95,
+    "capture": "Godot viewport / X11 / Mesa llvmpipe / Compatibility renderer"
+  }
+}

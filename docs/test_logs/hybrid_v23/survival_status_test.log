@@ -1,0 +1,69 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: ชื่อสเตตัสใหม่และ alias เดิมอ่านค่าชุดเดียว
+PASS: เริ่มหิว/แรง/MP เต็ม แยก instance
+PASS: 4.75s ยังไม่ครบรอบหิว
+PASS: 5s หิวลด 1 แม้เรียกด้วย delta หลายขนาด
+PASS: 10s เพิ่มคิดครบสองรอบ ไม่หายเมื่อ frame ใหญ่
+PASS: 150 เฟรมเล็กเท่ากับ 15s รวม ผลไม่ขึ้นกับ FPS
+PASS: หิวเพิ่งถึงศูนย์ไม่ทำดาเมจย้อนหลัง 5s
+PASS: อดอาหาร 2.75s ยังไม่โดนดาเมจ
+PASS: ครบ 3s อดอาหาร HP -5 แม้ใส่เกราะสูง
+PASS: อดอาหารไม่หัก HP/MP ของคู่หู
+PASS: Battle ทำให้แรงลดตามวินาที
+PASS: แรงศูนย์ 3s ทำดาเมจ 5
+PASS: ออก Battle และยังอิ่ม ฟื้นแรงได้
+PASS: หิว/เหนื่อยศูนย์พร้อมกันดาเมจ 5+5 ไม่หักซ้ำเกินรอบ
+PASS: เตรียม Champion สำหรับทดสอบ debuff
+PASS: HP เท่ากับ 20% ยังไม่เข้า debuff ถ้าเดิมพร้อมสู้
+PASS: HP 19.5% บังคับ Rookie ทันที
+PASS: Debuff ล้างเป้าทั้งสองตัวและ Auto
+PASS: คู่หูไกลแล้วเปลี่ยน Follow กลับหา Tamer
+PASS: Devolve คงสัดส่วน HP/MP ไม่แจกฟื้นฟรี
+PASS: เข้า debuff ส่ง Signal ครั้งเดียว
+PASS: เรียก command/Auto ตรง ๆ ไม่ข้าม Cannot Battle
+PASS: ทั้งสกิลและตีธรรมดามี guard ที่ Actor
+PASS: Cannot Battle ไม่จอง DS/คัตซีน
+PASS: HUD ปิดปุ่มโจมตี/Auto/พัฒนา/สกิล
+PASS: ฟื้นแค่ 20% ยังไม่ปลด debuff
+PASS: ฟื้นเกิน 20% พร้อมสู้แต่ไม่เปิด Auto เอง
+PASS: DS ศูนย์ แต่ MP พอ ยังใช้สกิลได้
+PASS: ใช้สกิลหัก MP 5 ไม่หัก DS
+PASS: กดซ้ำคูลดาวน์/ท่าร่ายไม่หัก MP ซ้ำ
+PASS: MP ไม่พอไม่ใช้ DS แทน ไม่ตั้งคูลดาวน์
+PASS: MP ศูนย์ยัง Digivolve ได้ถ้า DS พอ; เปลี่ยนร่างไม่เติม MP
+PASS: DS ไม่พอเปลี่ยนร่าง ไม่หัก MP แทน
+PASS: ปฏิเสธค่า energy ติดลบ/NaN/Infinity
+PASS: ปล่อยลูกไฟจริงก่อน debuff
+PASS: ลูกไฟที่ยิงแล้วถูกยกเลิกเมื่อ Tamer อ่อนแรง ไม่ลง hit ล่าช้า
+PASS: เพิ่มอาหาร Tamer เข้ากระเป๋า
+PASS: กินอาหารได้แม้คู่หูเป็นไข่
+PASS: อาหารฟื้น HP/หิว/แรง และปลด debuff
+PASS: อาหาร Tamer ไม่ชุบคู่หู
+PASS: ตัดอาหารและ save Survival ในธุรกรรมเดียว
+PASS: อิ่ม/HP/แรงเต็มไม่กินของฟรี
+PASS: น้ำ MP เติมเท่าที่ขาด ไม่เติม/หัก DS
+PASS: MP เต็มไม่กินน้ำเพิ่ม
+PASS: พัก 3s ฟื้น HP/แรง/MP ไม่มี Survival damage
+PASS: พักไม่เติมความอิ่มฟรี แต่ HP เกิน 20% ปลด debuff
+PASS: ออก Safe Zone A ยังพักอยู่เพราะอยู่ใน B
+PASS: ลบ Safe Zone B ไม่ทิ้งสถานะพักค้าง
+PASS: เปิด Status pause แล้ว Survival ไม่เดินต่อ
+PASS: Save เก็บ latch ที่ HP 20% และ MP คู่หู
+PASS: Load ที่ HP 20% คง debuff เดิม
+PASS: Load เก็บเศษเวลา starvation ไม่เริ่ม 3s ใหม่
+PASS: ฟิลด์ Survival ผิดชนิด/NaN ใช้ค่าเริ่มต้นปลอดภัย
+PASS: เซฟ v18 ไม่มี Survival ใช้ค่าเต็ม
+PASS: Signals อัปเดตหลอด Hunger/Stamina/MP จริง
+PASS: แตะปุ่มกินจริงใน InventoryUI ฟื้น Tamer และหักของครั้งเดียว
+PASS: จอง DS ระหว่างคัตซีนก่อนรับอันตรายภายนอก
+PASS: HP ต่ำระหว่างคัตซีนยกเลิกและคืน DS ครั้งเดียว/Resume
+PASS: World loader คืน Hunger/Stamina/MP ข้าม Scene
+PASS: คืนเซฟ HP ต่ำพร้อมร่างสูง แล้วลด Rookie โดยคงสัดส่วน HP
+PASS: ก่อน 10s ไม่เขียน checkpoint ทุกเฟรม
+PASS: ครบ 10s checkpoint เก็บ Survival ล่าสุด
+PASS: พักแอปหลังเสีย MP เซฟได้ทันทีแม้ยังไม่ถึงรอบความหิว
+PASS: แอปอยู่พื้นหลังไม่คิด delta มาหักความหิว
+PASS: เฟรมแรกหลัง Resume ทิ้ง delta ที่อาจรวมเวลา OS พักไว้
+PASS: เฟรมถัดไปหลัง Resume กลับมานับเวลา active ตามเดิม
+RESULT: 0 failure(s)

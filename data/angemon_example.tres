@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="MonsterData" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/monster_data.gd" id="1"]
+[ext_resource type="SpriteFrames" path="res://data/champion_frames.tres" id="2"]
+[ext_resource type="Resource" path="res://data/champion_claw.tres" id="3"]
+[ext_resource type="Resource" path="res://data/champion_flare.tres" id="4"]
+[ext_resource type="Resource" path="res://data/champion_burst.tres" id="5"]
+[ext_resource type="Resource" path="res://data/champion_nova.tres" id="6"]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="skill_type"]
+
+[resource]
+script = ExtResource("1")
+id = &"patamon_angemon"
+monster_name = "Angemon (example)"
+evolution_stage = 1
+required_story_flag = &"angemon"
+sprite_frames = ExtResource("2")
+sprite_scale = Vector2(0.2934609250398724, 0.2934609250398724)
+max_hp = 240
+attack = 30
+move_speed = 270.0
+attack_range = 58.0
+attack_interval = 0.8
+evolution_cost = 25.0
+ds_drain_per_second = 6.0
+skills = Array[ExtResource("skill_type")]([ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6")])
+animation_prefix = &"cast"
+release_frame = 2

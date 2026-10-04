@@ -1,0 +1,38 @@
+{
+  "Godot4_Pseudo3D_Kit_v21.zip": {
+    "bytes": 45816
+  },
+  "Godot4_Pseudo3D_v21_Guide_TH.md": {
+    "bytes": 60821
+  },
+  "Pseudo3D_v21_Demo.mp4": {
+    "bytes": 5911488
+  },
+  "Pseudo3D_v21_Dusk.png": {
+    "bytes": 1940600
+  },
+  "Pseudo3D_v21_GroundSkills.png": {
+    "bytes": 2094148
+  },
+  "Pseudo3D_v21_Parallax.png": {
+    "bytes": 1586274
+  },
+  "Pseudo3D_v21_Village.png": {
+    "bytes": 2110792
+  },
+  "code/art_shadow.gd": {
+    "bytes": 4038
+  },
+  "code/ground_projection.gd": {
+    "bytes": 1786
+  },
+  "code/ground_skill_indicator.gd": {
+    "bytes": 3728
+  },
+  "code/party_depth_camera.gd": {
+    "bytes": 4419
+  },
+  "code/world_lighting.gd": {
+    "bytes": 5914
+  }
+}

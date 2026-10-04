@@ -1,0 +1,33 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: เริ่มด้วย HP และชุดสกิลร่างพื้นฐาน
+PASS: แค็ตตาล็อกโหลดตาม id และคืน null เมื่อไม่พบ
+PASS: โหลดค่าระหว่างเล่นจาก MonsterData
+PASS: ร่างข้อมูลผิดไม่เปลี่ยนค่าเดิมและไม่หัก DS
+PASS: โหลด null ไม่ทำให้สถานะเดิมเสียหาย
+PASS: สอง instance แชร์ Resource แต่ HP ไม่กระทบกัน
+PASS: แก้ Array สกิลระหว่างเล่นไม่แก้ Array ของ Resource
+PASS: DS ไม่พอ: ไม่เปลี่ยนร่างและไม่หัก DS
+PASS: เปลี่ยนร่างสำเร็จ
+PASS: โหลดร่างใหม่สลับ SpriteFrames และเล่น Idle ตามทิศทันที
+PASS: เปลี่ยนค่าต่อสู้และชุดสกิลพร้อมกัน
+PASS: รักษา HP 50% และหัก DS 25
+PASS: สลับสกิลและขนาด Sprite
+PASS: ร่าง Ultimate ที่ยังล็อกไม่หัก DS
+PASS: DS หมดกลับร่างพื้นฐานพร้อมรักษา HP
+PASS: Joystick รับ finger 0
+PASS: finger 1 เปิดคัตซีนขณะ finger 0 เดิน
+PASS: คัตซีนจบแล้วเปลี่ยนร่างและ Resume
+PASS: นิ้วที่ปล่อยระหว่างคัตซีนไม่ทำให้ Joystick ค้าง
+PASS: กลับจากคัตซีนแล้วรับ Joystick ใหม่ได้
+PASS: Follow เคลื่อนที่ตาม waypoint ของ NavigationAgent
+PASS: แตะศัตรูส่ง Target และแสดงวงล็อก
+PASS: กด UI ไม่ล้าง Target หรือเลือกทะลุ UI
+PASS: คู่หูสร้างความเสียหายและเริ่มคูลดาวน์สกิล
+PASS: เปลี่ยนร่างไม่ล้างคูลดาวน์สกิลเดิม
+PASS: ศัตรูโต้กลับและคู่หูเป็นผู้รับความเสียหาย
+PASS: ศัตรูถูกลบแล้วล้างเป้าหมายได้โดยไม่เกิด error
+PASS: Auto-Battle หาเป้าหมายในระยะแล้วเข้า Battle
+PASS: คู่หูล้ม: หยุดต่อสู้และห้ามเปลี่ยนร่าง
+PASS: โหลดร่างใหม่โดย preserve_hp ไม่ชุบคู่หูที่ล้มแล้ว
+RESULT: 0 failure(s)

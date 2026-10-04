@@ -1,0 +1,7 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3]
+[ext_resource type="Texture2D" path="res://assets/actions/rookie_cast_v13.png" id="1"]
+[resource]
+atlas = ExtResource("1")
+region = Rect2(51, 63, 230, 240)
+margin = Rect2(171.0, 272, 282, 272)
+filter_clip = true

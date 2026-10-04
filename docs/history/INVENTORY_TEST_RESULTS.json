@@ -1,0 +1,117 @@
+{
+  "version": "0.17.0",
+  "engine": "Godot 4.4.1.stable Standard",
+  "platform": "Linux headless",
+  "suites": [
+    {
+      "suite": "art_integration_test",
+      "assertions": 12,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "classic_hud_test",
+      "assertions": 50,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "combat_actions_test",
+      "assertions": 66,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "damage_popup_test",
+      "assertions": 14,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "equipment_test",
+      "assertions": 58,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "form_skills_animation_test",
+      "assertions": 69,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "inventory_loot_test",
+      "assertions": 53,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "openworld_test",
+      "assertions": 21,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "pregame_flow_test",
+      "assertions": 75,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "projectile_upgrade_test",
+      "assertions": 32,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "recovery_progress_cutscene_test",
+      "assertions": 35,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "smoke_test",
+      "assertions": 30,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "smooth_walk_test",
+      "assertions": 31,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "spawner_test",
+      "assertions": 18,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "story_quest_test",
+      "assertions": 27,
+      "failures": 0,
+      "engine_errors": 0
+    },
+    {
+      "suite": "target_freed_test",
+      "assertions": 15,
+      "failures": 0,
+      "engine_errors": 0
+    }
+  ],
+  "total_assertions": 606,
+  "failures": 0,
+  "clean_import": {
+    "status": "passed without .godot / .import caches",
+    "inventory_assertions": 53,
+    "engine_errors": 0
+  },
+  "notes": [
+    "New inventory suite and latest pregame/equipment/damage-popup checks use fixed-fps 60",
+    "Damage-popup timing check was rerun at fixed 60fps after an uncapped parallel run missed the brief Pop interval",
+    "Native DisplayServer unavailable in this environment; real Control bounds/overlap verified in headless",
+    "Android APK/device testing not performed",
+    "Egg and quest chip storage implemented; hatching and chip quest objectives are future extension points"
+  ]
+}

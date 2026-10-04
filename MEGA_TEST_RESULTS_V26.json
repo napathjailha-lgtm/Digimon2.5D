@@ -1,0 +1,41 @@
+{
+  "version": "v26",
+  "engine": "Godot 4.4.1.stable.official.49a5bc7b6",
+  "tested_at_utc": "2026-10-04T03:16:03.661128+00:00",
+  "suites": [
+    {
+      "name": "mega_lines_test",
+      "assertions": 69,
+      "failures": 0,
+      "log": "docs/test_logs/mega_lines_v26/mega_lines_test.log"
+    },
+    {
+      "name": "pregame_flow_test",
+      "assertions": 77,
+      "failures": 0,
+      "log": "docs/test_logs/mega_lines_v26/pregame_flow_test.log"
+    },
+    {
+      "name": "hybrid_hud_test",
+      "assertions": 43,
+      "failures": 0,
+      "log": "docs/test_logs/mega_lines_v26/hybrid_hud_test.log"
+    },
+    {
+      "name": "single_world_test",
+      "assertions": 50,
+      "failures": 0,
+      "log": "docs/test_logs/mega_lines_v26/single_world_test.log"
+    }
+  ],
+  "total_assertions": 239,
+  "failures": 0,
+  "visual_check": "Godot Compatibility / Mesa llvmpipe, 1280x720; field and status screenshots for both Mega forms",
+  "android_device_tested": false,
+  "apk_exported": false,
+  "notes": [
+    "Mega unlock remains q07_myotismon",
+    "Legacy form IDs and save paths preserved",
+    "18-pose transparent atlas has no foreground crossing row/column seams"
+  ]
+}

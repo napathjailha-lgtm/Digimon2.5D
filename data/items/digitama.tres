@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/items/digitama.svg" id="2"]
+[resource]
+script = ExtResource("1")
+item_id = "digitama"
+item_name = "ไข่ดิจิมอน"
+item_type = 2
+item_texture = ExtResource("2")
+description = "ฟักเป็นคู่หู Rookie แบบสุ่มจากสายที่ยังไม่มีในทีม ทีมรองรับ 3 ตัวและจะไม่เสียไข่เมื่อทีมเต็ม"
+effect_value = 101

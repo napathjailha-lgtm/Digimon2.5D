@@ -1,0 +1,64 @@
+{
+  "godot": "4.4.1-stable official",
+  "date": "2026-10-02",
+  "suites": [
+    {
+      "scene": "res://tests/smooth_walk_test.tscn",
+      "passed_checks": 31,
+      "failures": 0
+    },
+    {
+      "scene": "res://tests/target_freed_test.tscn",
+      "passed_checks": 15,
+      "failures": 0
+    },
+    {
+      "scene": "res://tests/form_skills_animation_test.tscn",
+      "passed_checks": 69,
+      "failures": 0
+    },
+    {
+      "scene": "res://tests/classic_hud_test.tscn",
+      "passed_checks": 50,
+      "failures": 0
+    },
+    {
+      "scene": "res://tests/smoke_test.tscn",
+      "passed_checks": 30,
+      "failures": 0
+    },
+    {
+      "scene": "res://tests/recovery_progress_cutscene_test.tscn",
+      "passed_checks": 35,
+      "failures": 0
+    },
+    {
+      "scene": "res://tests/art_integration_test.tscn",
+      "passed_checks": 12,
+      "failures": 0
+    },
+    {
+      "scene": "res://tests/projectile_upgrade_test.tscn",
+      "passed_checks": 31,
+      "failures": 0
+    },
+    {
+      "scene": "res://tests/story_quest_test.tscn",
+      "passed_checks": 27,
+      "failures": 0
+    }
+  ],
+  "passed_checks": 300,
+  "follow_metrics": {
+    "measurement": "straight clear path, 120 physics frames; after first 31 frames",
+    "stopped_frames": 0,
+    "minimum_gap_px": 55.0750732421875,
+    "maximum_gap_px": 76.0552978515625
+  },
+  "visual_check": {
+    "renderer": "Compatibility/OpenGL, Mesa llvmpipe",
+    "walk_preview_frames": 120,
+    "gameplay_preview_frames": 86
+  },
+  "android_device_benchmark": false
+}

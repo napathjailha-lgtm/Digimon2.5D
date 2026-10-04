@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/monster_spawner.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/wild_monster.tscn" id="2"]
+[node name="MonsterSpawner" type="Marker2D"]
+script = ExtResource("1")
+monster_scene = ExtResource("2")
+spawn_radius = 100.0
+respawn_time = 5.0
+[node name="RespawnTimer" type="Timer" parent="."]
+one_shot = true
+autostart = false

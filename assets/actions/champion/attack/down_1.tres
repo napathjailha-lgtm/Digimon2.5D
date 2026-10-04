@@ -1,0 +1,7 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3]
+[ext_resource type="Texture2D" path="res://assets/actions/champion_attack_v13.png" id="1"]
+[resource]
+atlas = ExtResource("1")
+region = Rect2(346, 33, 226, 276)
+margin = Rect2(197.0, 236, 286, 236)
+filter_clip = true

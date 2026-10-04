@@ -1,0 +1,102 @@
+[gd_resource type="SpriteFrames" load_steps=20 format=3]
+[ext_resource type="Texture2D" path="res://assets/anime_v22/koushiro_atlas.png" id="atlas"]
+[sub_resource type="AtlasTexture" id="r0c0"]
+atlas = ExtResource("atlas")
+region = Rect2(58, 18, 160, 312)
+margin = Rect2(6.5, 9, 13, 9)
+filter_clip = true
+[sub_resource type="AtlasTexture" id="r0c1"]
+atlas = ExtResource("atlas")
+region = Rect2(301, 20, 162, 316)
+margin = Rect2(5.5, 5, 11, 5)
+filter_clip = true
+[sub_resource type="AtlasTexture" id="r0c2"]
+atlas = ExtResource("atlas")
+region = Rect2(558, 16, 162, 319)
+margin = Rect2(5.5, 2, 11, 2)
+filter_clip = true
+[sub_resource type="AtlasTexture" id="r0c3"]
+atlas = ExtResource("atlas")
+region = Rect2(812, 19, 162, 311)
+margin = Rect2(5.5, 10, 11, 10)
+filter_clip = true
+[sub_resource type="AtlasTexture" id="r0c4"]
+atlas = ExtResource("atlas")
+region = Rect2(1072, 20, 162, 316)
+margin = Rect2(5.5, 5, 11, 5)
+filter_clip = true
+[sub_resource type="AtlasTexture" id="r0c5"]
+atlas = ExtResource("atlas")
+region = Rect2(1330, 15, 161, 321)
+margin = Rect2(6, 0, 12, 0)
+filter_clip = true
+[sub_resource type="AtlasTexture" id="r1c0"]
+atlas = ExtResource("atlas")
+region = Rect2(49, 357, 164, 310)
+margin = Rect2(4.5, 11, 9, 11)
+filter_clip = true
+[sub_resource type="AtlasTexture" id="r1c1"]
+atlas = ExtResource("atlas")
+region = Rect2(299, 358, 171, 306)
+margin = Rect2(1, 15, 2, 15)
+filter_clip = true
+[sub_resource type="AtlasTexture" id="r1c2"]
+atlas = ExtResource("atlas")
+region = Rect2(561, 355, 166, 310)
+margin = Rect2(3.5, 11, 7, 11)
+filter_clip = true
+[sub_resource type="AtlasTexture" id="r1c3"]
+atlas = ExtResource("atlas")
+region = Rect2(817, 357, 163, 310)
+margin = Rect2(5, 11, 10, 11)
+filter_clip = true
+[sub_resource type="AtlasTexture" id="r1c4"]
+atlas = ExtResource("atlas")
+region = Rect2(1074, 359, 173, 306)
+margin = Rect2(0, 15, 0, 15)
+filter_clip = true
+[sub_resource type="AtlasTexture" id="r1c5"]
+atlas = ExtResource("atlas")
+region = Rect2(1341, 356, 165, 309)
+margin = Rect2(4, 12, 8, 12)
+filter_clip = true
+[sub_resource type="AtlasTexture" id="r2c0"]
+atlas = ExtResource("atlas")
+region = Rect2(55, 682, 156, 315)
+margin = Rect2(8.5, 6, 17, 6)
+filter_clip = true
+[sub_resource type="AtlasTexture" id="r2c1"]
+atlas = ExtResource("atlas")
+region = Rect2(299, 682, 161, 319)
+margin = Rect2(6, 2, 12, 2)
+filter_clip = true
+[sub_resource type="AtlasTexture" id="r2c2"]
+atlas = ExtResource("atlas")
+region = Rect2(556, 682, 161, 320)
+margin = Rect2(6, 1, 12, 1)
+filter_clip = true
+[sub_resource type="AtlasTexture" id="r2c3"]
+atlas = ExtResource("atlas")
+region = Rect2(816, 683, 158, 313)
+margin = Rect2(7.5, 8, 15, 8)
+filter_clip = true
+[sub_resource type="AtlasTexture" id="r2c4"]
+atlas = ExtResource("atlas")
+region = Rect2(1067, 682, 162, 319)
+margin = Rect2(5.5, 2, 11, 2)
+filter_clip = true
+[sub_resource type="AtlasTexture" id="r2c5"]
+atlas = ExtResource("atlas")
+region = Rect2(1328, 681, 157, 321)
+margin = Rect2(8, 0, 16, 0)
+filter_clip = true
+[resource]
+metadata/mirror_left = true
+animations = [{"frames":[{"duration":1.0,"texture":SubResource("r0c0")}],"loop":true,"name":&"idle_down","speed":1.0},
+{"frames":[{"duration":1.0,"texture":SubResource("r0c0")}, {"duration":1.0,"texture":SubResource("r0c1")}, {"duration":1.0,"texture":SubResource("r0c3")}, {"duration":1.0,"texture":SubResource("r0c5")}],"loop":true,"name":&"walk_down","speed":8.0},
+{"frames":[{"duration":1.0,"texture":SubResource("r1c0")}],"loop":true,"name":&"idle_right","speed":1.0},
+{"frames":[{"duration":1.0,"texture":SubResource("r1c0")}, {"duration":1.0,"texture":SubResource("r1c1")}, {"duration":1.0,"texture":SubResource("r1c3")}, {"duration":1.0,"texture":SubResource("r1c5")}],"loop":true,"name":&"walk_right","speed":8.0},
+{"frames":[{"duration":1.0,"texture":SubResource("r2c0")}],"loop":true,"name":&"idle_up","speed":1.0},
+{"frames":[{"duration":1.0,"texture":SubResource("r2c0")}, {"duration":1.0,"texture":SubResource("r2c1")}, {"duration":1.0,"texture":SubResource("r2c3")}, {"duration":1.0,"texture":SubResource("r2c5")}],"loop":true,"name":&"walk_up","speed":8.0},
+{"frames":[{"duration":1.0,"texture":SubResource("r1c0")}],"loop":true,"name":&"idle_left","speed":1.0},
+{"frames":[{"duration":1.0,"texture":SubResource("r1c0")}, {"duration":1.0,"texture":SubResource("r1c1")}, {"duration":1.0,"texture":SubResource("r1c3")}, {"duration":1.0,"texture":SubResource("r1c5")}],"loop":true,"name":&"walk_left","speed":8.0}]

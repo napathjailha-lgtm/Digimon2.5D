@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/skills_painted/claw.png" id="icon"]
+[resource]
+script = ExtResource("1")
+id = &"quick_bite"
+display_name = "Quick Bite"
+icon = ExtResource("icon")
+multiplier = 1.6
+cast_range = 85.0
+cooldown = 4.0
+mp_cost = 6.0
+impact_radius = 0.0
+effect_color = Color(0.6352941176470588, 0.9098039215686274, 0.8117647058823529, 1)
+effect_size = 12.0
+animation_prefix = &"attack"
+release_frame = 2
+
+vfx_style = "claw"

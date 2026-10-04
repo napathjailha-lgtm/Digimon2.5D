@@ -1,0 +1,7 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3]
+[ext_resource type="Texture2D" path="res://assets/actions/mega_cast_v13.png" id="1"]
+[resource]
+atlas = ExtResource("1")
+region = Rect2(968, 355, 263, 253)
+margin = Rect2(134.0, 259, 249, 259)
+filter_clip = true

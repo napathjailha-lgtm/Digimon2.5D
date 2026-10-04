@@ -1,0 +1,13 @@
+# Godot 4 specific ignores
+.godot/
+*.uid
+
+# Windows system files
+Thumbs.db
+Desktop.ini
+
+# Mobile build artifacts
+*.apk
+*.ap_
+*.aab
+build/

@@ -1,0 +1,74 @@
+{
+  "engine": "Godot 4.4.1 official",
+  "date": "2026-10-02",
+  "suites": [
+    {
+      "scene": "res://tests/combat_actions_test.tscn",
+      "passed": 66,
+      "failures": 0
+    },
+    {
+      "scene": "res://tests/smooth_walk_test.tscn",
+      "passed": 31,
+      "failures": 0
+    },
+    {
+      "scene": "res://tests/target_freed_test.tscn",
+      "passed": 15,
+      "failures": 0
+    },
+    {
+      "scene": "res://tests/form_skills_animation_test.tscn",
+      "passed": 69,
+      "failures": 0
+    },
+    {
+      "scene": "res://tests/classic_hud_test.tscn",
+      "passed": 50,
+      "failures": 0
+    },
+    {
+      "scene": "res://tests/smoke_test.tscn",
+      "passed": 30,
+      "failures": 0
+    },
+    {
+      "scene": "res://tests/recovery_progress_cutscene_test.tscn",
+      "passed": 35,
+      "failures": 0
+    },
+    {
+      "scene": "res://tests/art_integration_test.tscn",
+      "passed": 12,
+      "failures": 0
+    },
+    {
+      "scene": "res://tests/projectile_upgrade_test.tscn",
+      "passed": 32,
+      "failures": 0
+    },
+    {
+      "scene": "res://tests/story_quest_test.tscn",
+      "passed": 27,
+      "failures": 0
+    }
+  ],
+  "passed": 367,
+  "failures": 0,
+  "visual_review": {
+    "renderer": "Compatibility OpenGL / Mesa llvmpipe",
+    "captured_frames": 176,
+    "demonstrated_forms": [
+      "rookie",
+      "champion",
+      "ultimate",
+      "mega"
+    ],
+    "actions": [
+      "basic attack",
+      "primary skill",
+      "secondary skill"
+    ]
+  },
+  "android_benchmark": false
+}

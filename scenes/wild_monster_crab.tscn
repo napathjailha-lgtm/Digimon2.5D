@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="PackedScene" path="res://scenes/wild_monster.tscn" id="1"]
+[ext_resource type="Texture2D" path="res://assets/art/wild_crab.tres" id="2"]
+[node name="WildCrab" instance=ExtResource("1")]
+[node name="Sprite2D" parent="."]
+texture = ExtResource("2")
+offset = Vector2(0, -118.5)
+

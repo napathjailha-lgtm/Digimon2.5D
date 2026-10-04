@@ -1,0 +1,15 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: Scene โหลดภาพพื้นหลังจริง
+PASS: Tamer แสดงภาพทิศ 0 ถูกต้อง
+PASS: เท้าตรง Origin หลังเปลี่ยนทิศ 0
+PASS: Tamer แสดงภาพทิศ 1 ถูกต้อง
+PASS: เท้าตรง Origin หลังเปลี่ยนทิศ 1
+PASS: Tamer แสดงภาพทิศ 2 ถูกต้อง
+PASS: เท้าตรง Origin หลังเปลี่ยนทิศ 2
+PASS: Tamer แสดงภาพทิศ 3 ถูกต้อง
+PASS: เท้าตรง Origin หลังเปลี่ยนทิศ 3
+PASS: พิกัดทดสอบอยู่นอก Collider ใต้เท้า
+PASS: แตะภาพส่วนบนของศัตรูแล้วเลือกได้ผ่าน TouchTarget
+PASS: แตะภาพส่วนบน NPC เริ่มบทสนทนาได้
+RESULT: 0 failure(s)

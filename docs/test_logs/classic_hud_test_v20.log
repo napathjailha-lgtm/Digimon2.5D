@@ -1,0 +1,47 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: ทั้งสอง Card มี portrait จริง
+PASS: HP เปลี่ยนแล้วหลอดทั้งสองตาม Signal
+PASS: DS ใช้ร่วมกันและอัปเดตทั้งสองกรอบ
+PASS: หลอด HP/EXP บาง ไม่ถูกขั้นต่ำ Theme ขยายทับกัน
+PASS: เลเวล/EXP อัปเดตพร้อมกัน
+PASS: Level Up มีข้อความใน System Chat
+PASS: เปลี่ยน Champion เพื่อทดสอบ portrait
+PASS: Portrait/ชื่อเปลี่ยนตาม Digivolve
+PASS: แพ้แล้วกรอบแสดงไข่และ HP 0
+PASS: Recover คืนชื่อและรูป Rookie
+PASS: เลือกศัตรูแล้วแสดงกรอบเป้าหมาย
+PASS: กรอบเป้าหมายอ่าน HP ล่าสุด
+PASS: แตะกรอบเลือด/แผนที่/แชตไม่เลือกศัตรูทะลุ UI
+PASS: แผนที่ย่อแปลงพิกัดต้นแผนที่จริง
+PASS: แผนที่ย่อแปลงขอบแผนที่จริง
+PASS: นิ้วซ้ายกำลังสั่งเดินก่อนพิมพ์
+WARNING: Virtual keyboard not supported by this display server.
+     at: virtual_keyboard_get_height (servers/display_server.cpp:650)
+PASS: แตะช่องพิมพ์ได้ focus
+PASS: เริ่มพิมพ์แล้วปล่อย Joystick/ยกเลิกนำทาง
+PASS: พิมพ์แล้วหยุดรับคำสั่งสกิล
+PASS: พิมพ์แชตไม่ pause โลก
+PASS: ช่องพิมพ์ยกเหนือคีย์บอร์ดสูง 320px
+PASS: แตะส่งเพิ่มข้อความครั้งเดียวและล้างช่องพิมพ์
+PASS: ข้อความผู้เล่นไม่ถูกตีความเป็น BBCode
+PASS: ส่งข้อความแล้วคืนการควบคุม
+PASS: แท็บระบบกรองข้อความทั่วไป
+PASS: แท็บทั่วไปแสดงข้อความผู้เล่น
+PASS: พับ Chat คืนพื้นที่สนาม
+PASS: เปิด Chat กลับได้
+PASS: ข้อความว่างไม่ถูกส่ง
+PASS: จำกัดข้อความยาว 160 ตัวอักษร
+PASS: แชตไม่ซ้อน Joystick ที่ (1280, 720)
+PASS: Minimap ไม่ซ้อน Digivolve/Auto ที่ (1280, 720)
+PASS: Chat ไม่ซ้อนสกิล Skill0 ที่ (1280, 720)
+PASS: Chat ไม่ซ้อนสกิล Skill1 ที่ (1280, 720)
+PASS: แชตไม่ซ้อน Joystick ที่ (1600, 720)
+PASS: Minimap ไม่ซ้อน Digivolve/Auto ที่ (1600, 720)
+PASS: Chat ไม่ซ้อนสกิล Skill0 ที่ (1600, 720)
+PASS: Chat ไม่ซ้อนสกิล Skill1 ที่ (1600, 720)
+PASS: เปิด Status ไม่กดสกิลผ่านหน้าต่าง
+PASS: ปิด Status คืนแผงสกิล
+PASS: ประวัติแชตเก็บได้สูงสุด 100 ข้อความ
+PASS: ออกจาก World ไม่ทำประวัติแชตหาย
+RESULT: 0 failure(s)

@@ -1,0 +1,36 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: ฐานพื้นบีบ Y และเฉือน X โดยรักษาจุดเท้า
+PASS: ฐานพื้นหมุนแล้วกลับพิกัดเดิมได้ angle=0.0
+PASS: ฐานพื้นหมุนแล้วกลับพิกัดเดิมได้ angle=0.4
+PASS: ฐานพื้นหมุนแล้วกลับพิกัดเดิมได้ angle=1.2
+PASS: เงา Sprite อยู่ใต้ Actor เสมอและใช้ texture จริง
+PASS: เงาตอบสนองต่อการเดินโดยไม่ยืด body/collision
+PASS: เงาที่อัปเดต 30/60 Hz ให้ผลใกล้กัน
+PASS: เงาทุกตัวใช้ texture และ material ร่วมกัน
+PASS: ภาพลอยสูงทำให้เงาจางและเลื่อนตามแสง
+PASS: refresh วงซ้ำไม่สะสมการบีบหรือย้ายจุดล็อกเป้า
+PASS: ฟังก์ชันพื้นที่วงใหม่ตรงกับวงรีที่แสดงจริง
+WARNING: Camera2D overridden to physics process mode due to use of physics interpolation.
+     at: _update_process_callback (scene/2d/camera_2d.cpp:92)
+PASS: กล้องเฉลี่ยตำแหน่งคู่หูและจำกัดแรงดึงเมื่ออยู่ไกล
+PASS: Camera ลูกของ Tamer ไม่รับ transform การเคลื่อนที่ซ้ำ
+PASS: เคลื่อนเร็วแล้ว Tween ซูมออกเล็กน้อย
+PASS: หยุดเดินแล้ว Tween ซูมคืน
+PASS: เวลาเตือนและกล้องหยุดพร้อมโลกระหว่าง modal
+PASS: วงเตือนจบครั้งเดียวหลังคืนเวลาเกม
+PASS: ยกเลิกวงเตือนไม่มี callback เก่าหลงเหลือ
+PASS: Reduce Motion ปิดซูมและไม่เขียนทับ offset ของ Camera Shake
+PASS: ดันติดกำแพงแล้วเงาหยุดตอบสนองต่อการเดินที่ไม่เกิดจริง
+PASS: พร็อพมี Occluder พิกัด local ที่ฐานและ mask ตรงกับแสง
+PASS: แดดสร้างเงาจริงเฉพาะ canvas โลก ไม่ฉายทับ HUD
+PASS: โคมสร้างเงาจริงอย่างมาก 1 ดวงต่อเฟรม
+PASS: เปลี่ยนทิศแดดแล้วเงาพร็อพอัปเดตทันที
+PASS: เงาใต้เท้าอ่านผู้ให้ทิศแสงเดียวกับพร็อพ
+PASS: ภูเขา repeat และไม่รับการเลื่อนกล้องสองครั้ง
+PASS: ภูเขาไกลเลื่อนช้ากว่า และฉากหน้าเลื่อนเร็วกว่าโลก
+PASS: Actor ยังซ้อนภาพตามจุดเท้าโดยไม่บิด body
+PASS: Low FX ปิดเงาไฟและฉากหน้าตกแต่ง
+PASS: Low FX ยังมีเงาใต้เท้าและเงาพร็อพแบบสไปรต์
+PASS: Warp คืนตำแหน่งเฉลี่ยกล้องและ interpolation
+PSEUDO3D RESULT assertions=31 failures=0

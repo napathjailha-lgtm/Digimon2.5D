@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/skills_painted/lightning.png" id="icon"]
+[resource]
+script = ExtResource("s")
+id = &"tentomon_2_skill"
+display_name = "Horn Buster"
+icon = ExtResource("icon")
+multiplier = 3.2
+cooldown = 8.0
+cast_range = 200.0
+mp_cost = 15.0
+impact_radius = 70.0
+projectile_speed = 480.0
+effect_color = Color(1.0, 0.9098039215686274, 0.43137254901960786, 1)
+effect_size = 28.0
+
+vfx_style = "lightning"

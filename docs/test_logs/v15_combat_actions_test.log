@@ -1,0 +1,69 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: rookie ผ่าน validation ของภาพแอคชั่น
+PASS: rookie attack_down มี 4 เฟรมและปิด Loop
+PASS: rookie cast_down มี 4 เฟรมและปิด Loop
+PASS: rookie attack_right มี 4 เฟรมและปิด Loop
+PASS: rookie cast_right มี 4 เฟรมและปิด Loop
+PASS: rookie attack_up มี 4 เฟรมและปิด Loop
+PASS: rookie cast_up มี 4 เฟรมและปิด Loop
+PASS: rookie attack_left มี 4 เฟรมและปิด Loop
+PASS: rookie cast_left มี 4 เฟรมและปิด Loop
+PASS: champion ผ่าน validation ของภาพแอคชั่น
+PASS: champion attack_down มี 4 เฟรมและปิด Loop
+PASS: champion cast_down มี 4 เฟรมและปิด Loop
+PASS: champion attack_right มี 4 เฟรมและปิด Loop
+PASS: champion cast_right มี 4 เฟรมและปิด Loop
+PASS: champion attack_up มี 4 เฟรมและปิด Loop
+PASS: champion cast_up มี 4 เฟรมและปิด Loop
+PASS: champion attack_left มี 4 เฟรมและปิด Loop
+PASS: champion cast_left มี 4 เฟรมและปิด Loop
+PASS: ultimate ผ่าน validation ของภาพแอคชั่น
+PASS: ultimate attack_down มี 4 เฟรมและปิด Loop
+PASS: ultimate cast_down มี 4 เฟรมและปิด Loop
+PASS: ultimate attack_right มี 4 เฟรมและปิด Loop
+PASS: ultimate cast_right มี 4 เฟรมและปิด Loop
+PASS: ultimate attack_up มี 4 เฟรมและปิด Loop
+PASS: ultimate cast_up มี 4 เฟรมและปิด Loop
+PASS: ultimate attack_left มี 4 เฟรมและปิด Loop
+PASS: ultimate cast_left มี 4 เฟรมและปิด Loop
+PASS: mega ผ่าน validation ของภาพแอคชั่น
+PASS: mega attack_down มี 4 เฟรมและปิด Loop
+PASS: mega cast_down มี 4 เฟรมและปิด Loop
+PASS: mega attack_right มี 4 เฟรมและปิด Loop
+PASS: mega cast_right มี 4 เฟรมและปิด Loop
+PASS: mega attack_up มี 4 เฟรมและปิด Loop
+PASS: mega cast_up มี 4 เฟรมและปิด Loop
+PASS: mega attack_left มี 4 เฟรมและปิด Loop
+PASS: mega cast_left มี 4 เฟรมและปิด Loop
+PASS: ปฏิเสธ Cast ที่เปิด Loop ป้องกันแอคชั่นค้าง
+PASS: ปฏิเสธ release_frame นอกชุดภาพ
+PASS: เริ่มตีธรรมดา
+PASS: เริ่มเตรียมท่ายังไม่หัก HP และหันถูกทิศ
+PASS: เฟรมง้างยังไม่ลงดาเมจ
+PASS: เฟรม Strike ลงดาเมจธรรมดาหนึ่งครั้ง
+PASS: ย้อนเฟรม/สัญญาณซ้ำไม่ทำ hit ซ้ำ
+PASS: แอนิเมชันจบคืน Idle และปลดล็อกจริง
+PASS: คืนสเกลเดินหลัง action
+PASS: เริ่ม Baby Flame
+PASS: สกิลใช้ Cast แยกจาก Attack ยังไม่ยิงตอนเริ่ม
+PASS: ชาร์จเฟรมแรกยังไม่ยิง
+PASS: Release สร้างลูกไฟ แต่ยังไม่ลงดาเมจจนกว่าจะชน
+PASS: เก็บ ATK ตอนเริ่ม ไม่ใช้ ATK ที่เปลี่ยนระหว่างชาร์จ
+PASS: หัก DS ครั้งเดียวและไม่เล่นอีกสกิลทับท่า
+PASS: ลูกไฟชนแล้วลงดาเมจและลบตัวเอง
+PASS: Quick Bite ใช้ท่า Attack ตาม Resource ของสกิล
+PASS: สกิลระยะประชิดลงดาเมจที่ Strike frame
+PASS: เริ่มท่าก่อน pause
+PASS: pause หยุดท่า/เอฟเฟกต์/Release พร้อมสนาม
+PASS: Resume แล้วปล่อยลูกไฟที่เฟรม Release ได้
+PASS: เปลี่ยนเป้าขณะชาร์จยกเลิก hit เก่า
+PASS: เปลี่ยนร่างขณะชาร์จได้
+PASS: โหลดร่างใหม่ล้าง action เก่า
+PASS: สลบก่อน Release ไม่ยิงและไม่มี hit ค้าง
+PASS: ฟื้นจากไข่แล้วใช้แอคชั่นใหม่ได้
+PASS: เริ่มท่าก่อนเป้าหมายหนี
+PASS: ศัตรูหนีออกจากระยะก่อน Strike แล้วตีพลาด
+PASS: ผนังเข้ามาขวางก่อน Release ไม่ยิงทะลุ
+PASS: เป้าหมายถูก free ระหว่างชาร์จไม่ส่ง freed reference ต่อ
+RESULT: 0 failure(s)

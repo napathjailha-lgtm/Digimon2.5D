@@ -1,0 +1,21 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: เริ่มเกมแต่ละ Spawner สร้างหนึ่งตัว
+PASS: Spawner แต่ละจุดมี instance แยกกัน
+PASS: สุ่มตำแหน่งเกิดในวงรัศมี
+PASS: บ้านและพื้นที่ Wander ใช้ศูนย์กลาง Spawner
+PASS: เรียก spawn ซ้ำไม่สร้างตัวซ้อน
+PASS: เริ่ม Timer ทันทีเมื่อ died
+PASS: tree_exited ตามหลัง died ไม่รีเซ็ตเวลา
+PASS: ครบเวลาเกิด instance ใหม่
+PASS: ตัวใหม่ HP เต็มและ Timer หยุดรอการตายครั้งถัดไป
+PASS: Respawn ของ A ไม่กระทบจุด B
+PASS: รัศมีศูนย์เกิดตรงจุดแม้ Actors มี transform
+PASS: ตายและเกิดใหม่หลายรอบยังมีหนึ่งตัวต่อจุด
+PASS: ลบโดยตรงใช้ tree_exited เพื่อ Respawn
+PASS: Pause เกมแล้ว Timer Respawn หยุดนับ
+PASS: Resume แล้วนับต่อและเกิดใหม่
+PASS: Spawner แบบ standalone ใช้ตัวเองเป็น parent ได้
+PASS: ลบ Spawner แล้วเก็บกวาดมอนสเตอร์ที่ดูแล
+PASS: ออกจาก World ขณะรอ Respawn ไม่มีมอนสเตอร์เกิดค้าง
+RESULT: 0 failure(s)

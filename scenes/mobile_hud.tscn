@@ -1,0 +1,197 @@
+[gd_scene load_steps=18 format=3]
+[ext_resource type="Script" path="res://scripts/mobile_hud.gd" id="hud"]
+[ext_resource type="Script" path="res://scripts/virtual_joystick.gd" id="joy"]
+[ext_resource type="Script" path="res://scripts/hud/hybrid_command.gd" id="touch"]
+[ext_resource type="Script" path="res://scripts/form_skill_panel.gd" id="skills"]
+[ext_resource type="FontFile" path="res://assets/fonts/NotoSansThai.ttf" id="font"]
+[ext_resource type="Script" path="res://scripts/hud/hybrid_vitals.gd" id="vitals"]
+[ext_resource type="Script" path="res://scripts/hud/hybrid_party_panel.gd" id="party"]
+[ext_resource type="Script" path="res://scripts/hud/round_minimap.gd" id="map"]
+[ext_resource type="PackedScene" path="res://scenes/collapsible_hud_menu.tscn" id="menu"]
+[ext_resource type="Texture2D" path="res://assets/skills_painted/claw.png" id="attack_icon"]
+[ext_resource type="Texture2D" path="res://assets/skills_painted/evolve.png" id="evolve_icon"]
+[ext_resource type="Texture2D" path="res://assets/ui/hybrid/auto.svg" id="auto_icon"]
+[ext_resource type="Texture2D" path="res://assets/ui/hybrid/cycle.svg" id="cycle_icon"]
+[ext_resource type="Texture2D" path="res://assets/ui/hybrid/inventory.svg" id="inventory_icon"]
+[ext_resource type="Texture2D" path="res://assets/ui/hybrid/settings.svg" id="settings_icon"]
+[ext_resource type="Texture2D" path="res://assets/ui/hybrid/recover.svg" id="recover_icon"]
+[sub_resource type="Theme" id="theme"]
+default_font = ExtResource("font")
+default_font_size = 17
+[node name="MobileHUD" type="CanvasLayer"]
+script = ExtResource("hud")
+[node name="Root" type="Control" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme = SubResource("theme")
+[node name="Safe" type="MarginContainer" parent="Root"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_bottom = 20
+[node name="Layout" type="Control" parent="Root/Safe"]
+layout_mode = 2
+mouse_filter = 2
+[node name="TopLeft" type="VBoxContainer" parent="Root/Safe/Layout"]
+offset_right = 300.0
+mouse_filter = 2
+theme_override_constants/separation = 8
+[node name="MapRow" type="HBoxContainer" parent="Root/Safe/Layout/TopLeft"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+[node name="Minimap" type="Panel" parent="Root/Safe/Layout/TopLeft/MapRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(146, 166)
+mouse_filter = 2
+script = ExtResource("map")
+[node name="Shortcuts" type="VBoxContainer" parent="Root/Safe/Layout/TopLeft/MapRow"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+[node name="Inventory" type="Control" parent="Root/Safe/Layout/TopLeft/MapRow/Shortcuts"]
+layout_mode = 2
+custom_minimum_size = Vector2(64, 64)
+mouse_filter = 2
+script = ExtResource("touch")
+caption = "กระเป๋า"
+icon = ExtResource("inventory_icon")
+[node name="Settings" type="Control" parent="Root/Safe/Layout/TopLeft/MapRow/Shortcuts"]
+layout_mode = 2
+custom_minimum_size = Vector2(64, 64)
+mouse_filter = 2
+script = ExtResource("touch")
+caption = "ตั้งค่า"
+icon = ExtResource("settings_icon")
+[node name="QuestShortcut" type="Control" parent="Root/Safe/Layout/TopLeft"]
+layout_mode = 2
+custom_minimum_size = Vector2(300, 64)
+mouse_filter = 2
+script = ExtResource("touch")
+plain_text = true
+caption = "เควสต์หลัก · แตะนำทาง"
+[node name="Vitals" type="VBoxContainer" parent="Root/Safe/Layout"]
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -230.0
+offset_right = 230.0
+offset_top = -172.0
+mouse_filter = 2
+alignment = 2
+script = ExtResource("vitals")
+[node name="PartyPanel" type="VBoxContainer" parent="Root/Safe/Layout"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -90.0
+offset_top = 90.0
+mouse_filter = 2
+script = ExtResource("party")
+[node name="Menu" parent="Root/Safe/Layout" instance=ExtResource("menu")]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -64.0
+offset_right = 0.0
+[node name="Combat" type="Control" parent="Root/Safe/Layout"]
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -374.0
+offset_top = -330.0
+mouse_filter = 2
+pivot_offset = Vector2(374, 330)
+[node name="SkillPanel" type="Control" parent="Root/Safe/Layout/Combat"]
+offset_right = 374.0
+offset_bottom = 330.0
+mouse_filter = 2
+script = ExtResource("skills")
+[node name="Attack" type="Control" parent="Root/Safe/Layout/Combat"]
+offset_left = 166.0
+offset_top = 150.0
+offset_right = 278.0
+offset_bottom = 262.0
+mouse_filter = 2
+script = ExtResource("touch")
+caption = "โจมตี"
+icon = ExtResource("attack_icon")
+illustrated = true
+[node name="Recover" type="Control" parent="Root/Safe/Layout/Combat"]
+offset_left = 166.0
+offset_top = 150.0
+offset_right = 278.0
+offset_bottom = 262.0
+mouse_filter = 2
+script = ExtResource("touch")
+caption = "ฟื้นฟู"
+icon = ExtResource("recover_icon")
+visible = false
+[node name="Evolve" type="Control" parent="Root/Safe/Layout/Combat"]
+offset_left = 248.0
+offset_top = 272.0
+offset_right = 304.0
+offset_bottom = 328.0
+mouse_filter = 2
+script = ExtResource("touch")
+caption = "Evolve"
+icon = ExtResource("evolve_icon")
+illustrated = true
+[node name="Auto" type="Control" parent="Root/Safe/Layout/Combat"]
+offset_left = 180.0
+offset_top = 272.0
+offset_right = 236.0
+offset_bottom = 328.0
+mouse_filter = 2
+script = ExtResource("touch")
+caption = "Auto"
+icon = ExtResource("auto_icon")
+[node name="Cycle" type="Control" parent="Root/Safe/Layout/Combat"]
+offset_left = 314.0
+offset_top = 250.0
+offset_right = 370.0
+offset_bottom = 306.0
+mouse_filter = 2
+script = ExtResource("touch")
+caption = "ชุดสกิล"
+icon = ExtResource("cycle_icon")
+[node name="PageLabel" type="Label" parent="Root/Safe/Layout/Combat"]
+offset_left = 0.0
+offset_top = 8.0
+offset_right = 264.0
+offset_bottom = 34.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_outline_color = Color(0.03, 0.07, 0.08, 1)
+theme_override_constants/outline_size = 2
+horizontal_alignment = 2
+clip_text = true
+text = "ชุดสกิล"
+[node name="Joystick" type="Control" parent="Root"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 26.0
+offset_top = -220.0
+offset_right = 226.0
+offset_bottom = -20.0
+mouse_filter = 2
+script = ExtResource("joy")
+[node name="Message" type="Label" parent="Root"]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -250.0
+offset_top = 100.0
+offset_right = 250.0
+offset_bottom = 138.0
+mouse_filter = 2
+horizontal_alignment = 1
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_constants/outline_size = 2
+text = ""

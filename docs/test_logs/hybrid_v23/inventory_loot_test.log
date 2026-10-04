@@ -1,0 +1,56 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: เริ่มกระเป๋าว่างและ bind Tamer ปัจจุบัน
+PASS: ฐานข้อมูล 5 ไอเทมพร้อม Texture
+PASS: ปฏิเสธข้อมูล/จำนวนไม่ถูกต้อง
+PASS: ปฏิเสธ ID ที่ไม่อยู่ใน catalog
+PASS: เพิ่มเนื้อสองครั้ง
+PASS: ซ้อนจำนวนเป็น stack เดียว
+PASS: แก้สำเนา UI ไม่แก้กระเป๋าจริง
+PASS: index เก่า/นอกขอบไม่ผิดพลาด
+PASS: HP เต็มไม่กินเนื้อ
+PASS: ใช้เนื้อฟื้น HP คู่หูตามค่าที่ขาด
+PASS: ลดหนึ่งชิ้นและไม่แก้ Resource
+PASS: save HP กับจำนวนหลัง commit พร้อมกัน
+PASS: คัตซีนไม่กินเนื้อ
+PASS: ไข่ไม่ถูกเนื้อชุบฟรี
+PASS: Recover เดิมยังทำงาน
+PASS: เก็บไข่กับชิปข้อมูล
+PASS: ไข่ฟักเป็นสมาชิกใหม่และไม่ฟื้น HP ตัวปัจจุบัน
+PASS: ชิปเควสต์ใช้เป็นเนื้อไม่ได้
+PASS: เกินเพดาน stack ไม่รับบางส่วน
+PASS: 100 rolls: 100%/0% และช่วงจำนวนถูกต้อง
+PASS: ฆ่าศัตรูดรอปครั้งเดียวแม้โดน hit ซ้ำ
+PASS: Loot เป็นลูก Actors ไม่เป็นลูกศัตรู
+PASS: ศัตรู free แล้ว Loot ยังอยู่
+PASS: ของยังคงพิกัดโลกเมื่อผู้เล่นเดิน
+PASS: Area2D ชน Tamer จริงแล้วเก็บของ
+PASS: callback ซ้ำไม่แจกเพิ่ม
+PASS: Tween จบแล้ว Loot queue_free
+PASS: กระเป๋าเต็มไม่ลบ Loot
+PASS: retry เก็บเมื่อมีช่องว่างโดยไม่เดินออก Area
+PASS: restore รวม ID ซ้ำและกรองเซฟเสีย
+PASS: JSON round-trip จำนวนตรง
+PASS: ทิ้ง index/จำนวนผิดไม่ได้
+PASS: Touch เปิดกระเป๋าและ pause
+PASS: Grid 6x4 มี 24 ช่อง
+PASS: Touch สล็อตแสดง Popup
+PASS: หน้ากระเป๋าไม่ล้นจอ Landscape 1280x720
+PASS: ปุ่ม Use/Drop อยู่ในกรอบและไม่ทับกัน
+PASS: Touch Use ฟื้น HP และลดจำนวนขณะ pause
+PASS: เลือกไข่ UI แสดงปุ่มฟักเมื่อทีมยังว่าง
+PASS: ทิ้งชิ้นสุดท้ายปิด Popup ไม่ใช้ไอเทมอื่นแทน
+PASS: ทิ้งสร้าง Loot จริงมี pickup delay
+PASS: ไม่เปิดอุปกรณ์ซ้อน pause กระเป๋า
+PASS: ปิดคืน pause/finger
+PASS: อุปกรณ์เดิมยังเปิดหลังปิดกระเป๋า
+PASS: ไม่แย่ง pause ของอุปกรณ์
+PASS: จำนวนอยู่ในเซฟจริงบนดิสก์
+PASS: WeakRef ไม่อ้าง Tamer ที่ free
+PASS: ใช้ของหลังเจ้าของออก Scene ไม่ crash
+PASS: เปลี่ยน Scene คืนกระเป๋าเดิม
+PASS: heal_requested ผูกคู่หูใหม่หลัง Scene เดิมถูก free
+PASS: ตัวละคร/เซฟใหม่ไม่รับกระเป๋าของคนก่อน
+PASS: เปิดก่อนเปลี่ยน Scene
+PASS: free หน้ากระเป๋าคืน pause
+INVENTORY_LOOT_TEST assertions=53 failures=0

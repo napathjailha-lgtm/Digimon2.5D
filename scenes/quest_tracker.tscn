@@ -1,0 +1,51 @@
+[gd_scene load_steps=5 format=3]
+[ext_resource type="Script" path="res://scripts/quest_tracker.gd" id="1"]
+[ext_resource type="FontFile" path="res://assets/fonts/NotoSansThai.ttf" id="thai_font"]
+[sub_resource type="Theme" id="thai_theme"]
+default_font = ExtResource("thai_font")
+[sub_resource type="StyleBoxFlat" id="panel"]
+bg_color = Color(0.025, 0.075, 0.14, 0.82)
+border_width_left = 3
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.9, 0.75, 0.3, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_left = 10
+corner_radius_bottom_right = 10
+[node name="QuestTracker" type="Control"]
+theme = SubResource("thai_theme")
+offset_left = 24.0
+offset_top = 120.0
+offset_right = 344.0
+offset_bottom = 360.0
+mouse_filter = 2
+script = ExtResource("1")
+[node name="Panel" type="PanelContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("panel")
+[node name="Margin" type="MarginContainer" parent="Panel"]
+mouse_filter = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin"]
+mouse_filter = 2
+theme_override_constants/separation = 5
+[node name="Title" type="Label" parent="Panel/Margin/VBox"]
+mouse_filter = 2
+theme_override_font_sizes/font_size = 15
+autowrap_mode = 3
+[node name="Detail" type="Label" parent="Panel/Margin/VBox"]
+mouse_filter = 2
+theme_override_font_sizes/font_size = 13
+autowrap_mode = 3
+[node name="Progress" type="Label" parent="Panel/Margin/VBox"]
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.9, 0.75, 0.3, 1)
+theme_override_font_sizes/font_size = 12

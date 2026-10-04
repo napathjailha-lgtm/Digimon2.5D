@@ -1,0 +1,36 @@
+{
+  "engine": "4.4.1",
+  "version": "0.11.1",
+  "scenes": [
+    {
+      "test": "target_freed",
+      "checks": 15,
+      "result": "RESULT: 0 failure(s)"
+    },
+    {
+      "test": "classic_hud",
+      "checks": 50,
+      "result": "RESULT: 0 failure(s)"
+    },
+    {
+      "test": "projectile_upgrade",
+      "checks": 31,
+      "result": "RESULT: 0 failure(s)"
+    },
+    {
+      "test": "smoke",
+      "checks": 30,
+      "result": "RESULT: 0 failure(s)"
+    },
+    {
+      "test": "form_skills_animation",
+      "checks": 69,
+      "result": "RESULT: 0 failure(s)"
+    },
+    {
+      "test": "story_quest",
+      "checks": 27,
+      "result": "RESULT: 0 failure(s)"
+    }
+  ]
+}

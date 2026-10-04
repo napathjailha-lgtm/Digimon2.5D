@@ -1,0 +1,108 @@
+[gd_scene load_steps=8 format=3]
+[ext_resource type="Script" path="res://scripts/pregame/loading_screen.gd" id="script"]
+[ext_resource type="Script" path="res://scripts/pregame/menu_background.gd" id="bg"]
+[ext_resource type="Theme" path="res://data/pregame/menu_theme.tres" id="theme"]
+[sub_resource type="Gradient" id="ug"]
+colors = PackedColorArray(0.035, 0.09, 0.14, 1, 0.035, 0.09, 0.14, 1)
+[sub_resource type="GradientTexture2D" id="under"]
+gradient = SubResource("ug")
+width = 700
+height = 22
+[sub_resource type="Gradient" id="fg"]
+colors = PackedColorArray(0.17, 0.55, 0.76, 1, 0.42, 0.9, 0.87, 1)
+[sub_resource type="GradientTexture2D" id="fill"]
+gradient = SubResource("fg")
+width = 700
+height = 22
+[node name="Screen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("script")
+theme = ExtResource("theme")
+[node name="Background" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("bg")
+mouse_filter = 2
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_bottom = 20
+[node name="Column" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 18
+[node name="Header" type="HBoxContainer" parent="Margin/Column"]
+layout_mode = 2
+[node name="Title" type="Label" parent="Margin/Column/Header"]
+layout_mode = 2
+text = "DIGITAL ADVENTURE"
+theme_override_font_sizes/font_size = 27
+mouse_filter = 2
+size_flags_horizontal = 3
+[node name="Subtitle" type="Label" parent="Margin/Column/Header"]
+layout_mode = 2
+text = "01 / DIGITAL GATE"
+theme_override_font_sizes/font_size = 14
+mouse_filter = 2
+vertical_alignment = 1
+[node name="Center" type="CenterContainer" parent="Margin/Column"]
+layout_mode = 2
+size_flags_vertical = 3
+[node name="Panel" type="PanelContainer" parent="Margin/Column/Center"]
+layout_mode = 2
+custom_minimum_size = Vector2(780, 320)
+[node name="Inner" type="MarginContainer" parent="Margin/Column/Center/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 34
+theme_override_constants/margin_right = 34
+theme_override_constants/margin_top = 26
+theme_override_constants/margin_bottom = 26
+[node name="Stack" type="VBoxContainer" parent="Margin/Column/Center/Panel/Inner"]
+layout_mode = 2
+theme_override_constants/separation = 16
+[node name="Logo" type="Label" parent="Margin/Column/Center/Panel/Inner/Stack"]
+layout_mode = 2
+text = "DIGITAL GATE"
+theme_override_font_sizes/font_size = 42
+mouse_filter = 2
+horizontal_alignment = 1
+[node name="Status" type="Label" parent="Margin/Column/Center/Panel/Inner/Stack"]
+layout_mode = 2
+text = "กำลังโหลดโลกดิจิตอล…"
+theme_override_font_sizes/font_size = 19
+mouse_filter = 2
+horizontal_alignment = 1
+[node name="Progress" type="TextureProgressBar" parent="Margin/Column/Center/Panel/Inner/Stack"]
+layout_mode = 2
+custom_minimum_size = Vector2(700, 22)
+texture_under = SubResource("under")
+texture_progress = SubResource("fill")
+nine_patch_stretch = true
+[node name="Percent" type="Label" parent="Margin/Column/Center/Panel/Inner/Stack"]
+layout_mode = 2
+text = "0%"
+theme_override_font_sizes/font_size = 24
+mouse_filter = 2
+horizontal_alignment = 1
+[node name="Retry" type="Button" parent="Margin/Column/Center/Panel/Inner/Stack"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 50)
+text = "ลองใหม่"
+[node name="Message" type="Label" parent="Margin/Column"]
+layout_mode = 2
+text = ""
+theme_override_font_sizes/font_size = 15
+mouse_filter = 2
+custom_minimum_size = Vector2(0, 28)
+theme_override_colors/font_color = Color(0.96, 0.81, 0.5, 1)

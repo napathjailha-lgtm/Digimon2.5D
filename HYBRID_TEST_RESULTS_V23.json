@@ -1,0 +1,101 @@
+{
+  "godot": "4.4.1.stable",
+  "assertions_passed": 583,
+  "suites": {
+    "hybrid_hud": {
+      "exit_code": 0,
+      "passes": 43,
+      "errors": [
+        "RESULT: 0 failure(s), 43 assertions"
+      ]
+    },
+    "visual_polish": {
+      "exit_code": 0,
+      "passes": 19,
+      "errors": [
+        "RESULT: 0 failure(s)"
+      ]
+    },
+    "pregame_flow": {
+      "exit_code": 0,
+      "passes": 75,
+      "errors": [
+        "RESULT: 0 failure(s)"
+      ]
+    },
+    "combat_actions": {
+      "exit_code": 0,
+      "passes": 66,
+      "errors": [
+        "RESULT: 0 failure(s)"
+      ]
+    },
+    "survival_status": {
+      "exit_code": 0,
+      "passes": 66,
+      "errors": [
+        "RESULT: 0 failure(s)"
+      ]
+    },
+    "inventory_loot": {
+      "exit_code": 0,
+      "passes": 53,
+      "errors": []
+    },
+    "target_freed": {
+      "exit_code": 0,
+      "passes": 15,
+      "errors": [
+        "RESULT: 0 failure(s)"
+      ]
+    },
+    "clean_hud": {
+      "exit_code": 0,
+      "passes": 42,
+      "errors": [
+        "RESULT: 0 failure(s)"
+      ]
+    },
+    "form_skills_animation": {
+      "exit_code": 0,
+      "passes": 69,
+      "errors": [
+        "RESULT: 0 failure(s)"
+      ]
+    },
+    "smooth_walk": {
+      "exit_code": 0,
+      "passes": 31,
+      "errors": [
+        "RESULT: 0 failure(s)"
+      ]
+    },
+    "pseudo3d": {
+      "exit_code": 0,
+      "passes": 31,
+      "errors": []
+    },
+    "story_quest": {
+      "exit_code": 0,
+      "passes": 27,
+      "errors": [
+        "RESULT: 0 failure(s)"
+      ]
+    },
+    "classic_hud": {
+      "exit_code": 0,
+      "passes": 46,
+      "errors": [
+        "RESULT: 0 failure(s)"
+      ]
+    }
+  },
+  "render": "Native Godot OpenGL Compatibility / Mesa llvmpipe",
+  "previews": [
+    "1280x720",
+    "1600x720 with simulated notch and 115% buttons",
+    "1024x768 tablet",
+    "native party switch"
+  ],
+  "physical_android_tested": false
+}

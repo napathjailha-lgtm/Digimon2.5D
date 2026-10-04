@@ -1,0 +1,167 @@
+{
+  "engine": "Godot 4.4.1 stable",
+  "platform": "Linux x86_64 headless and native OpenGL Compatibility",
+  "suite_count": 18,
+  "assertions": 706,
+  "failures": 0,
+  "tests": [
+    {
+      "name": "art_integration_test",
+      "exit": 0,
+      "passes": 12,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 2.2
+    },
+    {
+      "name": "classic_hud_test",
+      "exit": 0,
+      "passes": 42,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 2.2
+    },
+    {
+      "name": "clean_hud_test",
+      "exit": 0,
+      "passes": 42,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 2.2
+    },
+    {
+      "name": "combat_actions_test",
+      "exit": 0,
+      "passes": 66,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 1.2
+    },
+    {
+      "name": "damage_popup_test",
+      "exit": 0,
+      "passes": 14,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 2.1
+    },
+    {
+      "name": "equipment_test",
+      "exit": 0,
+      "passes": 58,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 4.1
+    },
+    {
+      "name": "form_skills_animation_test",
+      "exit": 0,
+      "passes": 69,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 2.2
+    },
+    {
+      "name": "inventory_loot_test",
+      "exit": 0,
+      "passes": 53,
+      "errors": [],
+      "result": "INVENTORY_LOOT_TEST assertions=53 failures=0",
+      "seconds": 4.1
+    },
+    {
+      "name": "openworld_test",
+      "exit": 0,
+      "passes": 21,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 2.2
+    },
+    {
+      "name": "pregame_flow_test",
+      "exit": 0,
+      "passes": 75,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 5.2
+    },
+    {
+      "name": "projectile_upgrade_test",
+      "exit": 0,
+      "passes": 32,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 1.2
+    },
+    {
+      "name": "recovery_progress_cutscene_test",
+      "exit": 0,
+      "passes": 35,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 2.2
+    },
+    {
+      "name": "smoke_test",
+      "exit": 0,
+      "passes": 30,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 2.2
+    },
+    {
+      "name": "smooth_walk_test",
+      "exit": 0,
+      "passes": 31,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 2.2
+    },
+    {
+      "name": "spawner_test",
+      "exit": 0,
+      "passes": 18,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 2.2
+    },
+    {
+      "name": "story_quest_test",
+      "exit": 0,
+      "passes": 27,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 2.2
+    },
+    {
+      "name": "survival_status_test",
+      "exit": 0,
+      "passes": 66,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 2.2
+    },
+    {
+      "name": "target_freed_test",
+      "exit": 0,
+      "passes": 15,
+      "errors": [],
+      "result": "RESULT: 0 failure(s)",
+      "seconds": 2.2
+    }
+  ],
+  "native_capture": {
+    "renderer": "Mesa llvmpipe OpenGL 4.5",
+    "images": [
+      "Survival_v19_HUD.png",
+      "Survival_v19_CannotBattle.png",
+      "Survival_v19_Food.png"
+    ],
+    "script_errors": 0,
+    "note": "VSync is unsupported in Xvfb; capture succeeds."
+  },
+  "not_tested": [
+    "Android APK export",
+    "Physical mobile device"
+  ]
+}

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/items/data_chip.svg" id="2"]
+[resource]
+script = ExtResource("1")
+item_id = "data_chip"
+item_name = "ชิปข้อมูล"
+item_type = 1
+item_texture = ExtResource("2")
+description = "ชิปข้อมูลจากมอนสเตอร์ป่า เก็บเป็นวัตถุดิบเควสต์ ไม่ใช่ชิปสวมใส่ Digivice"
+effect_value = 0

@@ -1,0 +1,145 @@
+[gd_scene load_steps=4 format=3]
+[ext_resource type="Script" path="res://scripts/pregame/login_screen.gd" id="script"]
+[ext_resource type="Script" path="res://scripts/pregame/menu_background.gd" id="bg"]
+[ext_resource type="Theme" path="res://data/pregame/menu_theme.tres" id="theme"]
+[node name="Screen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("script")
+theme = ExtResource("theme")
+[node name="Background" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("bg")
+mouse_filter = 2
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_bottom = 20
+[node name="Column" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 18
+[node name="Header" type="HBoxContainer" parent="Margin/Column"]
+layout_mode = 2
+[node name="Title" type="Label" parent="Margin/Column/Header"]
+layout_mode = 2
+text = "DIGITAL ADVENTURE"
+theme_override_font_sizes/font_size = 27
+mouse_filter = 2
+size_flags_horizontal = 3
+[node name="Subtitle" type="Label" parent="Margin/Column/Header"]
+layout_mode = 2
+text = "OFFLINE DEMO · LANDSCAPE"
+theme_override_font_sizes/font_size = 14
+mouse_filter = 2
+vertical_alignment = 1
+[node name="Body" type="HBoxContainer" parent="Margin/Column"]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+[node name="Hero" type="VBoxContainer" parent="Margin/Column/Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+[node name="HeroTitle" type="Label" parent="Margin/Column/Body/Hero"]
+layout_mode = 2
+text = "DIGITAL\nADVENTURE"
+theme_override_font_sizes/font_size = 60
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.55, 0.88, 0.98, 1)
+[node name="HeroSubtitle" type="Label" parent="Margin/Column/Body/Hero"]
+layout_mode = 2
+text = "หนึ่งเทมเมอร์ • หนึ่งคู่หู • การผจญภัยครั้งใหม่"
+theme_override_font_sizes/font_size = 23
+mouse_filter = 2
+
+[node name="HeroNote" type="Label" parent="Margin/Column/Body/Hero"]
+layout_mode = 2
+text = "FILE ISLAND → SERVER CONTINENT\n→ ODAIBA → SPIRAL MOUNTAIN"
+theme_override_font_sizes/font_size = 17
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.87, 0.72, 0.4, 1)
+[node name="LoginPanel" type="PanelContainer" parent="Margin/Column/Body"]
+layout_mode = 2
+custom_minimum_size = Vector2(448, 0)
+size_flags_horizontal = 3
+[node name="Inner" type="MarginContainer" parent="Margin/Column/Body/LoginPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_bottom = 16
+[node name="Stack" type="VBoxContainer" parent="Margin/Column/Body/LoginPanel/Inner"]
+layout_mode = 2
+[node name="Name" type="Label" parent="Margin/Column/Body/LoginPanel/Inner/Stack"]
+layout_mode = 2
+text = "ยินดีต้อนรับ เทมเมอร์"
+theme_override_font_sizes/font_size = 26
+mouse_filter = 2
+
+[node name="Help" type="Label" parent="Margin/Column/Body/LoginPanel/Inner/Stack"]
+layout_mode = 2
+text = "Login จำลอง — ใช้ demo / demo เพื่อเริ่ม"
+theme_override_font_sizes/font_size = 14
+mouse_filter = 2
+
+[node name="UserLabel" type="Label" parent="Margin/Column/Body/LoginPanel/Inner/Stack"]
+layout_mode = 2
+text = "USERNAME"
+theme_override_font_sizes/font_size = 13
+mouse_filter = 2
+
+[node name="Username" type="LineEdit" parent="Margin/Column/Body/LoginPanel/Inner/Stack"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 52)
+placeholder_text = "Username"
+max_length = 24
+[node name="PasswordLabel" type="Label" parent="Margin/Column/Body/LoginPanel/Inner/Stack"]
+layout_mode = 2
+text = "PASSWORD"
+theme_override_font_sizes/font_size = 13
+mouse_filter = 2
+
+[node name="Password" type="LineEdit" parent="Margin/Column/Body/LoginPanel/Inner/Stack"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 52)
+placeholder_text = "Password"
+max_length = 64
+secret = true
+[node name="ServerLabel" type="Label" parent="Margin/Column/Body/LoginPanel/Inner/Stack"]
+layout_mode = 2
+text = "เลือกเซิร์ฟเวอร์"
+theme_override_font_sizes/font_size = 14
+mouse_filter = 2
+
+[node name="Server" type="OptionButton" parent="Margin/Column/Body/LoginPanel/Inner/Stack"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 50)
+[node name="Login" type="Button" parent="Margin/Column/Body/LoginPanel/Inner/Stack"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 60)
+text = "LOGIN  →"
+[node name="Notice" type="Label" parent="Margin/Column/Body/LoginPanel/Inner/Stack"]
+layout_mode = 2
+text = "ระบบทดสอบภายในเครื่อง ไม่มีการส่งรหัสผ่าน"
+theme_override_font_sizes/font_size = 12
+mouse_filter = 2
+
+[node name="Message" type="Label" parent="Margin/Column"]
+layout_mode = 2
+text = ""
+theme_override_font_sizes/font_size = 15
+mouse_filter = 2
+custom_minimum_size = Vector2(0, 28)
+theme_override_colors/font_color = Color(0.96, 0.81, 0.5, 1)

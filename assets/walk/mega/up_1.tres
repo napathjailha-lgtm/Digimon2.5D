@@ -1,0 +1,7 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3]
+[ext_resource type="Texture2D" path="res://assets/walk/mega_walk_v12.png" id="1"]
+[resource]
+atlas = ExtResource("1")
+region = Rect2(336, 625, 288, 288)
+margin = Rect2(111.0, 224, 224, 224)
+filter_clip = true

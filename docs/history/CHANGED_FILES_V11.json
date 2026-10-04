@@ -1,0 +1,126 @@
+{
+  "source": "Godot4_ClassicMobileHUD_Chat_v10.zip",
+  "version": "0.11.0",
+  "files": [
+    {
+      "path": "README_FIRST_V11_TH.md",
+      "change": "added",
+      "sha256_v10": null,
+      "sha256_v11": "f4e4c50bc73735c295dff8ff3ab9820d043d409813dfee96fc38887952c901a8"
+    },
+    {
+      "path": "UPGRADE_TEST_RESULTS.json",
+      "change": "added",
+      "sha256_v10": null,
+      "sha256_v11": "2336d13214162a7ea1969b966e93eef301cb49ea173e2482d92afe82fe70eeea"
+    },
+    {
+      "path": "data/champion_claw.tres",
+      "change": "modified",
+      "sha256_v10": "6793c4b86faece61344e7fa182490651483461ff7cd2d4a70f7ff810ddde50d5",
+      "sha256_v11": "df11b770ce2c22be6422ca41e8417774b9b6d80bc039826773736680472847b2"
+    },
+    {
+      "path": "data/rookie_strike.tres",
+      "change": "modified",
+      "sha256_v10": "3b06a715ae03e07ace0029600dd20af4e618729121c6e70d94018dce44226f13",
+      "sha256_v11": "9c876253fd03fae76347cb307de057d7b648ef80d0d4779bdf010e54cb5ebdd1"
+    },
+    {
+      "path": "project.godot",
+      "change": "modified",
+      "sha256_v10": "3bd018bff6e7a9f84ec8ed701e923851cebb8ee37d2fa69fdc0f020cdda08b0a",
+      "sha256_v11": "426491ecde69fcb9069806cf89c51f6c8c6acfdf360635cfa10c0fc0567cc57f"
+    },
+    {
+      "path": "scripts/directional_animator.gd",
+      "change": "modified",
+      "sha256_v10": "c447ef36e7996fb6cb7215df50ddeb17ff8c9398b4009a86487673bcada96547",
+      "sha256_v11": "c573926ae54c2c229aa035f95fa818d40902f7f1df1451ebf93cc7e277c07d94"
+    },
+    {
+      "path": "scripts/form_skill_panel.gd",
+      "change": "modified",
+      "sha256_v10": "33a093c01c22a6cd50875d47896aabdc9131ad539a348dea0779e46fea8ea0ef",
+      "sha256_v11": "cd0eb0e3734d9fd1d6e43cb8236d667544a4b67362ac61a15b70ad52068f4286"
+    },
+    {
+      "path": "scripts/partner_monster.gd",
+      "change": "modified",
+      "sha256_v10": "54736d0ad4158d715f88aaea866c23ec5f93c8e186633eea2d082db77136c686",
+      "sha256_v11": "ab2aee312fba39512ca5ac1a2daf7ddfca0bc2512209dda45d938984bf36045a"
+    },
+    {
+      "path": "scripts/skill_data.gd",
+      "change": "modified",
+      "sha256_v10": "e8ded3b94423006b03499869b20dc67a6dd4395a6cb7c7131bf945e0941ee187",
+      "sha256_v11": "0ef48875a961afab9a357a29f15bf12db312ac28819032afe7a19ac64433f89c"
+    },
+    {
+      "path": "scripts/skill_hit_resolver.gd",
+      "change": "added",
+      "sha256_v10": null,
+      "sha256_v11": "077e4fdc215e309ac2db76985fb24b1ee502b279966656793f6545aa6e80bda3"
+    },
+    {
+      "path": "scripts/skill_hit_resolver.gd.uid",
+      "change": "added",
+      "sha256_v10": null,
+      "sha256_v11": "8b7ce22877f69d7c9c731297301b20a8926fc196c0afa7267324959c0617d680"
+    },
+    {
+      "path": "scripts/skill_impact.gd",
+      "change": "modified",
+      "sha256_v10": "f837db4511a3f4c28464bcf0c7f045bb3252b0a9a13ea0498717298ae9f2316e",
+      "sha256_v11": "2cbf57608bc43b9f7c96f8aa1b05517143f1d72427b3158f2d9855c11e9c2530"
+    },
+    {
+      "path": "scripts/skill_projectile.gd",
+      "change": "added",
+      "sha256_v10": null,
+      "sha256_v11": "ff7efe14d40c0c2aac7c24fc72a5ea5df4cddb59ae968fe4446317519d7d1718"
+    },
+    {
+      "path": "scripts/skill_projectile.gd.uid",
+      "change": "added",
+      "sha256_v10": null,
+      "sha256_v11": "3eee14856a095b5dd8714597584b484570fb50d823d9900cd7647202fb8e5d17"
+    },
+    {
+      "path": "tests/classic_hud_test.gd.uid",
+      "change": "added",
+      "sha256_v10": null,
+      "sha256_v11": "e400cab264e4fc05bcf4aec52a193dc113362030f9a676be4c035fc77fff8c41"
+    },
+    {
+      "path": "tests/form_skills_animation_test.gd",
+      "change": "modified",
+      "sha256_v10": "8a1aece23d2d6e91d750678bfae1c9498db03b15ec4d1f4b7955ebfdb4303094",
+      "sha256_v11": "55c60d5877c75b421ed80d722fd8c6c691f0e1e8ab9b33bb3124f90cc361c313"
+    },
+    {
+      "path": "tests/projectile_upgrade_test.gd",
+      "change": "added",
+      "sha256_v10": null,
+      "sha256_v11": "b521a184ce5b6e3269e5dde45eb6bf2d1c33544db08de0b601b069c7ae21c9e0"
+    },
+    {
+      "path": "tests/projectile_upgrade_test.gd.uid",
+      "change": "added",
+      "sha256_v10": null,
+      "sha256_v11": "2d6ca91f6ff691b041d6a1aeae2a832cb0d70eafc3263cc2cb579da8f6f8a0f5"
+    },
+    {
+      "path": "tests/projectile_upgrade_test.tscn",
+      "change": "added",
+      "sha256_v10": null,
+      "sha256_v11": "36417a91ea81412e9f26127cf03f352fe8d890648737ccdd0b14551da3a8a27f"
+    },
+    {
+      "path": "tests/smoke_test.gd",
+      "change": "modified",
+      "sha256_v10": "1c51a39aad6b0b4c7f6ab653ddf358e5d672f09751b033e86b85c2b2b7e18167",
+      "sha256_v11": "4086be9339cda0ce31a056fa4051a0cd460f1f02a858b454cb2200ac3310558b"
+    }
+  ]
+}

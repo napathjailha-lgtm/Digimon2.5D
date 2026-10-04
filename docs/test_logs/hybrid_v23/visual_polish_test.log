@@ -1,0 +1,22 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: HP จริงลดทันที ภาพหลอดเริ่มไหลโดยไม่เลื่อนกติกาเกม
+PASS: damage/heal ถี่ ๆ จบที่ค่าล่าสุด ไม่ถูก Tween เก่าเขียนทับ
+PASS: Status ถือ pause ระหว่าง UI ทำงาน
+PASS: popup จบที่ scale 1.0 แม้โลก pause
+PASS: Inventory ไม่เปิดทับ Status หรือแย่ง pause
+PASS: ปิด popup แล้วคืนเวลาเกม
+PASS: Cannot Battle ล็อกปุ่มและแสดงขอบแดงจากข้อมูลจริง
+PASS: HP ฟื้นถึงเกณฑ์แล้วขอบแดงดับ
+PASS: กดนิ้วที่สองแล้วปุ่มยุบ โดยจอยยังถือ finger 0
+PASS: touch canceled คืนสเกลและนิ้วได้
+PASS: คัตซีนเริ่ม GPUParticles2D จริงพร้อม pause
+PASS: กล้องสั่นต่อได้ขณะโลก pause
+PASS: ยกเลิก burst คืน offset, DS และ pause
+PASS: เอฟเฟกต์น้อยใช้ CPU 24 เม็ดแทน GPU 56 เม็ด
+PASS: เอฟเฟกต์น้อยไม่สั่นกล้อง
+PASS: เอฟเฟกต์น้อยใช้หรี่แสงแทนอ่าน screen texture
+PASS: ปุ่ม BaseButton มาตรฐานรับ FX อัตโนมัติ
+PASS: Reduce Motion แสดง HP ใหม่ทันที
+PASS: Reduce Motion ไม่ย่อปุ่ม
+RESULT: 0 failure(s)

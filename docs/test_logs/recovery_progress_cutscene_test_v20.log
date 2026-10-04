@@ -1,0 +1,38 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: EXP ครั้งเดียวขึ้นหลายเลเวลและเก็บส่วนเกิน
+PASS: สเตตัสคำนวณจากฐานและโบนัสระดับ
+PASS: Level Cap ไม่สะสม EXP เพิ่ม
+PASS: HP 0 เปลี่ยนเป็น Fainted และไม่ลบ Node
+PASS: Tween หดตัวแล้วแสดงไข่
+PASS: ความเสียหายซ้ำไม่ emit defeat ซ้ำ
+PASS: UI แสดง Recover และหลอด HP 0
+PASS: Loader ปกติไม่ชุบไข่ข้าม Recover
+PASS: ไข่เปลี่ยนร่างไม่ได้
+PASS: ไข่ไม่รับ Attack/Skill
+PASS: ไข่ HP 0 ยังเดินตาม Navigation ได้
+PASS: ไข่ไม่ใช้ DS ต่อวินาที
+PASS: Level Up ระหว่างเป็นไข่ไม่ชุบชีวิต
+PASS: ปุ่ม Recover คืน Rookie HP เต็มและใช้ Node เดิม
+PASS: Recover เก็บ Level/EXP เดิม
+PASS: Champion ใช้ฐานของร่างบวกโบนัสระดับ
+PASS: กลับ Rookie ไม่บวกโบนัสซ้ำ
+PASS: เข้า Safe Zone แล้วฟื้นฟูได้จริง
+PASS: การฆ่าหนึ่งตัวให้ EXP ทั้งสองตัวครั้งเดียว
+PASS: รองรับเครดิตการฆ่าจาก Tamer
+PASS: ปุ่ม Digivolve เปิด CanvasLayer และ pause เกม
+PASS: จอง DS แล้วรอคัตซีนก่อนเปลี่ยนตัวในสนาม
+PASS: กดซ้ำไม่สร้างคัตซีนหรือหัก DS ซ้ำ
+PASS: AnimationPlayer เล่นต่อขณะ pause และสลับภาพพรีวิว
+PASS: Timer Respawn ในสนามหยุดระหว่างคัตซีน
+PASS: คัตซีนจบแล้ว Commit ร่างและ Resume
+PASS: หัก DS ครั้งเดียว เก็บเลเวล และเก็บกวาดคัตซีน
+PASS: ลบคัตซีนกลางทางคืน DS และ Resume
+PASS: ไม่เริ่มคัตซีนทับ pause ของระบบอื่น
+PASS: คัตซีนที่ไม่ได้ถือ pause ไม่ปลด pause ของระบบอื่น
+PASS: เริ่มคัตซีนสำหรับทดสอบออกจาก World
+PASS: ออกจาก World ระหว่างคัตซีนไม่ทำให้ pause ค้าง
+PASS: ออกจาก World กลางคัตซีนไม่บันทึก DS ที่จองไว้
+PASS: โหลด Save ปาร์ตี้ร่วมกับเควสต์
+PASS: เปิด Scene ใหม่คืนไข่ HP 0 และ Level เดิม
+RESULT: 0 failure(s)

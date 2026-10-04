@@ -1,0 +1,7 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3]
+[ext_resource type="Texture2D" path="res://assets/actions/mega_attack_v13.png" id="1"]
+[resource]
+atlas = ExtResource("1")
+region = Rect2(314, 931, 281, 282)
+margin = Rect2(64.0, 230, 231, 230)
+filter_clip = true

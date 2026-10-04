@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EquipmentItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/equipment_item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/equipment/legs.svg" id="2"]
+[resource]
+script = ExtResource("1")
+id = &"cargo_pants"
+item_name = "Cargo Pants"
+slot = &"legs"
+icon = ExtResource("2")
+rarity = 0
+description = "อุปกรณ์เทมเมอร์สำหรับการผจญภัย เพิ่มค่าสเตตัสขณะสวมใส่"
+hp_bonus = 40
+defense_bonus = 3

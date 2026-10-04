@@ -1,0 +1,45 @@
+{
+  "engine": "Godot 4.4.1",
+  "renderer": "OpenGL Compatibility / Mesa llvmpipe (software) for screenshots",
+  "target": "Mobile landscape, Godot 4.4+",
+  "tested_on_physical_mobile": false,
+  "assertions": 268,
+  "failures": 0,
+  "suites": [
+    {
+      "suite": "pseudo3d_test",
+      "passed": 31,
+      "failures": 0
+    },
+    {
+      "suite": "openworld_test",
+      "passed": 21,
+      "failures": 0
+    },
+    {
+      "suite": "smoke_test",
+      "passed": 30,
+      "failures": 0
+    },
+    {
+      "suite": "visual_polish_test",
+      "passed": 19,
+      "failures": 0
+    },
+    {
+      "suite": "projectile_upgrade_test",
+      "passed": 32,
+      "failures": 0
+    },
+    {
+      "suite": "form_skills_animation_test",
+      "passed": 69,
+      "failures": 0
+    },
+    {
+      "suite": "survival_status_test",
+      "passed": 66,
+      "failures": 0
+    }
+  ]
+}

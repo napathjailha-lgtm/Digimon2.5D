@@ -1,0 +1,45 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: เริ่มต้นซ่อน Grid/แผนที่ คืนพื้นที่ฉาก
+PASS: แตะปุ่มเดียวกางเมนูได้
+PASS: เมนูกางแล้วไม่รับสกิลที่อยู่ใต้ Drawer
+PASS: กดเร็วระหว่าง Tween แล้วจบเป็นสถานะล่าสุด
+PASS: แตะ Status เปิด modal และยุบเมนู
+PASS: ฉากหลัง modal ใช้ blur shader และไม่เบลอตัวหน้าต่าง
+PASS: เปิด modal ซ้อนแล้วไม่แย่ง pause
+PASS: ปิดด้วย touch แล้วคืนเวลาเกม
+PASS: ตั้งค่าปุ่ม 115% ใช้งานได้จริง
+PASS: ลดการเคลื่อนไหวปิด Tween เมนู
+PASS: ตั้งค่าคงอยู่เมื่อโหลด Config ใหม่
+PASS: Attack อยู่ในขอบจอ (1280, 720)
+PASS: Chat ไม่ซ้อน Joystick (1280, 720)
+PASS: Chat ไม่ซ้อน Attack (1280, 720)
+PASS: Auto อยู่ในช่วงนิ้วโป้ง (1280, 720)
+PASS: Attack อยู่ในขอบจอ (1600, 720)
+PASS: Chat ไม่ซ้อน Joystick (1600, 720)
+PASS: Chat ไม่ซ้อน Attack (1600, 720)
+PASS: Auto อยู่ในช่วงนิ้วโป้ง (1600, 720)
+PASS: Attack อยู่ในขอบจอ (1280, 800)
+PASS: Chat ไม่ซ้อน Joystick (1280, 800)
+PASS: Chat ไม่ซ้อน Attack (1280, 800)
+PASS: Auto อยู่ในช่วงนิ้วโป้ง (1280, 800)
+PASS: Attack อยู่ในขอบจอ (1280, 640)
+PASS: Chat ไม่ซ้อน Joystick (1280, 640)
+PASS: Chat ไม่ซ้อน Attack (1280, 640)
+PASS: Auto อยู่ในช่วงนิ้วโป้ง (1280, 640)
+PASS: สลับหน้าไม่เปลี่ยนร่าง/HP/ATK/DS
+PASS: ปุ่มหน้าเก่าถอดจาก tree ทันที
+PASS: callback รุ่นเก่าไม่ออกคำสั่ง
+PASS: Skill Cycle เลือกชุด Champion ในร่าง Rookie
+PASS: Touch ข้ามร่างส่งคำสั่งร่ายจริง
+PASS: สกิลข้ามร่างหัก MP ไม่หัก DS/ตั้งคูลดาวน์เดิม
+PASS: ร่ายสกิลต่างร่างยังใช้ ATK ของร่างสนาม
+PASS: ดาเมจต่างร่างใช้ multiplier และค่าแกว่ง 5%
+PASS: สลับหน้าไม่ล้างคูลดาวน์
+PASS: Ultimate ไม่ข้ามล็อกเควสต์
+PASS: ดูหน้าร่างล็อกได้ แต่ปุ่มระบุและปิดใช้งาน
+PASS: เรียกคำสั่งตรงก็ไม่ข้ามล็อกหรือหัก DS
+PASS: Auto Battle ยังใช้สกิลร่างปัจจุบันหลังสลับหน้า
+PASS: ชุด 5 สกิลมีหน้าที่สอง
+PASS: ลบ modal ที่เปิดอยู่ยังคืน pause
+RESULT: 0 failure(s)

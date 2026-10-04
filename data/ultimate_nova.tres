@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/skills_painted/astral.png" id="icon"]
+[resource]
+script = ExtResource("1")
+id = &"ultimate_nova"
+display_name = "Solar Nova"
+icon = ExtResource("icon")
+multiplier = 4.0
+cast_range = 280.0
+cooldown = 11.0
+mp_cost = 18.0
+impact_radius = 145.0
+effect_color = Color(0.7686274509803922, 0.6509803921568628, 1.0, 1)
+effect_size = 28.0
+animation_prefix = &"cast"
+release_frame = 2
+
+vfx_style = "astral"

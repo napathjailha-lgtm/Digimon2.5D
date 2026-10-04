@@ -1,0 +1,13 @@
+{
+  "version": "0.21.0",
+  "base": "v20",
+  "changes": [
+    "Dynamic foot shadow Sprite: real movement velocity, shared material, common sun direction",
+    "Directional sun shadow and nearest lantern shadow budget; footprint LightOccluder nodes",
+    "Weighted camera follow with exponential smoothing and speed zoom Tween",
+    "Far vista CanvasLayer and native Parallax2D foreground",
+    "Ground target rings and skill impact projection; cancellable boss warning visual scene",
+    "Thai documentation, rendered screenshots, demo and relevant regression checks"
+  ],
+  "gameplay_damage_formula_changed": false
+}

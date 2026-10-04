@@ -1,0 +1,35 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: เร่งตาม delta ไม่กระโดดเป็นความเร็วเต็มในเฟรมแรก
+PASS: ปล่อยนิ้วแล้วหยุดภายใน 0.14s ไม่ไหลต่อยาว
+PASS: ระยะถึงจุดหยุดไม่สั่งวิ่งต่อ
+PASS: ใกล้เป้าหมายแล้วลดความเร็วตามระยะเบรก
+PASS: ทั้งสองตัวใช้ Floating สำหรับ top-down
+PASS: เปิด physics interpolation
+PASS: ครึ่งอนาล็อกยังค่อย ๆ เร่ง
+PASS: ครึ่งอนาล็อกวิ่งครึ่งความเร็ว ไม่ normalize ทิ้ง
+PASS: เบรกจบแล้วเปลี่ยนเป็น Idle ทิศล่าสุด
+PASS: คู่หูตาม Tamer ที่เดินต่อเนื่องโดยไม่มีเฟรมหยุด
+PASS: รักษาระยะตาม ไม่ทับตัว Tamer หรือหลุดไกล
+FOLLOW METRICS: stopped_frames=0 gap=55.0750732421875..76.0552978515625
+PASS: Tamer มีเฟรมเดินจริงอย่างน้อย4เฟรม down
+PASS: rookie มี Walk 4ทิศ down
+PASS: champion มี Walk 4ทิศ down
+PASS: ultimate มี Walk 4ทิศ down
+PASS: mega มี Walk 4ทิศ down
+PASS: Tamer มีเฟรมเดินจริงอย่างน้อย4เฟรม right
+PASS: rookie มี Walk 4ทิศ right
+PASS: champion มี Walk 4ทิศ right
+PASS: ultimate มี Walk 4ทิศ right
+PASS: mega มี Walk 4ทิศ right
+PASS: Tamer มีเฟรมเดินจริงอย่างน้อย4เฟรม up
+PASS: rookie มี Walk 4ทิศ up
+PASS: champion มี Walk 4ทิศ up
+PASS: ultimate มี Walk 4ทิศ up
+PASS: mega มี Walk 4ทิศ up
+PASS: Tamer มีเฟรมเดินจริงอย่างน้อย4เฟรม left
+PASS: rookie มี Walk 4ทิศ left
+PASS: champion มี Walk 4ทิศ left
+PASS: ultimate มี Walk 4ทิศ left
+PASS: mega มี Walk 4ทิศ left
+RESULT: 0 failure(s)

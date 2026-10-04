@@ -1,0 +1,62 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: 18 ไอเทมเริ่มในกระเป๋า ไม่เปลี่ยนฐาน v14
+PASS: ไม่รับ ID ที่ไม่มี
+PASS: ช่องไม่ตรงไม่กินไอเทม
+PASS: ไอเทม Lv6 ปฏิเสธ Lv1
+PASS: สวมหมวก
+PASS: หมวกเพิ่มฐานสูงสุด ไม่ฮีล
+PASS: DF ลดความเสียหายจริง
+PASS: ความเสียหายบวกมีขั้นต่ำ 1
+PASS: ความเสียหายติดลบไม่ฮีล
+PASS: ใส่หมวกใหม่แทนช่องเดิม
+PASS: ของเดิมคืน bag โบนัสแทนที่ไม่สะสม
+PASS: สวมสำเนาที่ไม่มีไม่ได้
+PASS: รีเฟรชไม่บวกสเตตัสซ้ำ
+PASS: รองเท้าเปลี่ยนความเร็วสนาม
+PASS: แว่นเพิ่ม DS สูงสุด ไม่เติม DS ฟรี
+PASS: ถอดแล้ว DS เกินเพดานถูก clamp
+PASS: ใส่ Digivice
+PASS: Digivice เพิ่ม HP/ATK คู่หู ไม่ฮีล
+PASS: ชิปลงได้สองช่อง
+PASS: โบนัสชิปสองช่องรวมถูกต้อง
+PASS: เปลี่ยนร่างพร้อมอุปกรณ์
+PASS: ATK ใช้ฐานร่างใหม่ + gear เดิม
+PASS: Level Up คง gear เพียงครั้งเดียว
+PASS: ดาเมจสกิลใช้ ATK หลัง gear
+PASS: ถอด Digivice ขณะไข่ไม่ชุบชีวิต
+PASS: ใส่ขณะไข่ไม่ทำให้โจมตีได้
+PASS: Recover กลับ Rookie พร้อม gear + level
+PASS: ถอด HP gear clamp ไม่เหลือ HP เกินเพดาน
+PASS: อุปกรณ์ไม่ชุบ Tamer HP0
+PASS: API รางวัลตรวจ ID และเพิ่มจำนวน
+PASS: Tamer Level Up รวม gear จากฐานใหม่
+PASS: Equipment save JSON round trip
+PASS: bag ว่างที่เซฟไว้ไม่รับ starter ซ้ำ
+PASS: กรอง unknown/ผิดช่อง/จำนวนติดลบตอนโหลด
+PASS: เซฟของระดับสูงเกินคืนเข้ากระเป๋า
+PASS: แตะปุ่มอุปกรณ์ เปิด UI+pause และรับ Android Back
+PASS: เปิดหน้าต่างล้างนิ้วจอย/ความเร็ว
+PASS: โลกและคูลดาวน์หยุดขณะดูอุปกรณ์
+PASS: เลือกจาก bag ผ่าน ScreenTouch
+PASS: ปุ่มใส่ทำงานขณะ pause และจำนวน UI ตามจริง
+PASS: เลือกอุปกรณ์ที่ใส่อยู่
+PASS: ปุ่มถอดคืน bag ขณะ pause
+PASS: จอกว้าง 1600 ปรับหน้าต่างอยู่กลางและไม่ล้น
+PASS: แท็บ Digivice มีช่องจริงแยกจากเสื้อผ้า
+PASS: เลือกเปลี่ยน Chip B โดยเฉพาะ ไม่ทับ Chip A
+PASS: แท็บ Skill อ่านชุดร่างปัจจุบันจริง
+PASS: แตะพื้นที่มืดไม่ทะลุเลือกศัตรู
+PASS: ปิด X คืนเวลา/Android Back
+PASS: ไม่เปิดอุปกรณ์แย่ง pause ของระบบอื่น
+PASS: ป้องกันแก้ gear ระหว่างเปลี่ยนร่าง
+PASS: เปิดซ้ำหลังปิดได้
+PASS: Esc ปิดผ่าน input จริง
+PASS: โหลดไฟล์ user:// จริงมีข้อมูล equipment
+PASS: เปลี่ยน Scene คืน bag/gear
+PASS: โหลด gear ก่อน clamp HP/DS ไม่ล้างสถานะ
+PASS: partner คืนร่าง+level+gear+HP จากเซฟเดียวกัน
+PASS: ลบ World ขณะเปิดหน้าต่างไม่ทำ pause ค้าง
+PASS: เซฟ v14 ไม่มี equipment ยังคงเล่นและรับ starter ใน bag
+ASSERTIONS: 58
+RESULT: 0 failure(s)

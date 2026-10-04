@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/skills_painted/ice.png" id="icon"]
+[resource]
+script = ExtResource("1")
+id = &"ultimate_wave"
+display_name = "Solar Wave"
+icon = ExtResource("icon")
+multiplier = 3.4
+cast_range = 260.0
+cooldown = 7.0
+mp_cost = 14.0
+impact_radius = 125.0
+effect_color = Color(0.3137254901960784, 0.6039215686274509, 1.0, 1)
+effect_size = 28.0
+animation_prefix = &"cast"
+release_frame = 2
+
+vfx_style = "ice"

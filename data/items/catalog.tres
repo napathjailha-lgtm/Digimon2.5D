@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemCatalog" load_steps=8 format=3]
+[ext_resource type="Script" path="res://scripts/item_catalog.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/item_data.gd" id="2"]
+[ext_resource type="Resource" path="res://data/items/meat.tres" id="3"]
+[ext_resource type="Resource" path="res://data/items/digitama.tres" id="4"]
+[ext_resource type="Resource" path="res://data/items/data_chip.tres" id="5"]
+[ext_resource type="Resource" path="res://data/items/digital_fruit.tres" id="6"]
+[ext_resource type="Resource" path="res://data/items/mp_drink.tres" id="7"]
+[resource]
+script = ExtResource("1")
+items = Array[ExtResource("2")]([ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("7")])
