@@ -284,6 +284,8 @@ func logout() -> void:
     tamer_name = "Tamer"
     current_level = 1
     current_form = &""
+    bits = DEFAULT_BITS
+    incubator_state.clear()
     pending_character.clear()
     creation_preview.clear()
     _empty_roster()
