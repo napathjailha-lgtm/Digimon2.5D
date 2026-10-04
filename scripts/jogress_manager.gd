@@ -1,14 +1,11 @@
 class_name JogressManager
 extends Node
-## Jogress ของ Agumon + Gabumon เมื่อ Shared Partner Level ถึง 90
-## ใช้ภาพ Omegamon ที่ generate ใหม่จริง + JogressCutscene ก่อน commit ร่าง
-
+## รวม Agumon + Gabumon ที่ Lv90 รายตัว ใช้ actor เดียวและล็อกการสลับทีมขณะรวมร่าง
+## การแยกร่างรักษา %HP/MP/CD ของตัวหลัก ไม่สร้างสมาชิกใหม่หรือแจกการฮีล
 signal availability_changed(available: bool)
 signal jogress_changed(active: bool)
-
 const REQUIRED_LEVEL: int = 90
 const REQUIRED_IDS: Array[StringName] = [&"agumon", &"gabumon"]
-
 var tamer: Tamer
 var partner: PartnerMonster
 var roster: PartnerRoster
@@ -16,81 +13,119 @@ var active: bool = false
 var _omegamon_form: MonsterData
 var _last_available: bool = false
 var _cutscene: JogressCutscene
+var _source_id: StringName
 
 func configure(owner_tamer: Tamer, owner_partner: PartnerMonster, owner_roster: PartnerRoster) -> void:
     tamer = owner_tamer
     partner = owner_partner
     roster = owner_roster
-    if is_instance_valid(roster):
-        roster.changed.connect(_refresh_available)
-        roster.switched.connect(func(_index: int): _refresh_available())
-    if is_instance_valid(partner):
-        partner.form_changed.connect(_on_form_changed)
-        partner.progress.progress_changed.connect(func(_level: int, _exp: int, _max_exp: int): _refresh_available())
+    roster.changed.connect(_refresh_available)
+    partner.form_changed.connect(_on_form_changed)
+    partner.state_changed.connect(_on_state_changed)
+    partner.progress.progress_changed.connect(func(_level: int, _exp: int, _max_exp: int): _refresh_available())
     _refresh_available()
 
-func can_jogress() -> bool:
+func _ingredients_ready() -> bool:
     if not is_instance_valid(tamer) or not is_instance_valid(partner) or not is_instance_valid(roster):
         return false
-    if not partner.is_alive() or partner.evolution_busy or not tamer.can_battle():
+    if not partner.can_battle() or tamer.ds <= 0.0 or not roster.initialized or roster._switching:
         return false
-    var active_id: StringName = roster.active_member_id()
-    if active_id not in REQUIRED_IDS:
+    if roster.active_member_id() not in REQUIRED_IDS:
         return false
     for id: StringName in REQUIRED_IDS:
-        if roster.member_level(id) < REQUIRED_LEVEL:
+        if roster.member_level(id) != REQUIRED_LEVEL or not roster.member_alive(id):
             return false
     return true
 
-func request_jogress() -> bool:
-    if active or is_instance_valid(_cutscene):
+func can_jogress() -> bool:
+    if not is_instance_valid(partner):
         return false
-    if not can_jogress():
-        if is_instance_valid(partner):
-            partner.feedback.emit("Jogress ต้องมี Agumon และ Gabumon ในทีม และ Shared Partner Level 90")
-        return false
+    return not active and not is_instance_valid(_cutscene) and not partner.evolution_busy and not get_tree().paused and _ingredients_ready()
 
+func request_jogress() -> bool:
+    # J และปุ่ม HUD ใช้ entry point เดียวกัน; กดขณะรวมร่าง = แยกร่าง
+    if active:
+        return dissolve()
+    if not can_jogress():
+        partner.feedback.emit("Jogress: ต้องมี Agumon และ Gabumon Lv90 ทั้งคู่ที่ยังต่อสู้ได้")
+        return false
     _omegamon_form = _build_omegamon_form()
     if _omegamon_form == null or not _omegamon_form.validation_error().is_empty():
-        partner.feedback.emit("สร้างข้อมูล Omegamon ไม่สำเร็จ")
         return false
-
+    _source_id = roster.active_member_id()
     partner.auto_battle = false
     partner.cancel_battle()
-
     _cutscene = JogressCutscene.new()
     get_tree().root.add_child(_cutscene)
     _cutscene.finished.connect(_finish_jogress)
-
     if not _cutscene.play(partner, _omegamon_form):
         _cutscene.queue_free()
         _cutscene = null
         return false
-
-    partner.feedback.emit("Jogress Evolution...")
+    # จอง actor ตลอดคัตซีน ป้องกันสลับสมาชิก/เซฟสถานะกลางทาง
+    partner.evolution_busy = true
+    partner.evolution_changed.emit(true)
     return true
-
 
 func _finish_jogress(success: bool) -> void:
     _cutscene = null
-    if not success or not is_instance_valid(partner):
+    if not is_instance_valid(partner):
         return
+    partner.evolution_busy = false
+    partner.evolution_changed.emit(false)
+    # ตรวจอีกครั้งตอน commit แม้มีระบบอื่นแก้ roster/HP ระหว่างคัตซีน
+    if success and roster.active_member_id() == _source_id and _ingredients_ready():
+        _activate()
+    tamer.save_party_progress()
 
+func _activate() -> bool:
+    if not _ingredients_ready():
+        return false
+    if _omegamon_form == null:
+        _omegamon_form = _build_omegamon_form()
+    if _omegamon_form == null or not _omegamon_form.validation_error().is_empty():
+        return false
+    partner._jogress_form = _omegamon_form
     partner._internal_load = true
     var ok: bool = partner.load_monster_data(_omegamon_form, true)
     partner._internal_load = false
-
     if not ok:
-        partner.feedback.emit("Jogress ล้มเหลว: โหลดร่าง Omegamon ไม่สำเร็จ")
-        return
-
+        partner._jogress_form = null
+        return false
     active = true
-    partner.feedback.emit("Jogress Evolution: Omegamon")
     jogress_changed.emit(true)
+    partner.feedback.emit("Jogress Evolution: Omegamon")
     _refresh_available()
+    return true
 
-    if is_instance_valid(tamer):
+func dissolve() -> bool:
+    if not active or get_tree().paused or partner.evolution_busy:
+        return false
+    partner.cancel_battle()
+    var form: MonsterData = partner.forms[3] if partner.can_battle() and tamer.ds > 0.0 else partner.forms[0]
+    partner._internal_load = true
+    var ok: bool = partner.load_monster_data(form, true)
+    partner._internal_load = false
+    if ok:
         tamer.save_party_progress()
+    return ok
+
+func get_save_data() -> Dictionary:
+    if not active or not partner.is_alive():
+        return {}
+    return {"active": true, "active_id": String(roster.active_member_id()), "hp_ratio": float(partner.hp) / partner.max_hp}
+
+func restore_data(raw: Variant) -> void:
+    # story_world เรียกหลัง roster และ HP/DS ถูก restore แล้วเท่านั้น
+    if not raw is Dictionary or not bool(raw.get("active", false)):
+        return
+    if str(raw.get("active_id", "")) != String(roster.active_member_id()) or not _ingredients_ready():
+        return
+    if _activate():
+        var ratio: Variant = raw.get("hp_ratio", float(partner.hp) / partner.max_hp)
+        if (ratio is float or ratio is int) and is_finite(float(ratio)) and float(ratio) > 0.0:
+            partner.hp = clampi(roundi(partner.max_hp * float(ratio)), 1, partner.max_hp)
+            partner.hp_changed.emit(partner.hp, partner.max_hp)
 
 func _build_omegamon_form() -> MonsterData:
     var data := MonsterData.new()
@@ -115,9 +150,9 @@ func _build_omegamon_form() -> MonsterData:
 
     data.sprite_frames = frames
     data.portrait_texture = frames.get_frame_texture(&"idle", 0)
-    data.sprite_scale = Vector2(0.82, 0.82)
-    data.attack_sprite_scale = Vector2(0.90, 0.90)
-    data.cast_sprite_scale = Vector2(0.90, 0.90)
+    data.sprite_scale = Vector2(0.285714, 0.285714)
+    data.attack_sprite_scale = Vector2(0.285714, 0.285714)
+    data.cast_sprite_scale = Vector2(0.285714, 0.285714)
     data.animation_reference_speed = 300.0
     data.idle_animation = &"idle"
     data.walk_animation = &"walk"
@@ -139,41 +174,9 @@ func _build_omegamon_form() -> MonsterData:
 
 
 func _build_omegamon_frames() -> SpriteFrames:
-    # ใช้ภาพ Omegamon ที่ generate ใหม่และตัดพื้นหลังแล้ว
-    # ไม่ใช้ SVG placeholder เดิมอีกต่อไป
-    var generated := load("res://assets/jogress/omegamon_generated.png") as Texture2D
-    if generated == null:
-        push_error("JogressManager: ไม่พบภาพ Omegamon ที่ generate ใหม่")
-        return null
-
-    var frames := SpriteFrames.new()
-    if frames.has_animation(&"default"):
-        frames.remove_animation(&"default")
-
-    # ภาพหลักเป็น key art เดียวกัน แต่แบ่ง state animation ให้ CombatAction
-    # ใช้ VFX/scale/impact frame ทำให้ Grey Sword และ Garuru Cannon มีจังหวะร่ายจริง
-    _add_generated_animation(frames, &"idle", generated, 2, 2.2, true)
-    _add_generated_animation(frames, &"walk", generated, 2, 4.0, true)
-    _add_generated_animation(frames, &"attack", generated, 4, 10.0, false)
-    _add_generated_animation(frames, &"cast", generated, 4, 10.0, false)
-
-    return frames
-
-
-func _add_generated_animation(
-        frames: SpriteFrames,
-        animation: StringName,
-        texture: Texture2D,
-        frame_count: int,
-        fps: float,
-        loop: bool
-) -> void:
-    frames.add_animation(animation)
-    frames.set_animation_speed(animation, fps)
-    frames.set_animation_loop(animation, loop)
-    for _index: int in range(frame_count):
-        frames.add_frame(animation, texture)
-
+    # AtlasTexture ตัด 4 ท่าจากภาพเดียวและใช้ margin ปักเท้า ไม่มีการแก้ pixel ตอนเล่น
+    # Idle/Walk/Attack/Cast มีภาพต่างกัน; เฟรม 2 ของ action ตรงกับจังหวะปล่อยสกิล
+    return load("res://data/omegamon_frames.tres") as SpriteFrames
 
 func _grey_sword() -> MonsterSkill:
     var skill := MonsterSkill.new()
@@ -211,13 +214,27 @@ func _garuru_cannon() -> MonsterSkill:
     return skill
 
 func _on_form_changed(data: MonsterData) -> void:
-    if active and (data == null or data.id != &"omegamon"):
+    if data == null or data.id != &"omegamon":
+        partner._jogress_form = null
+        if active:
+            active = false
+            jogress_changed.emit(false)
+    _refresh_available()
+
+func _on_state_changed(state: PartnerMonster.State) -> void:
+    # ร่างไข่ยังใช้ HP0; ล้าง fusion เพื่อไม่ให้ recover คืนเป็น Omegamon โดยไม่ตรวจทีม
+    if state in [PartnerMonster.State.FAINTED, PartnerMonster.State.EGG] and active:
         active = false
+        partner._jogress_form = null
         jogress_changed.emit(false)
     _refresh_available()
 
 func _refresh_available() -> void:
-    var next_available := can_jogress() and not active
-    if next_available != _last_available:
-        _last_available = next_available
-        availability_changed.emit(next_available)
+    var available: bool = can_jogress()
+    if available != _last_available:
+        _last_available = available
+        availability_changed.emit(available)
+
+func _exit_tree() -> void:
+    if is_instance_valid(_cutscene):
+        _cutscene.cancel()

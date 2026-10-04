@@ -1,0 +1,45 @@
+{
+  "source": "Built-in image generation; original RGBA copied unchanged. AtlasTexture regions only.",
+  "size": [
+    1254,
+    1254
+  ],
+  "regions": [
+    [
+      146,
+      137,
+      419,
+      428
+    ],
+    [
+      696,
+      136,
+      487,
+      441
+    ],
+    [
+      92,
+      774,
+      514,
+      393
+    ],
+    [
+      739,
+      762,
+      459,
+      405
+    ]
+  ],
+  "frame_size": [
+    514,
+    441
+  ],
+  "scale": 0.285714,
+  "poses": [
+    "Idle",
+    "Walk",
+    "Grey Sword",
+    "Garuru Cannon"
+  ],
+  "direction_note": "Shared facing poses; left is mirrored by existing DirectionalAnimator."
+}

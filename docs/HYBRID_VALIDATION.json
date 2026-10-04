@@ -1,0 +1,22 @@
+{
+  "engine": "Godot 4.4.1 stable",
+  "integration": {
+    "assertions": 98,
+    "failures": 0
+  },
+  "pregame": {
+    "assertions": 78,
+    "failures": 0
+  },
+  "single_world": {
+    "assertions": 50,
+    "failures": 0
+  },
+  "total_assertions": 226,
+  "render": "OpenGL Compatibility / Mesa llvmpipe; field, attack, cast, status screenshots inspected",
+  "limitations": [
+    "Web export not built or browser-tested",
+    "No physical mobile device test",
+    "Omegamon uses 4 poses with shared facing and mirrored left"
+  ]
+}

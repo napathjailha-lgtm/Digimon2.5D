@@ -76,6 +76,8 @@ var _navigation_repath_left: float = 0.0
 var _stuck_left: float = 0.0
 var _last_navigation_position: Vector2
 
+var controls_blocked: bool = false
+
 func _ready() -> void:
     HybridInput.ensure_actions()
     add_to_group("tamer")
@@ -121,6 +123,10 @@ func _physics_process(delta: float) -> void:
     var keyboard_direction := Input.get_vector(&"move_left", &"move_right", &"move_up", &"move_down")
     var mobile_direction: Vector2 = joystick.move_vector if is_instance_valid(joystick) else Vector2.ZERO
     var direction: Vector2 = keyboard_direction if keyboard_direction.length_squared() > 0.0025 else mobile_direction
+    # Input.get_vector อ่านสถานะดิบ แม้ LineEdit รับคีย์ไปแล้ว จึงต้องกรองอีกชั้น
+    if controls_blocked or HybridInput.text_has_focus(get_viewport()):
+        direction = Vector2.ZERO
+        cancel_auto_navigation()
     # การควบคุมด้วยมือทุกแพลตฟอร์มยกเลิก Auto-Navigation แล้วกลับมาควบคุมเอง
     if direction.length_squared() > 0.0025:
         cancel_auto_navigation()
@@ -135,12 +141,17 @@ func _physics_process(delta: float) -> void:
         restore_ds(ds_regen_per_second * delta)
 
 func _unhandled_input(event: InputEvent) -> void:
+    if controls_blocked or get_tree().paused or HybridInput.text_has_focus(get_viewport()):
+        return
     # Mobile: แตะศัตรู / Web-PC: คลิกซ้ายศัตรู
     # UI จะ consume input ของปุ่มก่อน จึงไม่เลือกศัตรูทะลุ HUD
     if event is InputEventScreenTouch and event.pressed and not event.canceled:
         select_at_screen(event.position)
     elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-        select_at_screen(event.position)
+        # โปรเจกต์เปิด emulate_touch_from_mouse เพื่อให้ HUD เดิมรับคลิกได้
+        # เส้นทาง ScreenTouch จัดการคลิกนี้แล้ว ห้ามเลือกซ้ำ/คลิกทะลุปุ่มที่รับ touch ไป
+        if not Input.emulate_touch_from_mouse:
+            select_at_screen(event.position)
 
 func select_at_screen(screen_position: Vector2) -> void:
     cancel_auto_navigation()
@@ -398,6 +409,9 @@ func capture_party_state() -> Dictionary:
         })
     if is_instance_valid(party_roster) and party_roster.initialized:
         result["partner_roster"] = party_roster.get_save_data()
+    var jogress := get_node_or_null("JogressManager") as JogressManager
+    if jogress != null:
+        result["jogress"] = jogress.get_save_data()
     return result
 
 func save_party_progress() -> void:

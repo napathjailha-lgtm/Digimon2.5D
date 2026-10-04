@@ -29,3 +29,7 @@ static func _ensure_keys(action: StringName, keys: Array) -> void:
         var event := InputEventKey.new()
         event.physical_keycode = keycode
         InputMap.action_add_event(action, event)
+
+static func text_has_focus(viewport: Viewport) -> bool:
+    var focus: Control = viewport.gui_get_focus_owner()
+    return focus is LineEdit or focus is TextEdit

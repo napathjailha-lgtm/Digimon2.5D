@@ -47,6 +47,8 @@ const LEVEL_EFFECT = preload("res://scripts/level_up_effect.gd")
 var max_story_stage: int = MonsterData.EvolutionStage.CHAMPION
 var state: State = State.IDLE
 var form_index: int = 0
+# อนุญาต Resource นี้เฉพาะ Manager หลังตรวจส่วนผสมสำเร็จ
+var _jogress_form: MonsterData
 var current_form: MonsterData
 # ค่าสถานะระหว่างเล่น แยกจาก Resource ต้นแบบ
 var digimon_hp: int = 0
@@ -140,14 +142,14 @@ func _physics_process(delta: float) -> void:
     _update_cooldowns(delta)
     _search_left -= delta
     # ไม่ให้ Auto-Battle/คำสั่งค้างเปิดการต่อสู้อีกหลัง Tamer ติด debuff
-    if not tamer.can_battle() and (state == State.BATTLE or auto_battle or form_index > 0):
+    if not tamer.can_battle() and (state == State.BATTLE or auto_battle or current_form != forms[0]):
         _on_tamer_battle_permission(false)
     if not can_battle() and is_instance_valid(target):
         cancel_battle()
 
     if current_form.ds_drain_per_second > 0.0:
         # ลดการใช้ DS ระหว่างคงร่างพัฒนาเหลือ 50% ของค่าที่กำหนดใน Resource
-        var balanced_drain: float = current_form.ds_drain_per_second * 0.5
+        var balanced_drain: float = EvolutionRules.ds_drain(current_form.ds_drain_per_second)
         if not tamer.consume_mp(balanced_drain * delta):
             # Tamer MP หมดกลับร่างพื้นฐาน ไม่เสีย HP และไม่รีเซ็ตคูลดาวน์
             tamer.consume_mp(tamer.tamer_mp)
@@ -343,7 +345,7 @@ func _try_skill_resource(skill: MonsterSkill) -> bool:
     # attack_power และ Sprite ยังคงเป็นร่างในสนาม คูลดาวน์เก็บตาม skill.id เดิม
     if combat_action.busy or not can_battle() or evolution_busy:
         return false
-    if skill == null or cooldown_remaining(skill) > 0.0 or not is_instance_valid(target) or not target.is_alive():
+    if skill == null or skill not in active_skills or cooldown_remaining(skill) > 0.0 or not is_instance_valid(target) or not target.is_alive():
         return false
     if global_position.distance_to(target.global_position) > skill.cast_range:
         return false
@@ -474,9 +476,6 @@ func prepare_digivolve() -> MonsterData:
     if not EvolutionRules.can_use_form(progress.level, next_index):
         feedback.emit("ต้องเลเวล %d เพื่อปลดล็อกร่าง %s" % [EvolutionRules.minimum_level_for_form_index(next_index), next_data.monster_name])
         return null
-    if not QuestManager.has_flag(next_data.required_story_flag):
-        feedback.emit("ร่างนี้ยังต้องปลดล็อกเงื่อนไขเนื้อเรื่อง")
-        return null
     var error: String = next_data.validation_error()
     if not error.is_empty():
         feedback.emit(error)
@@ -560,6 +559,7 @@ func load_monster_data(data: MonsterData, preserve_hp: bool = true) -> bool:
         was_dead = hp == 0
 
     _cancel_combat_action()
+    cancel_page_skill()
     current_form = data
     form_index = forms.find(data)
     progress.set_base_stats(data.max_hp, data.attack, data.move_speed)
@@ -751,18 +751,16 @@ func _change_state(next_state: State) -> void:
 func _on_story_unlocks_changed(max_stage: int) -> void:
     # stage เดิมยังเก็บไว้เพื่อ compatibility แต่การปลดร่างหลักใช้เลเวลเป็นตัวกำหนด
     max_story_stage = max_stage
-    if current_form != null and not QuestManager.has_flag(current_form.required_story_flag) and not forms.is_empty():
-        abort_digivolve()
-        load_monster_data(forms[0])
+    # เควสต์ยังปลดเนื้อเรื่อง แต่ไม่ลดร่างที่เลเวลอนุญาตแล้ว
 
 func _form_unlocked(data: MonsterData) -> bool:
     if data == null:
         return false
     # Jogress เป็นร่าง runtime พิเศษ ไม่ได้อยู่ใน forms จึงอนุญาตเมื่อ Manager ผ่านเงื่อนไขแล้ว
     if data.id == &"omegamon":
-        return true
+        return data == _jogress_form and progress.level == EvolutionRules.MAX_LEVEL
     var index: int = forms.find(data)
-    return index >= 0 and EvolutionRules.can_use_form(progress.level, index) and QuestManager.has_flag(data.required_story_flag)
+    return index >= 0 and EvolutionRules.can_use_form(progress.level, index)
 
 func _start_basic_attack() -> bool:
     if not can_battle():

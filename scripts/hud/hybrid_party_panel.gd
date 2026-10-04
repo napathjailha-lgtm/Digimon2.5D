@@ -58,6 +58,8 @@ func refresh() -> void:
                 if String(possible.id) == str(entry.get("form_id", "")):
                     form = possible
                     break
+            if index == roster.active_index and roster.partner.current_form != null:
+                form = roster.partner.current_form
             var frame: Texture2D = form.sprite_frames.get_frame_texture(form.idle_animation, 0)
             # ตัดครึ่งบนจาก texture ที่ trim แล้ว ให้หน้าอ่านได้บนจอมือถือ
             var visible_frame: Texture2D = WalkTextureTools.visible_texture(frame)
@@ -72,7 +74,8 @@ func refresh() -> void:
                 button.icon = portrait
                 button.set_meta("frame", frame)
             button.set_caption("DIGITAMA" if bool(entry.get("egg", false)) else form.monster_name)
-            _bars[index].set_vitals(int(entry.get("hp", 0)), int(entry.get("max_hp", 1)), "", true)
+            var live: bool = index == roster.active_index
+            _bars[index].set_vitals(roster.partner.hp if live else int(entry.get("hp", 0)), roster.partner.max_hp if live else int(entry.get("max_hp", 1)), "", true)
         button._label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
         button._label.offset_bottom = -8
         button._label.clip_text = true

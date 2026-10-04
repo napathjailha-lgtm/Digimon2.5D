@@ -11,6 +11,7 @@ const GABUMON_MEGA: MonsterData = preload("res://data/pregame/gabumon_3.tres")
 var _owns_pause: bool = false
 var _previous_paused: bool = false
 var _running: bool = false
+var _animation: Tween
 var _root: Control
 var _flash: ColorRect
 var _left: TextureRect
@@ -154,51 +155,32 @@ func _portrait() -> TextureRect:
 
 
 func _animate() -> void:
-    # 1) สองร่าง Mega ปรากฏ
-    var intro := create_tween()
-    intro.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-    intro.set_parallel(true)
-    intro.tween_property(_left, "modulate:a", 1.0, 0.32)
-    intro.tween_property(_right, "modulate:a", 1.0, 0.32)
-    intro.tween_property(_left, "position:x", -350.0, 0.55).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-    intro.tween_property(_right, "position:x", 90.0, 0.55).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-    await intro.finished
+    # ใช้ Tween timeline เดียว ไม่มี coroutine await ค้างเมื่อผู้เล่นยกเลิกคัตซีน
+    _animation = create_tween()
+    _animation.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+    _animation.tween_property(_left, "modulate:a", 1.0, 0.32)
+    _animation.parallel().tween_property(_right, "modulate:a", 1.0, 0.32)
+    _animation.parallel().tween_property(_left, "position:x", -350.0, 0.55).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+    _animation.parallel().tween_property(_right, "position:x", 90.0, 0.55).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+    _animation.tween_property(_left, "position:x", -150.0, 0.48).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+    _animation.parallel().tween_property(_right, "position:x", -10.0, 0.48).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+    _animation.parallel().tween_property(_left, "modulate", Color(0.6, 0.9, 1.5, 0.15), 0.48)
+    _animation.parallel().tween_property(_right, "modulate", Color(1.5, 0.75, 0.35, 0.15), 0.48)
+    _animation.tween_property(_flash, "modulate:a", 0.98, 0.10)
+    _animation.tween_interval(0.12)
+    _animation.tween_property(_flash, "modulate:a", 0.0, 0.30)
+    _animation.tween_callback(_reveal_omega)
+    _animation.tween_property(_omega, "scale", Vector2(1.12, 1.12), 0.48).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+    _animation.tween_property(_omega, "scale", Vector2.ONE, 0.20)
+    _animation.tween_interval(0.48)
+    _animation.tween_callback(_finish.bind(true))
 
-    # 2) พุ่งเข้าหากัน
-    var merge := create_tween()
-    merge.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-    merge.set_parallel(true)
-    merge.tween_property(_left, "position:x", -150.0, 0.48).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
-    merge.tween_property(_right, "position:x", -10.0, 0.48).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
-    merge.tween_property(_left, "modulate", Color(0.6, 0.9, 1.5, 0.15), 0.48)
-    merge.tween_property(_right, "modulate", Color(1.5, 0.75, 0.35, 0.15), 0.48)
-    await merge.finished
-
-    # 3) Digital flash
-    var burst := create_tween()
-    burst.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-    burst.tween_property(_flash, "modulate:a", 0.98, 0.10)
-    burst.tween_interval(0.12)
-    burst.tween_property(_flash, "modulate:a", 0.0, 0.30)
-    await burst.finished
-
+func _reveal_omega() -> void:
     _left.hide()
     _right.hide()
     _omega.modulate = Color.WHITE
-    _omega.modulate.a = 1.0
     _caption.text = "OMEGAMON"
     _caption.add_theme_font_size_override("font_size", 30)
-
-    # 4) Omegamon reveal
-    var reveal := create_tween()
-    reveal.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-    reveal.tween_property(_omega, "scale", Vector2(1.12, 1.12), 0.48).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-    reveal.tween_property(_omega, "scale", Vector2.ONE, 0.20)
-    reveal.tween_interval(0.48)
-    await reveal.finished
-
-    _finish(true)
-
 
 func cancel() -> void:
     if not _running:
@@ -210,6 +192,9 @@ func _finish(success: bool) -> void:
     if not _running:
         return
     _running = false
+    if _animation != null and _animation.is_valid():
+        _animation.kill()
+    _animation = null
 
     if _owns_pause:
         get_tree().paused = _previous_paused

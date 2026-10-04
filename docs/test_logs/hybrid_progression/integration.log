@@ -1,0 +1,101 @@
+Godot Engine v4.4.1.stable.official.49a5bc7b6 - https://godotengine.org
+
+PASS: Evolution boundary 1
+PASS: Evolution boundary 14
+PASS: Evolution boundary 15
+PASS: Evolution boundary 59
+PASS: Evolution boundary 60
+PASS: Evolution boundary 89
+PASS: Evolution boundary 90
+PASS: Evolution boundary 999
+PASS: DS rate 0.0 halved exactly once
+PASS: DS rate 6.0 halved exactly once
+PASS: DS rate 10.0 halved exactly once
+PASS: DS rate 8.0 halved exactly once
+PASS: Input mapping idempotent
+PASS: Physical mapping move_left
+PASS: Physical mapping move_left
+PASS: Physical mapping move_up
+PASS: Physical mapping move_up
+PASS: Physical mapping move_down
+PASS: Physical mapping move_down
+PASS: Physical mapping move_right
+PASS: Physical mapping move_right
+PASS: Physical mapping skill_1
+PASS: Physical mapping skill_2
+PASS: Physical mapping skill_3
+PASS: Physical mapping skill_4
+PASS: Physical mapping basic_attack
+PASS: Physical mapping jogress
+PASS: Digimon level cap 90
+PASS: Add Gabumon
+PASS: Training active does not level reserve
+PASS: 90 + 1 cannot fuse
+PASS: Switch to Gabumon
+PASS: Switch restores own level
+PASS: Loader boundary 14 / stage 1
+PASS: Loader boundary 15 / stage 1
+PASS: Loader boundary 59 / stage 2
+PASS: Loader boundary 60 / stage 2
+PASS: Loader boundary 89 / stage 3
+PASS: Loader boundary 90 / stage 3
+PASS: HUD only current form
+PASS: Skill isolation Gabumon
+PASS: Skill isolation Garurumon
+PASS: Skill isolation WereGarurumon
+PASS: Skill isolation MetalGarurumon
+PASS: Direct foreign skill denied
+PASS: 90 + 89 cannot fuse
+PASS: Huge EXP caps at 90
+PASS: 90 + 90 unlocks fusion without quest gates
+PASS: Fainted reserve cannot fuse
+PASS: Start cancellable fusion
+PASS: Cancel releases pause and does not commit
+PASS: Omegamon ID alone cannot bypass manager
+PASS: J/HUD entry starts cutscene
+PASS: Cutscene locks member switching
+PASS: Cutscene commits Omegamon
+PASS: Cutscene releases pause/busy
+PASS: Fusion preserves HP ratio
+PASS: Top tier base stats
+PASS: Omegamon replaces whole skill set
+PASS: Fusion cannot duplicate through party switching
+PASS: Sword has distinct art
+PASS: Cannon has distinct art
+PASS: Active portrait identifies Omegamon
+PASS: Omegamon HUD updates immediately
+PASS: Keyboard starts Omega skill 0
+PASS: Omega impact damage 0
+PASS: Skill spends partner MP only 0
+PASS: Keyboard starts Omega skill 1
+PASS: Omega impact damage 1
+PASS: Skill spends partner MP only 1
+PASS: Omega drain 8 -> 4 DS/sec
+PASS: Roster saves valid component Mega ID
+PASS: Disk save restores Omegamon
+PASS: Reload restores skill set
+PASS: Reload keeps Omega cooldown
+PASS: J toggles dissolve
+PASS: Dissolve returns component Mega
+PASS: Re-fuse checks ingredients
+PASS: DS depletion returns Rookie and clears fusion
+PASS: Ready ingredients can fuse again
+PASS: Death clears fusion
+PASS: Recover safely returns Rookie
+PASS: Other component still has its own progression
+PASS: Lv90 wild proportional stats
+PASS: Live rescale preserves half HP
+PASS: Repeated progress events do not compound
+PASS: Downscale cannot round living enemy to death
+PASS: Boss 2.5x rounded devimon
+PASS: Boss 2.5x rounded etemon
+PASS: Boss 2.5x rounded myotismon
+PASS: Boss 2.5x rounded piedmon
+PASS: Keyboard wins over joystick drift
+PASS: Joystick still drives movement
+PASS: Typing does not move character
+PASS: Menu blocks movement polling
+PASS: Native left click targets wild
+PASS: Touch/emulated click targets wild
+PASS: Emulated mouse is not handled twice
+HYBRID_PROGRESSION_RESULTS: {"assertions":98,"engine":"4.4.1-stable (official)","failures":0}
