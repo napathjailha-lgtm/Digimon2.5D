@@ -144,6 +144,18 @@ func run() -> void:
     check(partner.progress.level == 45 and partner.digimon_mp == 100 and tamer.ds == 63,
         "สมาชิกใหม่รับ Shared Partner Level เดิมทันที และไม่เปลี่ยน Tamer MP")
 
+    # Regression: หลังสลับตัวต้องกดสกิลได้ ไม่ถูก command_attack ล้าง pending skill
+    var switch_enemy := get_tree().get_first_node_in_group("wild_monsters") as WildMonster
+    if is_instance_valid(switch_enemy):
+        switch_enemy.global_position = partner.global_position + Vector2(65, 0)
+        partner.digimon_mp = partner.digimon_max_mp
+        partner.skill_cooldowns.clear()
+        var switched_skill: MonsterSkill = partner.active_skills[0]
+        partner.command_skill(0, switch_enemy)
+        check(partner._pending_skill == 0 or partner.cooldown_remaining(switched_skill) > 0.0,
+            "หลังสลับคู่หู Skill 1 ถูก queue/ร่ายได้จริง")
+        partner.cancel_battle()
+
     partner.hp = 41
     partner.digimon_mp = 29
     roster._process(2.0)
@@ -175,6 +187,13 @@ func run() -> void:
     roster.select_member(0)
     roster.members[1] = original_reserve
     tamer.restore_hp(tamer.max_hp)
+    var omega_test: MonsterData = hud.jogress_manager._build_omegamon_form()
+    check(omega_test != null and omega_test.validation_error().is_empty(),
+        "Omegamon runtime form มี SpriteFrames/Skill ถูกต้อง")
+    check(omega_test.sprite_frames.get_frame_count(&"attack") == 4
+        and omega_test.sprite_frames.get_frame_count(&"cast") == 4,
+        "Omegamon มี Grey Sword/Garuru Cannon animation อย่างน้อย 4 เฟรม")
+
     var saved: Dictionary = JSON.parse_string(JSON.stringify(tamer.capture_party_state()))
     var expected_id: String = str(roster.members[0].id)
     world.queue_free()
