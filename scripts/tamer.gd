@@ -136,11 +136,25 @@ func _physics_process(delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
     # Mobile: แตะศัตรู / Web-PC: คลิกซ้ายศัตรู
-    # UI จะ consume input ของปุ่มก่อน จึงไม่เลือกศัตรูทะลุ HUD
+    # Web เปิด emulate_touch_from_mouse: คลิกเดียวอาจสร้าง ScreenTouch ให้ปุ่ม HUD
+    # แล้ว MouseButton เดิมยังมาถึง _unhandled_input ภายหลัง จึงต้องกัน hitbox HUD ซ้ำที่นี่
     if event is InputEventScreenTouch and event.pressed and not event.canceled:
         select_at_screen(event.position)
     elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+        if _is_command_ui_at(event.position):
+            get_viewport().set_input_as_handled()
+            return
         select_at_screen(event.position)
+
+
+func _is_command_ui_at(screen_position: Vector2) -> bool:
+    # ปุ่ม Attack/Skill/Digivolve/Auto ฯลฯ สืบทอด TouchCommand และอยู่ใน group นี้
+    # ตรวจเฉพาะปุ่มที่มองเห็น เพื่อไม่ให้ Control ที่ซ่อนอยู่บังการเลือกมอนสเตอร์
+    for node: Node in get_tree().get_nodes_in_group("touch_commands"):
+        var command := node as TouchCommand
+        if is_instance_valid(command) and command.contains_screen_point(screen_position):
+            return true
+    return false
 
 func select_at_screen(screen_position: Vector2) -> void:
     cancel_auto_navigation()
