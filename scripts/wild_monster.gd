@@ -49,7 +49,8 @@ func _ready() -> void:
     _loot_rng.randomize()
     var tamer := get_tree().get_first_node_in_group("tamer") as Tamer
     if is_instance_valid(tamer) and is_instance_valid(tamer.partner):
-        tamer.partner.progress.leveled_up.connect(_on_partner_level_changed)
+        # progress_changed ทำงานทั้งตอน Level Up และตอนสลับสมาชิกในทีม
+        tamer.partner.progress.progress_changed.connect(_on_partner_progress_changed)
     if drop_table == null:
         drop_table = load("res://data/items/default_loot.tres") as LootTable
     _home = home_anchor.global_position if is_instance_valid(home_anchor) else global_position
@@ -200,8 +201,8 @@ func _apply_scaling_from_active_partner() -> void:
     max_hp = maxi(1, roundi(float(_base_max_hp) * level_scale * boss_scale))
     attack_damage = maxi(1, roundi(float(_base_attack_damage) * level_scale * boss_scale))
 
-func _on_partner_level_changed(_new_level: int) -> void:
-    # มอนสเตอร์ที่เกิดอยู่แล้วปรับตามเลเวลใหม่ โดยรักษา %HP เดิมไม่ฮีลฟรี
+func _on_partner_progress_changed(_level: int, _current_exp: int, _max_exp: int) -> void:
+    # มอนสเตอร์ที่เกิดอยู่แล้วปรับตามเลเวล/สมาชิกใหม่ โดยรักษา %HP เดิมไม่ฮีลฟรี
     var old_max: int = maxi(1, max_hp)
     var ratio: float = clampf(float(hp) / float(old_max), 0.0, 1.0)
     _apply_scaling_from_active_partner()
