@@ -5,6 +5,7 @@ extends RefCounted
 
 signal changed
 signal feedback(message: String)
+signal hatch_completed(partner_id: StringName)
 
 var roster: PartnerRoster
 var rng := RandomNumberGenerator.new()
@@ -87,5 +88,7 @@ func _complete_hatch(egg: ItemData) -> bool:
     InventoryManager.remove_item(egg.item_id, 1)
     GameManager.incubator_state.clear()
     changed.emit()
+    # UI รับ signal นี้เพื่อเล่น white flash + SFX ในเฟรมเดียวกับผลฟักสำเร็จ
+    hatch_completed.emit(egg.egg_partner_id)
     feedback.emit("ฟักสำเร็จ: %s • ส่งเข้า Digimon Archive" % roster.family(egg.egg_partner_id).display_name)
     return true
