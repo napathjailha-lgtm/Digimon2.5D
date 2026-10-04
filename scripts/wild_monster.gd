@@ -19,9 +19,9 @@ var _loot_rng := RandomNumberGenerator.new()
 @export var move_speed: float = 95.0
 @export var attack_damage: int = 9
 @export var is_world_boss: bool = false
-@export_range(1.0, 10.0, 0.1) var world_boss_multiplier: float = 2.5
+const WORLD_BOSS_MULTIPLIER: float = DynamicScaling.BOSS_MULTIPLIER
 @export_range(80.0, 1000.0, 10.0) var world_boss_aggro_radius: float = 360.0
-@export_range(0.2, 3.0, 0.05) var world_boss_attack_interval: float = 0.65
+@export_range(0.2, 3.0, 0.05) var world_boss_attack_interval: float = 1.2
 var _base_max_hp: int
 var _base_attack_damage: int
 var _scaled_partner_level: int = 1
@@ -152,7 +152,7 @@ func _physics_process(delta: float) -> void:
     if is_world_boss and not is_instance_valid(_attacker):
         var tamer := get_tree().get_first_node_in_group("tamer") as Tamer
         if is_instance_valid(tamer) and is_instance_valid(tamer.partner) and tamer.partner.is_alive():
-            if global_position.distance_to(tamer.partner.global_position) <= world_boss_aggro_radius:
+            if tamer.partner.can_battle() and _home.distance_to(tamer.partner.global_position) <= leash_distance and global_position.distance_to(tamer.partner.global_position) <= world_boss_aggro_radius:
                 _attacker = tamer.partner
     if is_instance_valid(_attacker):
         if global_position.distance_to(_attacker.global_position) > attack_range:
@@ -203,15 +203,15 @@ func _apply_scaling_from_active_partner() -> void:
         level = clampi(tamer.partner.progress.level, 1, EvolutionRules.MAX_LEVEL)
     _scaled_partner_level = level
 
-    # เส้นโค้งค่อนข้างนุ่ม: Lv90 ประมาณ 5.45x จากฐาน
-    var level_scale: float = 1.0 + float(level - 1) * 0.05
-    var boss_scale: float = world_boss_multiplier if is_world_boss else 1.0
-    max_hp = maxi(1, roundi(float(_base_max_hp) * level_scale * boss_scale))
-    attack_damage = maxi(1, roundi(float(_base_attack_damage) * level_scale * boss_scale))
+    # อ่านฐานที่จับครั้งเดียวใน _ready ไม่ใช้ max_hp ปัจจุบันคูณซ้ำ
+    var scaled: Dictionary = DynamicScaling.stats(_base_max_hp, _base_attack_damage, level, is_world_boss)
+    max_hp = int(scaled.max_hp)
+    attack_damage = int(scaled.attack)
 
 func _on_partner_progress_changed(_level: int, _current_exp: int, _max_exp: int) -> void:
     # มอนสเตอร์ที่เกิดอยู่แล้วปรับตามเลเวล/สมาชิกใหม่ โดยรักษา %HP เดิมไม่ฮีลฟรี
     var old_max: int = maxi(1, max_hp)
     var ratio: float = clampf(float(hp) / float(old_max), 0.0, 1.0)
     _apply_scaling_from_active_partner()
-    hp = clampi(roundi(float(max_hp) * ratio), 0, max_hp)
+    # ศัตรู HP1 ต้องไม่ตายเพราะ round ลงเมื่อสลับไปคู่หูเลเวลต่ำ และศพห้ามคืนชีพ
+    hp = clampi(roundi(float(max_hp) * ratio), 1, max_hp) if hp > 0 else 0

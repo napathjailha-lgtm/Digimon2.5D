@@ -1,7 +1,7 @@
 class_name PartnerRoster
 extends Node
 ## ทีมคู่หูสูงสุด 3 ตัว ใช้ PartnerMonster บนสนามเพียง Node เดียว
-## HP/MP/คูลดาวน์เก็บแยกแต่ละสมาชิก แต่ Level/EXP ใช้ร่วมกันทั้งทีม (Shared Partner Level)
+## HP/MP/เลเวล/EXP/คูลดาวน์แยกแต่ละสมาชิก เพื่อให้ Jogress ตรวจ Lv90 ของทั้งสองตัวจริง
 signal changed
 signal switched(index: int)
 signal feedback(message: String)
@@ -15,11 +15,6 @@ var active_index: int = 0
 var initialized: bool = false
 var _switching: bool = false
 var _legacy_family: StarterPartnerData
-
-# เลเวล/EXP ของคู่หูทั้งทีมใช้ชุดเดียวกัน
-# สมาชิกทุกตัวจะอ่านค่าจาก Dictionary นี้ ไม่สร้าง Lv1 แยกกันอีก
-var shared_progress: Dictionary = {"level": 1, "exp": 0}
-
 
 func configure(player: Tamer) -> void:
     tamer = player
@@ -40,7 +35,7 @@ func configure(player: Tamer) -> void:
     ]:
         source.connect(_on_actor_changed)
 
-    # Level/EXP เป็น shared progression ของทั้งทีม
+    # Level/EXP เป็น progression สมาชิก ของทั้งทีม
     partner.progress.progress_changed.connect(_on_partner_progress_changed)
 
 
@@ -66,11 +61,15 @@ func initialize(saved: Dictionary = {}) -> void:
                 continue
             members.append((entry as Dictionary).duplicate(true))
 
-    shared_progress = _resolve_shared_progress(saved)
+    # เซฟ v2 เคยใช้เลเวลร่วม: รักษาค่าที่ผู้เล่นมีอยู่เมื่อย้ายมา v3
+    # เซฟที่มี progress รายตัวอยู่แล้วต้องไม่เอาค่าสูงสุดของตัวอื่นมาทับ
+    for member: Dictionary in members:
+        if not member.get("progress") is Dictionary:
+            var legacy: Variant = saved.get("shared_progress", {"level": 1, "exp": 0})
+            member["progress"] = _sanitize_progress(legacy if legacy is Dictionary else {})
 
-    # ให้ Node Partner ตัวเดียวในสนามใช้ shared level ก่อนคำนวณสเตตัส/ร่าง
+    # กันสัญญาณจากการโหลดข้อมูลทับ snapshot ของสมาชิกเดิม
     _switching = true
-    partner.progress.restore_data(shared_progress)
 
     if members.is_empty():
         # เซฟเก่าที่มีคู่หูเดียว
@@ -92,30 +91,8 @@ func initialize(saved: Dictionary = {}) -> void:
 
     _switching = false
     initialized = true
-    _sync_shared_progress_to_members()
     _capture_active()
     changed.emit()
-
-
-func _resolve_shared_progress(saved: Dictionary) -> Dictionary:
-    # v2+: ใช้ shared_progress ที่บันทึกไว้โดยตรง
-    var saved_shared: Variant = saved.get("shared_progress", null)
-    if saved_shared is Dictionary and saved_shared.has("level"):
-        return _sanitize_progress(saved_shared)
-
-    # Migration v1: เลือก progression ที่สูงที่สุดจาก
-    # 1) actor ปัจจุบันที่ story_world restore ไว้
-    # 2) สมาชิกทุกตัวใน roster เก่า
-    var best: Dictionary = _sanitize_progress(partner.progress.get_save_data())
-
-    for member: Dictionary in members:
-        var raw_progress: Variant = member.get("progress", null)
-        if raw_progress is Dictionary and raw_progress.has("level"):
-            var candidate: Dictionary = _sanitize_progress(raw_progress)
-            if _progress_is_higher(candidate, best):
-                best = candidate
-
-    return best
 
 
 func _sanitize_progress(raw: Dictionary) -> Dictionary:
@@ -124,19 +101,6 @@ func _sanitize_progress(raw: Dictionary) -> Dictionary:
     if level >= EvolutionRules.MAX_LEVEL:
         exp = 0
     return {"level": level, "exp": exp}
-
-
-func _progress_is_higher(a: Dictionary, b: Dictionary) -> bool:
-    var a_level: int = int(a.get("level", 1))
-    var b_level: int = int(b.get("level", 1))
-    if a_level != b_level:
-        return a_level > b_level
-    return int(a.get("exp", 0)) > int(b.get("exp", 0))
-
-
-func _sync_shared_progress_to_members() -> void:
-    for index: int in range(members.size()):
-        members[index]["progress"] = shared_progress.duplicate(true)
 
 
 func has_partner(id: StringName) -> bool:
@@ -154,15 +118,23 @@ func active_member_id() -> StringName:
 
 
 func member_level(id: StringName) -> int:
-    # Jogress ยังเช็ก Agumon/Gabumon แยกว่ามีในทีม
-    # แต่เลเวลเป็น Shared Partner Level จึงเท่ากันทุกสมาชิก
-    if not initialized or not has_partner(id):
+    if not initialized:
         return 0
-    return clampi(int(shared_progress.get("level", 1)), 1, EvolutionRules.MAX_LEVEL)
+    _capture_active()
+    for member: Dictionary in members:
+        if StringName(member.get("id", "")) == id:
+            return clampi(int(member.get("progress", {}).get("level", 1)), 1, EvolutionRules.MAX_LEVEL)
+    return 0
 
+func member_alive(id: StringName) -> bool:
+    _capture_active()
+    for member: Dictionary in members:
+        if StringName(member.get("id", "")) == id:
+            return not bool(member.get("egg", false)) and int(member.get("hp", 0)) > 0
+    return false
 
 func add_partner(id: StringName) -> bool:
-    # สมาชิกใหม่เข้าทีมด้วย Shared Partner Level ปัจจุบันทันที
+    # สมาชิกใหม่เริ่ม Lv1; การฝึกของตัวเดิมไม่ทำให้ตัวใหม่ปลด Jogress ทันที
     var data: StarterPartnerData = family(id)
     if not initialized or data == null or data.forms.is_empty() or has_partner(id) or members.size() >= CAPACITY:
         return false
@@ -177,7 +149,7 @@ func add_partner(id: StringName) -> bool:
         "max_hp": hp_max,
         "mp": partner.digimon_max_mp,
         "egg": false,
-        "progress": shared_progress.duplicate(true),
+        "progress": {"level": 1, "exp": 0},
         "cooldowns": {},
         "basic_cooldown": 0.0
     })
@@ -202,15 +174,15 @@ func select_member(index: int) -> bool:
     if not initialized or _switching or index < 0 or index >= members.size() or index == active_index:
         return false
 
-    if get_tree().paused or partner.evolution_busy:
-        feedback.emit("รอหน้าต่างหรือคัตซีนจบก่อนสลับคู่หู")
+    if get_tree().paused or partner.evolution_busy or partner.current_form.id == &"omegamon":
+        feedback.emit("ปิดหน้าต่าง/รอคัตซีน หรือแยก Omegamon ก่อนสลับคู่หู")
         return false
 
     var candidate: StarterPartnerData = family(StringName(members[index].get("id", "")))
     if candidate == null or candidate.forms.is_empty():
         return false
 
-    # เก็บ HP/MP/Form/CD ของตัวเดิม แต่ไม่เปลี่ยน shared level
+    # เก็บสถานะตัวเดิมก่อนโหลดสมาชิกเป้าหมาย
     _capture_active()
 
     var previous_index: int = active_index
@@ -218,9 +190,6 @@ func select_member(index: int) -> bool:
     var target_snapshot: Dictionary = members[index].duplicate(true)
 
     _switching = true
-
-    # บังคับ target ใช้ shared progression ก่อนโหลดสเตตัสของร่าง
-    partner.progress.restore_data(shared_progress)
 
     if not _apply_member(target_snapshot):
         _apply_member(previous_snapshot)
@@ -231,7 +200,6 @@ func select_member(index: int) -> bool:
     _switching = false
 
     _capture_active()
-    _sync_shared_progress_to_members()
 
     changed.emit()
     switched.emit(index)
@@ -245,8 +213,8 @@ func _apply_member(entry: Dictionary) -> bool:
     if data == null or data.forms.is_empty():
         return false
 
-    # Progress ไม่อ่านจาก entry แล้ว เพราะเป็น Shared Partner Level
-    partner.progress.restore_data(shared_progress)
+    # คืนเลเวลของสมาชิกเป้าหมายก่อนคำนวณสเตตัส
+    partner.progress.restore_data(entry.get("progress", {}))
 
     partner.auto_battle = false
     partner.cancel_page_skill()
@@ -260,24 +228,11 @@ func _apply_member(entry: Dictionary) -> bool:
     partner.forms.assign(data.forms)
 
     var form: MonsterData = data.forms[0]
-    var shared_level: int = clampi(
-        int(shared_progress.get("level", 1)),
-        1,
-        EvolutionRules.MAX_LEVEL
-    )
-
-    # สมาชิกแต่ละตัวจำร่างของตัวเอง แต่ต้องไม่เกินร่างที่ Shared Level ปลดล็อก
+    # โหลดเฉพาะร่างที่เซฟไว้และเลเวลอนุญาต ไม่แจกการวิวัฒนาการฟรีตอนสลับตัว
     for index: int in range(data.forms.size()):
         var possible: MonsterData = data.forms[index]
-        if possible == null:
-            continue
-        if not EvolutionRules.can_use_form(shared_level, index):
-            continue
-        if not QuestManager.has_flag(possible.required_story_flag):
-            continue
-
-        form = possible
-        if String(possible.id) == str(entry.get("form_id", "")):
+        if possible != null and String(possible.id) == str(entry.get("form_id", "")) and EvolutionRules.can_use_form(partner.progress.level, index) and tamer.can_battle():
+            form = possible
             break
 
     if not form.validation_error().is_empty():
@@ -298,7 +253,7 @@ func _apply_member(entry: Dictionary) -> bool:
     var saved_hp: int = maxi(0, int(entry.get("hp", 0)))
 
     if String(form.id) != str(entry.get("form_id", "")):
-        # ถ้าร่างที่เซฟไว้สูงเกิน shared level ให้ลดร่างแต่รักษา %HP
+        # ถ้าร่างที่เซฟไว้สูงเกิน เลเวลสมาชิก ให้ลดร่างแต่รักษา %HP
         var ratio: float = clampf(
             float(saved_hp) / maxi(1, int(entry.get("max_hp", partner.max_hp))),
             0.0,
@@ -351,25 +306,33 @@ func _capture(id: StringName) -> Dictionary:
     for key: Variant in partner.skill_cooldowns:
         cooldowns[String(key)] = float(partner.skill_cooldowns[key])
 
+    # Omegamon เป็นสถานะชั่วคราว ไม่ยัด ID นอกสายร่างลงสมาชิก
+    # เก็บร่าง Mega และ %HP เทียบฐาน Mega เพื่อให้เซฟยังโหลดได้แม้ fusion ใช้ไม่ได้
+    var saved_form: MonsterData = partner.current_form
+    var saved_max: int = partner.max_hp
+    var saved_hp: int = partner.hp
+    if saved_form.id == &"omegamon":
+        saved_form = family(id).forms[3]
+        saved_max = partner.max_hp - partner.current_form.max_hp + saved_form.max_hp
+        saved_hp = maxi(1, roundi(float(partner.hp) / partner.max_hp * saved_max)) if partner.hp > 0 else 0
     return {
         "id": String(id),
-        "form_id": String(partner.current_form.id),
-        "hp": partner.hp,
-        "max_hp": partner.max_hp,
+        "form_id": String(saved_form.id),
+        "hp": saved_hp,
+        "max_hp": saved_max,
         "mp": partner.digimon_mp,
         "egg": not partner.is_alive(),
-        "progress": shared_progress.duplicate(true),
+        "progress": partner.progress.get_save_data(),
         "cooldowns": cooldowns,
         "basic_cooldown": partner._basic_cooldown
     }
 
 
 func _capture_active() -> void:
-    if members.is_empty():
+    if members.is_empty() or _switching:
         return
 
-    # actor ปัจจุบันคือ source of truth ของ Shared Level ระหว่าง gameplay
-    shared_progress = _sanitize_progress(partner.progress.get_save_data())
+    # actor ปัจจุบันคือ source of truth ของ เลเวลสมาชิก ระหว่าง gameplay
     members[active_index] = _capture(
         StringName(members[active_index].get("id", ""))
     )
@@ -380,9 +343,7 @@ func _on_partner_progress_changed(
         _current_exp: int,
         _max_exp: int
 ) -> void:
-    # ทุกครั้งที่ active partner ได้ EXP/Level ให้กระจาย progression ไปทั้งทีมทันที
-    shared_progress = _sanitize_progress(partner.progress.get_save_data())
-    _sync_shared_progress_to_members()
+    # EXP เปลี่ยนเฉพาะสมาชิกบนสนาม ไม่กระจายเลเวลไปตัวสำรอง
 
     if initialized and not _switching:
         _capture_active()
@@ -433,11 +394,9 @@ func get_save_data() -> Dictionary:
     if not _switching:
         _capture_active()
 
-    _sync_shared_progress_to_members()
 
     return {
-        "version": 2,
+        "version": 3,
         "active_id": members[active_index].get("id", ""),
-        "shared_progress": shared_progress.duplicate(true),
         "members": members.duplicate(true)
     }

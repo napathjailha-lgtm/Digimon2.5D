@@ -138,3 +138,11 @@ func _form_skills(source: MonsterData) -> Array[MonsterSkill]:
     if not is_instance_valid(partner) or source != partner.current_form:
         return []
     return partner.active_skills
+
+func request_visible_slot(local_slot: int) -> void:
+    # คีย์ 1–4 และนิ้วใช้ callback เดียวกัน รวม guard revision/CD/MP/ร่างปัจจุบัน
+    if process_mode == Node.PROCESS_MODE_DISABLED or local_slot < 0 or local_slot >= buttons.size():
+        return
+    var button: TouchCommand = buttons[local_slot]
+    if not button.locked:
+        _request_slot(int(button.get_meta("skill_slot")), StringName(button.get_meta("skill_id")), _revision)

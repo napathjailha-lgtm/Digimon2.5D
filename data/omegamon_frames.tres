@@ -1,0 +1,27 @@
+[gd_resource type="SpriteFrames" load_steps=6 format=3]
+[ext_resource type="Texture2D" path="res://assets/jogress/omegamon_actions.png" id="1"]
+[sub_resource type="AtlasTexture" id="Frame0"]
+atlas = ExtResource("1")
+region = Rect2(146, 137, 419, 428)
+margin = Rect2(47.5, 13, 95, 13)
+filter_clip = true
+[sub_resource type="AtlasTexture" id="Frame1"]
+atlas = ExtResource("1")
+region = Rect2(696, 136, 487, 441)
+margin = Rect2(13.5, 0, 27, 0)
+filter_clip = true
+[sub_resource type="AtlasTexture" id="Frame2"]
+atlas = ExtResource("1")
+region = Rect2(92, 774, 514, 393)
+margin = Rect2(0.0, 48, 0, 48)
+filter_clip = true
+[sub_resource type="AtlasTexture" id="Frame3"]
+atlas = ExtResource("1")
+region = Rect2(739, 762, 459, 405)
+margin = Rect2(27.5, 36, 55, 36)
+filter_clip = true
+[resource]
+animations = [{"name": &"idle", "frames": [{"duration": 1.0, "texture": SubResource("Frame0")}], "loop": true, "speed": 2},
+{"name": &"walk", "frames": [{"duration": 1.0, "texture": SubResource("Frame0")}, {"duration": 1.0, "texture": SubResource("Frame1")}], "loop": true, "speed": 6},
+{"name": &"attack", "frames": [{"duration": 1.0, "texture": SubResource("Frame0")}, {"duration": 1.0, "texture": SubResource("Frame0")}, {"duration": 1.0, "texture": SubResource("Frame2")}, {"duration": 1.0, "texture": SubResource("Frame0")}], "loop": false, "speed": 10},
+{"name": &"cast", "frames": [{"duration": 1.0, "texture": SubResource("Frame0")}, {"duration": 1.0, "texture": SubResource("Frame0")}, {"duration": 1.0, "texture": SubResource("Frame3")}, {"duration": 1.0, "texture": SubResource("Frame0")}], "loop": false, "speed": 10}]

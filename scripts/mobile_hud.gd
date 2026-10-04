@@ -325,6 +325,7 @@ func _on_chat_editing(editing: bool) -> void:
 
 func _sync_skill_input() -> void:
     var blocked: bool = chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open)
+    tamer.controls_blocked = blocked
     skill_panel.process_mode = Node.PROCESS_MODE_DISABLED if blocked else Node.PROCESS_MODE_INHERIT
     party_panel.process_mode = skill_panel.process_mode
 
@@ -360,20 +361,22 @@ func _unhandled_input(event: InputEvent) -> void:
     # ใช้ unhandled_input เพื่อไม่แย่งปุ่มจาก LineEdit/เมนูที่กำลังรับคีย์บอร์ด
     if chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open):
         return
+    if get_tree().paused or HybridInput.text_has_focus(get_viewport()) or event.is_echo():
+        return
     if event.is_action_pressed(&"basic_attack"):
         tamer.command_attack()
         get_viewport().set_input_as_handled()
     elif event.is_action_pressed(&"skill_1"):
-        tamer.command_skill(0)
+        skill_panel.request_visible_slot(0)
         get_viewport().set_input_as_handled()
     elif event.is_action_pressed(&"skill_2"):
-        tamer.command_skill(1)
+        skill_panel.request_visible_slot(1)
         get_viewport().set_input_as_handled()
     elif event.is_action_pressed(&"skill_3"):
-        tamer.command_skill(2)
+        skill_panel.request_visible_slot(2)
         get_viewport().set_input_as_handled()
     elif event.is_action_pressed(&"skill_4"):
-        tamer.command_skill(3)
+        skill_panel.request_visible_slot(3)
         get_viewport().set_input_as_handled()
     elif event.is_action_pressed(&"jogress") and is_instance_valid(jogress_manager):
         jogress_manager.request_jogress()
@@ -494,17 +497,18 @@ func _return_to_characters() -> void:
 func _refresh_combat_controls() -> void:
     # Cannot Battle ปิด Attack/Auto/Digivolve/สกิล แต่ Recover/อาหารยังใช้งานได้
     var blocked: bool = chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open)
+    tamer.controls_blocked = blocked
     attack_button.locked = blocked or not partner.can_battle() or partner.evolution_busy
     recover_button.locked = blocked or partner.evolution_busy
     auto_button.locked = attack_button.locked
     auto_button.set_caption("Auto ON" if partner.auto_battle else "Auto OFF")
     var next_index: int = partner.form_index + 1
-    evolve_button.locked = blocked or partner.evolution_busy or not partner.is_alive() or not tamer.can_battle() or next_index < 0 or next_index >= partner.forms.size()
+    evolve_button.locked = blocked or partner.evolution_busy or not partner.is_alive() or not tamer.can_battle() or partner.form_index < 0 or next_index >= partner.forms.size()
     if not evolve_button.locked:
-        evolve_button.locked = not EvolutionRules.can_use_form(partner.progress.level, next_index) or not QuestManager.has_flag(partner.forms[next_index].required_story_flag)
+        evolve_button.locked = not EvolutionRules.can_use_form(partner.progress.level, next_index)
     # ปุ่ม Cycle เดิมถูกใช้เป็น Jogress; แสดงได้ตลอดแต่ล็อกจน Agumon/Gabumon Lv90 ทั้งคู่
-    cycle_button.set_caption("Omegamon" if is_instance_valid(jogress_manager) and jogress_manager.active else "Jogress [J]")
-    cycle_button.locked = blocked or not is_instance_valid(jogress_manager) or not jogress_manager.can_jogress() or jogress_manager.active
+    cycle_button.set_caption("แยกร่าง [J]" if is_instance_valid(jogress_manager) and jogress_manager.active else "Jogress [J]")
+    cycle_button.locked = blocked or not is_instance_valid(jogress_manager) or (not jogress_manager.active and not jogress_manager.can_jogress()) or partner.evolution_busy
 
 
 func _on_battle_permission(allowed: bool) -> void:

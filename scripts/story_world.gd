@@ -38,7 +38,7 @@ func _ready() -> void:
             partner.progress.restore_data(state.get("partner_progress", {}))
         var selected: MonsterData = partner.forms[0]
         for data: MonsterData in partner.forms:
-            if String(data.id) == str(state.get("form_id", "")) and QuestManager.can_use_form(data):
+            if String(data.id) == str(state.get("form_id", "")) and partner._form_unlocked(data):
                 selected = data
                 break
         # โหลดร่างเซฟภายในก่อน เพื่อคืนสัดส่วน HP ถูกต้อง แล้วค่อยบังคับ Rookie ถ้า Tamer ล้ม
@@ -60,6 +60,9 @@ func _ready() -> void:
     if is_instance_valid(tamer.party_roster):
         var roster_data: Variant = state.get("partner_roster", {})
         tamer.party_roster.initialize(roster_data if roster_data is Dictionary else {})
+    var jogress := tamer.get_node_or_null("JogressManager") as JogressManager
+    if jogress != null:
+        jogress.restore_data(state.get("jogress", {}))
     # คืนกระเป๋าหลัง HP/ร่างพร้อมแล้ว changed จึงบันทึก snapshot ที่ครบทุกระบบ
     var saved_inventory: Variant = state.get("inventory", {})
     InventoryManager.bind_player(tamer, saved_inventory if saved_inventory is Dictionary else {})

@@ -1,0 +1,8 @@
+{
+  "reason": "Wild monsters too strong: user feedback",
+  "hp_growth_per_level": 0.2,
+  "attack_growth_per_level": 0.15,
+  "boss_multiplier": 2.5,
+  "boss_attack_interval_seconds": 1.2,
+  "tested": "Godot 4.4.1 hybrid_progression_test: 98 assertions, 0 failures"
+}

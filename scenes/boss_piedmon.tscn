@@ -4,8 +4,10 @@
 [ext_resource type="Texture2D" path="res://assets/art/boss_piedmon_art.tres" id="boss_art"]
 [node name="Boss" instance=ExtResource("1")]
 monster_id = &"piedmon"
-max_hp = 650
-attack_damage = 12
+max_hp = 160
+attack_damage = 9
+is_world_boss = true
+leash_distance = 600.0
 [node name="QuestTarget" type="Marker2D" parent="."]
 script = ExtResource("2")
 target_id = &"piedmon"
