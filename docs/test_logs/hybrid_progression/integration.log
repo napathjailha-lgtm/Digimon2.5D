@@ -83,7 +83,7 @@ PASS: Ready ingredients can fuse again
 PASS: Death clears fusion
 PASS: Recover safely returns Rookie
 PASS: Other component still has its own progression
-PASS: Lv90 wild proportional stats
+PASS: Lv90 gentler scaling
 PASS: Live rescale preserves half HP
 PASS: Repeated progress events do not compound
 PASS: Downscale cannot round living enemy to death

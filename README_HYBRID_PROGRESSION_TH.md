@@ -52,14 +52,13 @@ Omegamon ใช้ฐาน HP 1200, ATK 155 ก่อนโบนัสเล�
 
 `EvolutionRules.ds_drain(rate)` คืน `rate * 0.5`; PartnerMonster หัก `balanced_rate * delta` ไม่แก้ Resource ต้นแบบและไม่คูณลดซ้ำตอนเปลี่ยนร่าง ค่าเริ่มต้นสองสาย: Champion 5 → 2.5, Ultimate 10 → 5, Mega 6 → 3 DS/วินาที; Omegamon 8 → 4 ค่าเปลี่ยนร่างครั้งแรกยังแยกจากอัตราคงร่าง
 
-`DynamicScaling.stats(base_hp, base_attack, level, boss)` คำนวณจากฐาน Lv1 ที่จับครั้งเดียวตอนเกิด:
+`DynamicScaling.stats(base_hp, base_attack, level, boss)` ปรับตามข้อเสนอแนะว่าศัตรูโหดเกินไป: HP เพิ่ม 20% ของฐานต่อเลเวล และ ATK เพิ่ม 15% แทนการคูณเลเวลเต็ม โดยคำนวณจากฐาน Lv1 ที่จับครั้งเดียวตอนเกิด:
 
 ```gdscript
-var factor: float = float(clampi(level, 1, 90))
-if boss:
-    factor *= 2.5
-var scaled_hp: int = maxi(1, roundi(base_hp * factor))
-var scaled_attack: int = maxi(1, roundi(base_attack * factor))
+var bonus_levels: int = clampi(level, 1, 90) - 1
+var boss_factor: float = 2.5 if boss else 1.0
+var scaled_hp: int = maxi(1, roundi(base_hp * (1.0 + 0.20 * bonus_levels) * boss_factor))
+var scaled_attack: int = maxi(1, roundi(base_attack * (1.0 + 0.15 * bonus_levels) * boss_factor))
 ```
 
 ฐานปัจจุบัน wild คือ HP160 / ATK9; บอสทั้ง Devimon, Etemon, Myotismon, Piedmon ใช้ฐานเดียวกันก่อนตัวคูณ เพื่อไม่คูณทับค่าเลือดบอสเก่าที่สูงอยู่แล้ว
@@ -67,12 +66,12 @@ var scaled_attack: int = maxi(1, roundi(base_attack * factor))
 | เลเวลคู่หู | Wild HP / ATK | Boss HP / ATK |
 |---|---|---|
 | 1 | 160 / 9 | 400 / 23 |
-| 10 | 1,600 / 90 | 4,000 / 225 |
-| 90 | 14,400 / 810 | 36,000 / 2,025 |
+| 10 | 448 / 21 | 1,120 / 53 |
+| 90 | 3,008 / 129 | 7,520 / 323 |
 
 ค่าทศนิยมปัดเป็นจำนวนเต็มใกล้ที่สุด บอสจึงได้ ATK23 จาก 22.5 ที่ Lv1 ข้อมูลที่เกิดอยู่แล้วฟัง `progress_changed` และรักษา %HP เมื่อเลเวลเปลี่ยน/สลับสมาชิก ศัตรู HP1 จะไม่ตายจากการปัดเศษ และศพ HP0 ไม่คืนชีพ สูตรไม่คูณค่าที่สเกลแล้วซ้ำ
 
-บอสเปิด proactive aggro ระยะ 360, โจมตีทุก 0.65 วินาที และ leash 600 ไม่ไล่ข้ามขอบเขตเกิดไม่สิ้นสุด ส่วนมอนสเตอร์ปกติยังโต้กลับตาม AI เดิม ตัวคูณ 2.5 เป็น HP/ATK; ความถี่โจมตีบอสเพิ่มความอันตรายอีกส่วนหนึ่ง
+บอสเปิด proactive aggro ระยะ 360, โจมตีทุก 1.2 วินาที และ leash 600 ไม่ไล่ข้ามขอบเขตเกิดไม่สิ้นสุด ส่วนมอนสเตอร์ปกติยังโต้กลับตาม AI เดิม ตัวคูณ 2.5 เป็น HP/ATK; ลดความถี่โจมตีบอสจากเดิม 0.65 วินาทีเพื่อให้มีเวลาถอยและฟื้นตัวมากขึ้น
 
 ## Web export และการทดสอบ
 

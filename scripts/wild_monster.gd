@@ -21,7 +21,7 @@ var _loot_rng := RandomNumberGenerator.new()
 @export var is_world_boss: bool = false
 const WORLD_BOSS_MULTIPLIER: float = DynamicScaling.BOSS_MULTIPLIER
 @export_range(80.0, 1000.0, 10.0) var world_boss_aggro_radius: float = 360.0
-@export_range(0.2, 3.0, 0.05) var world_boss_attack_interval: float = 0.65
+@export_range(0.2, 3.0, 0.05) var world_boss_attack_interval: float = 1.2
 var _base_max_hp: int
 var _base_attack_damage: int
 var _scaled_partner_level: int = 1

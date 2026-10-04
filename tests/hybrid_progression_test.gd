@@ -113,6 +113,8 @@ func run() -> void:
 
     check(hud.skill_panel.pages.size() == 1 and hud.skill_panel.pages[0].form == partner.current_form, "Omegamon HUD updates immediately")
     var enemy: WildMonster = load("res://scenes/wild_monster.tscn").instantiate()
+    # เป้าทดสอบสองสกิลต้องอยู่รอดจากท่าแรก แม้ปรับสมดุลศัตรูให้เบาลง
+    enemy.max_hp = 10000
     enemy.position = partner.position + Vector2(70,0)
     world.get_node("Actors").add_child(enemy)
     enemy.set_physics_process(false)
@@ -165,12 +167,12 @@ func run() -> void:
     wild.position = Vector2(900, 380)
     world.get_node("Actors").add_child(wild)
     wild.set_physics_process(false)
-    check(wild.max_hp == 14400 and wild.attack_damage == 810, "Lv90 wild proportional stats")
+    check(wild.max_hp == 3008 and wild.attack_damage == 129, "Lv90 gentler scaling")
     wild.hp = wild.max_hp / 2
     partner.progress.restore_data({"level": 10})
-    check(wild.max_hp == 1600 and wild.hp == 800 and wild.attack_damage == 90, "Live rescale preserves half HP")
+    check(wild.max_hp == 448 and wild.hp == 224 and wild.attack_damage == 21, "Live rescale preserves half HP")
     partner.progress.restore_data({"level": 10, "exp": 1})
-    check(wild.max_hp == 1600 and wild.hp == 800, "Repeated progress events do not compound")
+    check(wild.max_hp == 448 and wild.hp == 224, "Repeated progress events do not compound")
     wild.hp = 1
     partner.progress.restore_data({"level": 1})
     check(wild.hp == 1, "Downscale cannot round living enemy to death")
