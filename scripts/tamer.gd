@@ -76,6 +76,7 @@ var _auto_target: Node2D
 var _navigation_repath_left: float = 0.0
 var _stuck_left: float = 0.0
 var _last_navigation_position: Vector2
+var _last_touch_press_msec: int = -1000
 
 func _ready() -> void:
     HybridInput.ensure_actions()
@@ -140,8 +141,14 @@ func _unhandled_input(event: InputEvent) -> void:
     # Web เปิด emulate_touch_from_mouse: คลิกเดียวอาจสร้าง ScreenTouch ให้ปุ่ม HUD
     # แล้ว MouseButton เดิมยังมาถึง _unhandled_input ภายหลัง จึงต้องกัน hitbox HUD ซ้ำที่นี่
     if event is InputEventScreenTouch and event.pressed and not event.canceled:
+        _last_touch_press_msec = Time.get_ticks_msec()
         select_at_screen(event.position)
     elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+        # เมื่อเปิด emulate_mouse_from_touch=true Web mobile จะสร้าง MouseButton ตามหลัง Touch เดิม
+        # กัน event ซ้ำภายใน 350ms เพื่อไม่ให้ target ถูกสั่งโจมตี/ยกเลิกสองครั้ง
+        if Time.get_ticks_msec() - _last_touch_press_msec < 350:
+            get_viewport().set_input_as_handled()
+            return
         if _is_command_ui_at(event.position):
             get_viewport().set_input_as_handled()
             return
