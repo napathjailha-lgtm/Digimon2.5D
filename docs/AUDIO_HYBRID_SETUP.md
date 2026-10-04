@@ -80,7 +80,7 @@ The success sound is only emitted after the storage transaction succeeds.
 
 ## Custom audio files
 
-The current repository has no copyrighted music files. AudioManager therefore contains small original procedural fallback sounds so Web builds work immediately.
+The repository currently contains no production audio assets. AudioManager deliberately stays silent when an audio file is missing. This avoids distorted runtime-generated PCM on Web Mobile and keeps the playback path identical between Web and native Mobile.
 
 To use production audio later:
 
@@ -92,4 +92,4 @@ var evolution_theme: AudioStream = load("res://assets/audio/evolution_theme.ogg"
 AudioManager.play_evolution_theme(evolution_theme)
 ```
 
-Use original/licensed audio rather than copying a commercial Digimon song.
+Use original/licensed audio. Recommended production paths are res://assets/audio/bgm/, res://assets/audio/evolution/, and res://assets/audio/sfx/.
