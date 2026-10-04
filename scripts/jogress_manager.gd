@@ -1,8 +1,7 @@
 class_name JogressManager
 extends Node
-## Jogress ของ Agumon + Gabumon เมื่อทั้งคู่ Lv90
-## หมายเหตุ: repo ปัจจุบันยังไม่มี Omegamon SpriteFrames จึงใช้ภาพ Mega ของตัวที่ active
-## เป็น fallback ชั่วคราว แต่สเตตัส/สกิล/เงื่อนไข Jogress ทำงานจริงและเปลี่ยน asset ภายหลังได้จุดเดียว
+## Jogress ของ Agumon + Gabumon เมื่อ Shared Partner Level ถึง 90
+## ใช้ Sprite Sheet Omegamon จริงของระบบนี้ + JogressCutscene ก่อน commit ร่าง
 
 signal availability_changed(available: bool)
 signal jogress_changed(active: bool)
@@ -16,6 +15,7 @@ var roster: PartnerRoster
 var active: bool = false
 var _omegamon_form: MonsterData
 var _last_available: bool = false
+var _cutscene: JogressCutscene
 
 func configure(owner_tamer: Tamer, owner_partner: PartnerMonster, owner_roster: PartnerRoster) -> void:
     tamer = owner_tamer
@@ -43,28 +43,56 @@ func can_jogress() -> bool:
     return true
 
 func request_jogress() -> bool:
-    if active:
+    if active or is_instance_valid(_cutscene):
         return false
     if not can_jogress():
         if is_instance_valid(partner):
-            partner.feedback.emit("Jogress ต้องมี Agumon และ Gabumon Lv90 ทั้งคู่ และเลือกหนึ่งในสองตัวเป็นคู่หูหลัก")
+            partner.feedback.emit("Jogress ต้องมี Agumon และ Gabumon ในทีม และ Shared Partner Level 90")
         return false
 
-    _omegamon_form = _build_omegamon_form(partner.current_form)
+    _omegamon_form = _build_omegamon_form()
+    if _omegamon_form == null or not _omegamon_form.validation_error().is_empty():
+        partner.feedback.emit("สร้างข้อมูล Omegamon ไม่สำเร็จ")
+        return false
+
     partner.auto_battle = false
     partner.cancel_battle()
+
+    _cutscene = JogressCutscene.new()
+    get_tree().root.add_child(_cutscene)
+    _cutscene.finished.connect(_finish_jogress)
+
+    if not _cutscene.play(partner, _omegamon_form):
+        _cutscene.queue_free()
+        _cutscene = null
+        return false
+
+    partner.feedback.emit("Jogress Evolution...")
+    return true
+
+
+func _finish_jogress(success: bool) -> void:
+    _cutscene = null
+    if not success or not is_instance_valid(partner):
+        return
+
     partner._internal_load = true
     var ok: bool = partner.load_monster_data(_omegamon_form, true)
     partner._internal_load = false
+
     if not ok:
-        return false
+        partner.feedback.emit("Jogress ล้มเหลว: โหลดร่าง Omegamon ไม่สำเร็จ")
+        return
+
     active = true
     partner.feedback.emit("Jogress Evolution: Omegamon")
     jogress_changed.emit(true)
     _refresh_available()
-    return true
 
-func _build_omegamon_form(fallback: MonsterData) -> MonsterData:
+    if is_instance_valid(tamer):
+        tamer.save_party_progress()
+
+func _build_omegamon_form() -> MonsterData:
     var data := MonsterData.new()
     data.id = &"omegamon"
     data.monster_name = "Omegamon"
@@ -72,7 +100,7 @@ func _build_omegamon_form(fallback: MonsterData) -> MonsterData:
     data.max_hp = 1200
     data.attack = 155
     data.move_speed = 300.0
-    data.attack_range = 110.0
+    data.attack_range = 118.0
     data.attack_interval = 0.62
     data.critical_chance = 12.0
     data.critical_multiplier = 1.8
@@ -80,24 +108,73 @@ func _build_omegamon_form(fallback: MonsterData) -> MonsterData:
     data.defense = 35
     data.block_chance = 8.0
     data.evasion_chance = 5.0
-    # ใช้ภาพ Mega ปัจจุบันเป็น fallback จนกว่าจะเพิ่ม SpriteFrames Omegamon จริง
-    data.sprite_frames = fallback.sprite_frames
-    data.sprite_scale = fallback.sprite_scale
-    data.attack_sprite_scale = fallback.attack_sprite_scale
-    data.cast_sprite_scale = fallback.cast_sprite_scale
-    data.idle_animation = fallback.idle_animation
-    data.walk_animation = fallback.walk_animation
-    data.attack_animation = fallback.attack_animation
-    data.cast_animation = fallback.cast_animation
-    data.attack_hit_frame = fallback.attack_hit_frame
+
+    var frames: SpriteFrames = _build_omegamon_frames()
+    if frames == null:
+        return null
+
+    data.sprite_frames = frames
+    data.portrait_texture = frames.get_frame_texture(&"idle", 0)
+    data.sprite_scale = Vector2(0.82, 0.82)
+    data.attack_sprite_scale = Vector2(0.90, 0.90)
+    data.cast_sprite_scale = Vector2(0.90, 0.90)
     data.animation_reference_speed = 300.0
-    data.require_directional_animations = fallback.require_directional_animations
-    data.require_action_animations = fallback.require_action_animations
+    data.idle_animation = &"idle"
+    data.walk_animation = &"walk"
+    data.attack_animation = &"attack"
+    data.cast_animation = &"cast"
+    data.require_directional_animations = false
+    data.require_action_animations = false
+    data.attack_hit_frame = 2
+
     data.evolution_cost = 0.0
     data.ds_drain_per_second = 8.0
-    var jogress_skills: Array[MonsterSkill] = [_grey_sword(), _garuru_cannon()]
+
+    var jogress_skills: Array[MonsterSkill] = [
+        _grey_sword(),
+        _garuru_cannon()
+    ]
     data.skills = jogress_skills
     return data
+
+
+func _build_omegamon_frames() -> SpriteFrames:
+    var sheet := load("res://assets/jogress/omegamon_sheet.svg") as Texture2D
+    if sheet == null:
+        push_error("JogressManager: ไม่พบ Omegamon sprite sheet")
+        return null
+
+    var frames := SpriteFrames.new()
+    if frames.has_animation(&"default"):
+        frames.remove_animation(&"default")
+
+    _add_animation(frames, &"idle", sheet, [0, 1], 3.0, true)
+    _add_animation(frames, &"walk", sheet, [0, 1], 7.0, true)
+    _add_animation(frames, &"attack", sheet, [0, 1, 2, 0], 10.0, false)
+    _add_animation(frames, &"cast", sheet, [0, 1, 3, 0], 10.0, false)
+
+    return frames
+
+
+func _add_animation(
+        frames: SpriteFrames,
+        animation: StringName,
+        sheet: Texture2D,
+        indexes: Array,
+        fps: float,
+        loop: bool
+) -> void:
+    frames.add_animation(animation)
+    frames.set_animation_speed(animation, fps)
+    frames.set_animation_loop(animation, loop)
+
+    for raw_index: Variant in indexes:
+        var index: int = int(raw_index)
+        var atlas := AtlasTexture.new()
+        atlas.atlas = sheet
+        atlas.region = Rect2(index * 256.0, 0.0, 256.0, 256.0)
+        frames.add_frame(animation, atlas)
+
 
 func _grey_sword() -> MonsterSkill:
     var skill := MonsterSkill.new()
