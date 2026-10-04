@@ -21,6 +21,7 @@ func buy(item_id: String, quantity: int = 1) -> bool:
         InventoryManager.remove_item(item_id, quantity)
         return false
     changed.emit()
+    _save_player()
     feedback.emit("ซื้อ %s x%d • -%d Bits" % [item.item_name, quantity, total])
     return true
 
@@ -39,5 +40,12 @@ func sell(item_id: String, quantity: int = 1) -> bool:
         return false
     GameManager.add_bits(item.sell_price * quantity)
     changed.emit()
+    _save_player()
     feedback.emit("ขาย %s x%d • +%d Bits" % [item.item_name, quantity, item.sell_price * quantity])
     return true
+
+func _save_player() -> void:
+    # Inventory.changed อาจเซฟก่อน Bits เปลี่ยน จึง commit snapshot อีกรอบหลัง transaction ครบ
+    var player: Node = InventoryManager.player_node()
+    if is_instance_valid(player) and player.has_method("save_party_progress"):
+        player.call("save_party_progress")
