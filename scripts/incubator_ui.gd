@@ -252,7 +252,6 @@ func _layout() -> void:
     ResponsiveUI.apply_safe_margins(safe, get_viewport(), 12.0)
     panel.custom_minimum_size = Vector2(1020, 620)
     ResponsiveUI.fit_centered(panel, get_viewport(), 14.0)
-    ResponsiveUI.fit_centered.call_deferred(panel, get_viewport(), 14.0)
 
 func _refresh() -> void:
     if not is_open or service == null or not is_instance_valid(tamer):
