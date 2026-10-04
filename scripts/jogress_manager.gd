@@ -1,7 +1,7 @@
 class_name JogressManager
 extends Node
 ## Jogress ของ Agumon + Gabumon เมื่อ Shared Partner Level ถึง 90
-## ใช้ Sprite Sheet Omegamon จริงของระบบนี้ + JogressCutscene ก่อน commit ร่าง
+## ใช้ภาพ Omegamon ที่ generate ใหม่จริง + JogressCutscene ก่อน commit ร่าง
 
 signal availability_changed(available: bool)
 signal jogress_changed(active: bool)
@@ -139,41 +139,40 @@ func _build_omegamon_form() -> MonsterData:
 
 
 func _build_omegamon_frames() -> SpriteFrames:
-    var sheet := load("res://assets/jogress/omegamon_sheet.svg") as Texture2D
-    if sheet == null:
-        push_error("JogressManager: ไม่พบ Omegamon sprite sheet")
+    # ใช้ภาพ Omegamon ที่ generate ใหม่และตัดพื้นหลังแล้ว
+    # ไม่ใช้ SVG placeholder เดิมอีกต่อไป
+    var generated := load("res://assets/jogress/omegamon_generated.png") as Texture2D
+    if generated == null:
+        push_error("JogressManager: ไม่พบภาพ Omegamon ที่ generate ใหม่")
         return null
 
     var frames := SpriteFrames.new()
     if frames.has_animation(&"default"):
         frames.remove_animation(&"default")
 
-    _add_animation(frames, &"idle", sheet, [0, 1], 3.0, true)
-    _add_animation(frames, &"walk", sheet, [0, 1], 7.0, true)
-    _add_animation(frames, &"attack", sheet, [0, 1, 2, 0], 10.0, false)
-    _add_animation(frames, &"cast", sheet, [0, 1, 3, 0], 10.0, false)
+    # ภาพหลักเป็น key art เดียวกัน แต่แบ่ง state animation ให้ CombatAction
+    # ใช้ VFX/scale/impact frame ทำให้ Grey Sword และ Garuru Cannon มีจังหวะร่ายจริง
+    _add_generated_animation(frames, &"idle", generated, 2, 2.2, true)
+    _add_generated_animation(frames, &"walk", generated, 2, 4.0, true)
+    _add_generated_animation(frames, &"attack", generated, 4, 10.0, false)
+    _add_generated_animation(frames, &"cast", generated, 4, 10.0, false)
 
     return frames
 
 
-func _add_animation(
+func _add_generated_animation(
         frames: SpriteFrames,
         animation: StringName,
-        sheet: Texture2D,
-        indexes: Array,
+        texture: Texture2D,
+        frame_count: int,
         fps: float,
         loop: bool
 ) -> void:
     frames.add_animation(animation)
     frames.set_animation_speed(animation, fps)
     frames.set_animation_loop(animation, loop)
-
-    for raw_index: Variant in indexes:
-        var index: int = int(raw_index)
-        var atlas := AtlasTexture.new()
-        atlas.atlas = sheet
-        atlas.region = Rect2(index * 256.0, 0.0, 256.0, 256.0)
-        frames.add_frame(animation, atlas)
+    for _index: int in range(frame_count):
+        frames.add_frame(animation, texture)
 
 
 func _grey_sword() -> MonsterSkill:
