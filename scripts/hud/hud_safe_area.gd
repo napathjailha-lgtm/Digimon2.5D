@@ -18,7 +18,8 @@ static func logical_insets(logical_size: Vector2, physical_size: Vector2,
         (physical_size.y - bounded.end.y) * ratio.y + padding.w)
 
 static func for_viewport(viewport: Viewport) -> Vector4:
-    if not OS.has_feature("mobile"):
+    # Web บนโทรศัพท์ไม่มี feature "mobile" เสมอไป จึงตรวจ touchscreen ด้วย
+    if not HybridPlatform.is_touch_device():
         return Vector4(18, 18, 24, 20)
     var screen: Vector2i = DisplayServer.screen_get_size()
     var safe: Rect2i = DisplayServer.get_display_safe_area()
