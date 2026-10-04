@@ -44,10 +44,12 @@ var _message_left: float = 0.0
 var chat_editing: bool = false
 var party_roster: PartnerRoster
 var jogress_manager: JogressManager
+var _rotate_overlay: ColorRect
 var safe_inset_override := Vector4(-1, -1, -1, -1) # ใช้ทดสอบรอยบาก; ค่า -1 ให้อ่าน OS จริง
 
 func _ready() -> void:
     layer = 10 # อยู่เหนือ CriticalScreenFX ชั้น 5 และใต้ modal ชั้น 80+
+    HybridPlatform.configure_web_touch_surface()
     preferences.load_data()
     tamer.joystick = joystick
     party_roster = PartnerRoster.new()
@@ -114,6 +116,7 @@ func _ready() -> void:
     InventoryManager.feedback.connect(_show_message)
     InventoryManager.item_picked_up.connect(_on_item_picked_up)
     _build_extras()
+    _build_mobile_web_overlay()
     critical_fx = CriticalScreenFX.new()
     critical_fx.name = "CriticalScreenFX"
     add_child(critical_fx)
@@ -160,46 +163,127 @@ func _build_extras() -> void:
     quest_button.pressed.connect(_tracker.request_navigation)
 
 func _layout() -> void:
-    # MarginContainer จัดพื้นที่ปลอดภัย; layout ย่อยยึดมุม/กลางของพื้นที่นี้ ไม่ยึด 1280 ตายตัว
+    # Web-mobile ใช้ viewport จริงของ browser และปรับ HUD ให้พื้นที่นิ้วโป้งไม่ชนกัน
     var viewport_size: Vector2 = get_viewport().get_visible_rect().size
     var inset: Vector4 = safe_inset_override if safe_inset_override.x >= 0 else HudSafeArea.for_viewport(get_viewport())
     var margin: MarginContainer = $Root/Safe
     for index: int in range(4):
         margin.add_theme_constant_override(["margin_left","margin_top","margin_right","margin_bottom"][index], int(inset[index]))
-    combat.scale = Vector2.ONE * preferences.combat_scale
-    var safe_width: float = viewport_size.x - inset.x - inset.z
-    var safe_height: float = viewport_size.y - inset.y - inset.w
+
+    var safe_width: float = maxf(1.0, viewport_size.x - inset.x - inset.z)
+    var safe_height: float = maxf(1.0, viewport_size.y - inset.y - inset.w)
+    var touch_mode: bool = HybridPlatform.is_touch_device()
+    var compact_touch: bool = touch_mode and (safe_width < 1050.0 or safe_height < 620.0)
+
+    # วงสกิลเดิมมีฐาน 374x330; จอมือถือเว็บขนาดเล็กย่อทั้งกลุ่มโดยไม่เปลี่ยน hitbox ภายใน
+    var combat_scale: float = preferences.combat_scale
+    if compact_touch:
+        combat_scale *= 0.86
+    if touch_mode and safe_width < 820.0:
+        combat_scale *= 0.82
+    combat_scale = clampf(combat_scale, 0.68, 1.25)
+    combat.scale = Vector2.ONE * combat_scale
+
+    # Joystick ปรับตามด้านสั้นของ viewport แทนการตรึง 200px ทุกเครื่อง
+    var joystick_side: float = 200.0
+    if touch_mode:
+        joystick_side = clampf(minf(safe_width * 0.23, safe_height * 0.34), 150.0, 200.0)
+    joystick.radius = joystick_side * 0.375
+    joystick.offset_left = inset.x + 8.0
+    joystick.offset_right = joystick.offset_left + joystick_side
+    joystick.offset_bottom = -inset.w
+    joystick.offset_top = joystick.offset_bottom - joystick_side
+
     # กันพื้นที่ Joystick และวงสกิลก่อนกำหนดความกว้างหลอดกลางล่าง
-    var vital_width: float = clampf(safe_width - 232 - 374 * preferences.combat_scale - 52, 300, 460)
+    var combat_width: float = 374.0 * combat_scale
+    var min_vitals: float = 240.0 if compact_touch else 300.0
+    var vital_width: float = clampf(safe_width - joystick_side - combat_width - 44.0, min_vitals, 460.0)
     party_status.offset_left = -vital_width * 0.5
     party_status.offset_right = vital_width * 0.5
-    party_panel.set_compact(safe_height < 660)
+    party_panel.set_compact(compact_touch or safe_height < 660.0)
+
     menu.animations_enabled = preferences.animations_enabled
     GameVisualSettings.motion_enabled = preferences.animations_enabled
     GameVisualSettings.blur_enabled = preferences.blur_enabled
     GameVisualSettings.low_effects = preferences.low_effects
     if not preferences.animations_enabled:
-        # Reduce Motion หยุด Tween ที่ยังเล่น ไม่เพียงเปลี่ยนค่าเมื่อกดครั้งต่อไป
         for fx: Node in get_tree().get_nodes_in_group("button_visual_fx"):
             fx.reset()
         for bar: Node in get_tree().get_nodes_in_group("smooth_texture_bars"):
             bar.snap_to_target()
-    minimap.visible = preferences.minimap_visible
-    joystick.offset_left = inset.x + 8
-    joystick.offset_right = inset.x + 208
-    joystick.offset_bottom = -inset.w
-    joystick.offset_top = -inset.w - 200
+
+    # บนมือถือจอแคบมาก ซ่อน minimap ก่อน แต่ยังเปิดกลับเมื่อหมุน Landscape/จอกว้างขึ้น
+    minimap.visible = preferences.minimap_visible and (not touch_mode or safe_width >= 760.0)
+
+    var chat_width: float = 264.0
+    if touch_mode:
+        chat_width = clampf(safe_width * 0.28, 190.0, 264.0)
     chat_panel.offset_left = inset.x
-    chat_panel.offset_right = inset.x + 264
-    chat_panel.bottom_inset = inset.w + 214
+    chat_panel.offset_right = inset.x + chat_width
+    chat_panel.bottom_inset = inset.w + joystick_side + 14.0
     chat_panel.layout_panel()
     quest_button.visible = chat_panel.collapsed
+
     target_card.offset_top = inset.y
     target_card.offset_bottom = inset.y + 59
     message.offset_top = inset.y + 78
     message.offset_bottom = inset.y + 116
-    exp_strip.position = Vector2(inset.x, viewport_size.y - maxf(4, inset.w - 12))
-    exp_strip.size = Vector2(viewport_size.x - inset.x - inset.z, 4)
+    exp_strip.position = Vector2(inset.x, viewport_size.y - maxf(4.0, inset.w - 12.0))
+    exp_strip.size = Vector2(maxf(1.0, viewport_size.x - inset.x - inset.z), 4)
+
+    _refresh_mobile_web_overlay()
+
+
+func _build_mobile_web_overlay() -> void:
+    # World เป็นเกม Landscape; Portrait ยังคงรับ resize แต่บังคำสั่งสนามเพื่อไม่ให้ผู้เล่นกดผิดตำแหน่ง
+    if not HybridPlatform.is_web_touch() or is_instance_valid(_rotate_overlay):
+        return
+
+    _rotate_overlay = ColorRect.new()
+    _rotate_overlay.name = "WebMobileRotateHint"
+    _rotate_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+    _rotate_overlay.color = Color(0.012, 0.028, 0.050, 0.96)
+    _rotate_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+    _rotate_overlay.z_index = 4090
+    $Root.add_child(_rotate_overlay)
+
+    var center := CenterContainer.new()
+    center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+    center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    _rotate_overlay.add_child(center)
+
+    var stack := VBoxContainer.new()
+    stack.custom_minimum_size = Vector2(300, 180)
+    stack.alignment = BoxContainer.ALIGNMENT_CENTER
+    stack.add_theme_constant_override("separation", 10)
+    center.add_child(stack)
+
+    var icon := Label.new()
+    icon.text = "↻"
+    icon.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    icon.add_theme_font_size_override("font_size", 52)
+    icon.add_theme_color_override("font_color", Color("70d8f4"))
+    stack.add_child(icon)
+
+    var title := Label.new()
+    title.text = "หมุนมือถือเป็นแนวนอน"
+    title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    title.add_theme_font_size_override("font_size", 24)
+    title.add_theme_color_override("font_color", Color.WHITE)
+    stack.add_child(title)
+
+    var detail := Label.new()
+    detail.text = "Joystick + Skill Touch พร้อมใช้งานเมื่ออยู่ใน Landscape"
+    detail.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    detail.add_theme_font_size_override("font_size", 15)
+    detail.add_theme_color_override("font_color", Color("a4bbcf"))
+    stack.add_child(detail)
+
+
+func _refresh_mobile_web_overlay() -> void:
+    if is_instance_valid(_rotate_overlay):
+        _rotate_overlay.visible = HybridPlatform.is_portrait(get_viewport())
 
 func _process(delta: float) -> void:
     # ไม่คำนวณสเตตัสใหม่ทุกเฟรม อัปเดตเฉพาะ lock/cooldown/เป้าหมาย
