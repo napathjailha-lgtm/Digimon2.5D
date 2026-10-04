@@ -9,3 +9,7 @@ item_type = 0
 item_texture = ExtResource("2")
 description = "ฟื้น HP คู่หูปัจจุบัน 80 หน่วย ใช้เมื่อคู่หูมีชีวิตและ HP ไม่เต็มเท่านั้น"
 effect_value = 80
+
+shop_sold = true
+buy_price = 30
+sell_price = 8
