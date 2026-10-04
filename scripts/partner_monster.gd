@@ -804,6 +804,16 @@ func _on_action_impact() -> void:
         return
     var direction: Vector2 = global_position.direction_to(_action_target.global_position)
     _remove_charge_effect()
+
+    # SFX ผูกกับ release/impact frame จริงของ Animation ไม่ใช่ตอนกดปุ่ม
+    # ตอนนี้เปิดตัวอย่างสาย Tentomon; สายอื่นเพิ่ม mapping ได้โดยไม่แก้ระบบ AudioManager
+    if _action_skill != null and is_instance_valid(tamer) and is_instance_valid(tamer.party_roster):
+        var active_family: StringName = &""
+        if not tamer.party_roster.members.is_empty():
+            active_family = StringName(str(tamer.party_roster.members[tamer.party_roster.active_index].get("id", "")))
+        if active_family == &"tentomon":
+            AudioManager.play_sfx(&"electric_attack", -5.0)
+
     if _action_skill == null:
         _create_action_effect(_action_target, Vector2(0, -24), direction,
             CombatActionEffect.Kind.SLASH, Color(1.0, 0.9, 0.55), 22.0, 0.2)

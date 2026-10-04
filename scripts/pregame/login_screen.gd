@@ -17,6 +17,9 @@ func _ready() -> void:
     password_input.text_submitted.connect(func(_text: String) -> void: login())
 
 func login() -> void:
+    # ต้องปลดล็อก Web Audio จาก user gesture เดิม ห้าม defer/await ก่อนคำสั่งนี้
+    AudioManager.unlock_audio()
+    AudioManager.play_sfx(&"ui_click")
     # ไม่กด Login ซ้ำขณะกำลังเปลี่ยน Scene และไม่เก็บ password ใน GameManager
     if _logging_in:
         return

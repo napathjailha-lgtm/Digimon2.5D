@@ -486,6 +486,7 @@ func _return_to_characters() -> void:
         return
     release_for_equipment()
     tamer.save_party_progress()
+    AudioManager.stop_bgm(0.30)
     GameManager.gameplay_active = false
     GameManager.go_to(GameManager.CHARACTER_SCENE)
 

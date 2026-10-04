@@ -88,14 +88,17 @@ func play_for(partner: PartnerMonster) -> bool:
     shake_fx.camera = partner.tamer.get_node_or_null("Camera2D") as Camera2D if is_instance_valid(partner.tamer) else null
     dust.start_dust()
     visual_fx.animate_open()
+    # เริ่ม Evolution Theme พร้อมหรี่ BGM ฉากหลัก โดย AudioManager ทำงานต่อแม้ SceneTree pause
+    AudioManager.play_evolution_theme()
     player.play(&"evolve")
     player.advance(0.0)
     $Watchdog.start()
     return true
 
 func energy_burst() -> void:
-    # AnimationPlayer เรียกตรงจุดระเบิดที่ 1.37s; แรงสั่นมีขอบเขตและจบใน 0.32s
+    # AnimationPlayer เรียกตรงจุดแฟลช 1.37s จึงซิงก์ SFX กับคีย์เฟรมจริง ไม่ใช้ Timer เดาเวลา
     shake_fx.shake(5.0, 0.32)
+    AudioManager.play_sfx(&"evolution_burst", -4.0)
 
 func _input(event: InputEvent) -> void:
     # กิน touch ทั้งจอ ป้องกันการสั่งโจมตี/เลือกเป้าหมายทะลุคัตซีน
@@ -126,6 +129,8 @@ func _finish(success: bool) -> void:
         _partner.abort_digivolve()
         if is_instance_valid(_partner.tamer):
             _partner.tamer.save_party_progress()
+    # success/cancel ต้องคืน BGM เสมอ เพื่อไม่ทิ้ง Evolution Theme ค้างบน Web
+    AudioManager.finish_evolution_theme()
     _restore_pause()
     finished.emit(success)
     queue_free()

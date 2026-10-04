@@ -23,6 +23,8 @@ func _ready() -> void:
         _return_to_file_island.call_deferred()
         return
     QuestManager.set_current_zone(zone_id)
+    # เริ่ม BGM หลังผ่านการตรวจโซนแล้ว
+    AudioManager.play_bgm()
     var state: Dictionary = QuestManager.party_snapshot if not QuestManager.party_snapshot.is_empty() else QuestManager.party_profile
     var tamer: Tamer = $Actors/Tamer
     var partner: PartnerMonster = $Actors/Partner

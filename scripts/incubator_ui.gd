@@ -21,6 +21,7 @@ var progress_bar: ProgressBar
 var inject_button: DigimonTouchButton
 var notice: Label
 var visual_fx: ModalVisualFX
+var hatch_flash: ColorRect
 var _owns_pause: bool = false
 var _previous_back_quit: bool = true
 
@@ -38,6 +39,8 @@ func configure(owner_service: IncubatorService, player: Tamer) -> void:
         service.changed.connect(_on_changed)
     if not service.feedback.is_connected(_show_notice):
         service.feedback.connect(_show_notice)
+    if not service.hatch_completed.is_connected(_on_hatch_completed):
+        service.hatch_completed.connect(_on_hatch_completed)
     if not InventoryManager.changed.is_connected(_deferred_refresh):
         InventoryManager.changed.connect(_deferred_refresh)
 
@@ -236,6 +239,15 @@ func _build() -> void:
 
     visual_fx = ModalVisualFX.attach(root, panel)
 
+    # Flash สีขาวอยู่ชั้นบนสุดและไม่รับ input ใช้เฉพาะจังหวะฟักสำเร็จ
+    hatch_flash = ColorRect.new()
+    hatch_flash.name = "HatchFlash"
+    hatch_flash.color = Color.WHITE
+    hatch_flash.modulate.a = 0.0
+    hatch_flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    hatch_flash.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+    root.add_child(hatch_flash)
+
 func _layout() -> void:
     var view: Vector2 = get_viewport().get_visible_rect().size
     for side: String in ["left", "right", "top", "bottom"]:
@@ -346,6 +358,17 @@ func _on_changed() -> void:
     if is_instance_valid(tamer):
         tamer.save_party_progress()
     _deferred_refresh()
+
+func _on_hatch_completed(_partner_id: StringName) -> void:
+    # Signal ถูกยิงหลังเพิ่ม Digimon เข้า Storage สำเร็จ จึงไม่มีเสียง success หลอกเมื่อ transaction ล้มเหลว
+    AudioManager.play_sfx(&"hatch_success", -3.0)
+    if not is_open or not is_instance_valid(hatch_flash):
+        return
+    hatch_flash.modulate.a = 0.0
+    var tween := create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+    tween.tween_property(hatch_flash, "modulate:a", 0.92, 0.10)
+    tween.tween_property(hatch_flash, "modulate:a", 0.0, 0.34)
+
 
 func _show_notice(text: String) -> void:
     if not is_open:
