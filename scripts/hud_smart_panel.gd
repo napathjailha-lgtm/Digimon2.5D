@@ -31,7 +31,6 @@ func _layout() -> void:
     # Settings/Quest มีปุ่ม 300px สองคอลัมน์ จึง scale ทั้ง panel เมื่อ browser แคบ/เตี้ย
     panel.custom_minimum_size = Vector2(840, 480)
     ResponsiveUI.fit_centered(panel, get_viewport(), 14.0)
-    ResponsiveUI.fit_centered.call_deferred(panel, get_viewport(), 14.0)
 
 func open_kind(value: StringName, title_text: String, content: String, options: Array[Dictionary] = []) -> bool:
     # ไม่แย่ง pause ของ Inventory/Equipment/Cutscene
