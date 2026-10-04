@@ -1,6 +1,6 @@
 class_name VitalsCard
 extends Panel
-## กรอบเลือดแบบเกม MMO: รูปตัวละคร + ชื่อ/Lv + HP แดง + DS น้ำเงิน + EXP ทอง
+## กรอบเลือดแบบเกม MMO: รูปตัวละคร + ชื่อ/Lv + HP + Tamer MP + EXP
 var portrait: TextureRect
 var header: Label
 var level_label: Label
@@ -37,7 +37,7 @@ func _ready() -> void:
     header.name = "Header"
     add_child(header)
     hp_bar = _make_bar("HP", 25, Color("da4249"), true)
-    ds_bar = _make_bar("DS", 42, Color("20a3de"), true)
+    ds_bar = _make_bar("MP", 42, Color("20a3de"), true)
     exp_bar = _make_bar("EXP", 60, Color("d6b461"), false)
     subtitle = ClassicUIStyle.label("", Vector2(80, 66), Vector2(234, 13), 9)
     subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -72,7 +72,7 @@ func _make_bar(key: String, y: float, color: Color, with_value: bool) -> Progres
     return bar
 
 func update_values(actor: Node, ds: float, max_ds: float, title: String, texture: Texture2D) -> void:
-    # ค่า DS ของคู่หูในเกมนี้ใช้ร่วมกับ Tamer จึงระบุใน subtitle
+    # พารามิเตอร์ ds/max_ds คงชื่อเดิมเพื่อ compatibility แต่ค่าที่แสดงคือ Tamer MP
     header.text = title
     level_label.text = "Lv %d" % actor.progress.level
     hp_bar.max_value = maxi(1, actor.max_hp)
@@ -80,11 +80,11 @@ func update_values(actor: Node, ds: float, max_ds: float, title: String, texture
     (hp_bar.get_node("Value") as Label).text = "HP  %d / %d" % [actor.hp, actor.max_hp]
     ds_bar.max_value = maxf(1.0, max_ds)
     ds_bar.value = ds
-    (ds_bar.get_node("Value") as Label).text = "DS  %.0f / %.0f" % [ds, max_ds]
+    (ds_bar.get_node("Value") as Label).text = "Tamer MP  %.0f / %.0f" % [ds, max_ds]
     exp_bar.max_value = actor.progress.max_exp
     exp_bar.value = actor.progress.current_exp
     var percent: float = 100.0 * actor.progress.current_exp / maxf(1, actor.progress.max_exp)
-    subtitle.text = ("DS ร่วมกับ Tamer  •  " if is_partner else "") + "EXP %.1f%%" % percent
+    subtitle.text = ("ใช้ Tamer MP ตอนเปลี่ยนร่าง  •  " if is_partner else "") + "EXP %.1f%%" % percent
     if texture != _last_texture:
         _last_texture = texture
         # ครอปส่วนบนของภาพต้นฉบับเป็น portrait โดยไม่แก้ไฟล์ภาพ
