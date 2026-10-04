@@ -39,6 +39,8 @@ func select_partner(partner_id: StringName) -> void:
         card_buttons[i].set_pressed_no_signal(GameManager.catalog.starters[i].id == partner_id)
 
 func confirm() -> void:
+    AudioManager.unlock_audio()
+    AudioManager.play_sfx(&"ui_click")
     # สร้างจริงเฉพาะกดยืนยัน ถ้ากด Back จะไม่เสีย slot
     if not GameManager.confirm_starter(partner_selected):
         return
