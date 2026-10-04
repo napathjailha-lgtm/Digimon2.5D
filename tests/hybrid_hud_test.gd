@@ -125,6 +125,8 @@ func run() -> void:
     InventoryManager.add_item(egg, 2)
     check(InventoryManager.use_item(InventoryManager.index_of("digitama")) and roster.members.size() == 2,
         "ใช้ไข่รับคู่หูจริงเข้า roster และกินไข่หนึ่งใบ")
+    check(int(roster.members[1].progress.level) == partner.progress.level,
+        "คู่หูที่เพิ่มใหม่รับ Shared Partner Level ปัจจุบันทันที")
     check(InventoryManager.use_item(InventoryManager.index_of("digitama")) and roster.members.size() == 3,
         "ไข่ใบถัดไปไม่ซ้ำ starter/สมาชิกเดิม")
     InventoryManager.add_item(egg, 1)
@@ -139,15 +141,15 @@ func run() -> void:
     tap(hud.party_panel.buttons[1])
     check(roster.active_index == 1 and partner.forms[0] == roster.family(StringName(roster.members[1].id)).forms[0],
         "แตะปาร์ตี้สลับ actor/สายพัฒนาจริง")
-    check(partner.progress.level == 1 and partner.digimon_mp == 100 and tamer.ds == 63,
-        "สมาชิกใหม่ใช้ EXP/MP ของตนเองและไม่เปลี่ยน Tamer MP")
+    check(partner.progress.level == 45 and partner.digimon_mp == 100 and tamer.ds == 63,
+        "สมาชิกใหม่รับ Shared Partner Level เดิมทันที และไม่เปลี่ยน Tamer MP")
 
     partner.hp = 41
     partner.digimon_mp = 29
     roster._process(2.0)
     tap(hud.party_panel.buttons[0])
     check(partner.hp == 55 and partner.digimon_mp == 31 and partner.progress.level == 45,
-        "สลับกลับสมาชิกเดิมต้องคืนเลเวลเดิม ไม่รีเซ็ตเป็น Lv1")
+        "สลับกลับสมาชิกเดิมยังใช้ Shared Partner Level เดิม")
     check(is_equal_approx(partner.cooldown_remaining(skill),3.0), "CD ตัวสำรองยังนับเวลาเกม")
     check(hud.party_status.partner_hp.value == partner.hp, "สลับตัว snap HP ทันที ไม่ไหลจากค่าตัวอื่น")
     get_tree().paused = true
@@ -188,7 +190,8 @@ func run() -> void:
         "ทีมสามตัวรอด JSON และโหลดฉากใหม่")
     check(hud.party_roster.members[1].hp == 41 and hud.party_roster.members[1].mp == 29,
         "HP/MP ตัวสำรองไม่ถูกแทนด้วยค่าตัว active เมื่อ reload")
-    check(partner.progress.level == 45, "เลเวลแยกของคู่หูรอด reload และการสลับตัว")
+    check(partner.progress.level == 45 and hud.party_roster.shared_progress.level == 45,
+        "Shared Partner Level รอด reload และการสลับตัว")
     world.queue_free()
     await get_tree().process_frame
     GameManager.gameplay_active = false
