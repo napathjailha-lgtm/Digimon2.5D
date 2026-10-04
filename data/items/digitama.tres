@@ -4,8 +4,13 @@
 [resource]
 script = ExtResource("1")
 item_id = "digitama"
-item_name = "ไข่ดิจิมอน"
+item_name = "Agumon Digitama"
 item_type = 2
 item_texture = ExtResource("2")
-description = "ฟักเป็นคู่หู Rookie แบบสุ่มจากสายที่ยังไม่มีในทีม ทีมรองรับ 3 ตัวและจะไม่เสียไข่เมื่อทีมเต็ม"
-effect_value = 101
+description = "ฟักสำเร็จจะได้ Agumon 100% ต้อง Inject Vaccine Data 5/5 ที่ Digital Incubator"
+egg_partner_id = &"agumon"
+required_chip_id = "data_chip"
+inject_goal = 5
+inject_success_chance = 0.72
+egg_break_chance = 0.12
+sell_price = 0
