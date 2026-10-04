@@ -148,11 +148,11 @@ func _physics_process(delta: float) -> void:
     if current_form.ds_drain_per_second > 0.0:
         # ลดการใช้ DS ระหว่างคงร่างพัฒนาเหลือ 50% ของค่าที่กำหนดใน Resource
         var balanced_drain: float = current_form.ds_drain_per_second * 0.5
-        if not tamer.consume_ds(balanced_drain * delta):
-            # DS หมดกลับร่างพื้นฐาน ไม่เสีย HP และไม่รีเซ็ตคูลดาวน์
-            tamer.consume_ds(tamer.ds)
+        if not tamer.consume_mp(balanced_drain * delta):
+            # Tamer MP หมดกลับร่างพื้นฐาน ไม่เสีย HP และไม่รีเซ็ตคูลดาวน์
+            tamer.consume_mp(tamer.tamer_mp)
             _apply_form(0, true)
-            feedback.emit("DS หมด: กลับร่างพื้นฐาน")
+            feedback.emit("MP ของ Tamer หมด: กลับร่างพื้นฐาน")
 
     # ตาย/ถูกลบ/ห่าง Tamer เกินกำหนด ให้เลิกไล่และกลับไปเดินตาม
     if is_instance_valid(target):
@@ -224,21 +224,54 @@ func cancel_battle() -> void:
         _change_state(State.IDLE)
 
 func command_skill(slot: int, enemy: WildMonster) -> void:
+    # Skill command จัดการ Target เอง ไม่เรียก command_attack()
+    # เพราะ command_attack() มีหน้าที่ล้าง pending action เมื่อเปลี่ยนเป้า
+    # ซึ่งทำให้คำสั่งสกิลบางจังหวะหลัง Switch/Digivolve ถูกล้างก่อน _battle_tick()
     _pending_page_skill = null
     _pending_page_form = null
+
     if evolution_busy or not can_battle() or current_form == null:
         return
     if slot < 0 or slot >= active_skills.size():
         return
+
     var skill: MonsterSkill = active_skills[slot]
-    if skill == null or cooldown_remaining(skill) > 0.0:
+    if skill == null:
         return
+    if cooldown_remaining(skill) > 0.0:
+        feedback.emit("%s ยังติดคูลดาวน์" % skill.display_name)
+        return
+    if digimon_mp < skill.mp_cost:
+        feedback.emit("Partner MP ไม่พอใช้ %s" % skill.display_name)
+        return
+
     if not is_instance_valid(enemy):
         enemy = find_nearest_enemy()
-    command_attack(enemy)
-    if is_instance_valid(target) and target == enemy:
-        # รับคำสั่งไว้ก่อน ถ้าอยู่นอกระยะจะเดินเข้าหาแล้วค่อยใช้
-        _pending_skill = slot
+    if not is_instance_valid(enemy) or not enemy.is_alive():
+        feedback.emit("ไม่พบเป้าหมายสำหรับใช้สกิล")
+        return
+    if not is_instance_valid(tamer):
+        return
+    if tamer.global_position.distance_to(enemy.global_position) > leash_distance:
+        feedback.emit("เป้าหมายอยู่ไกล Tamer เกินไป")
+        return
+
+    # เปลี่ยนเป้าได้โดยไม่ล้าง slot ที่เพิ่งกด
+    if target != enemy:
+        _cancel_combat_action()
+        _repath_left = 0.0
+    target = enemy
+    if tamer.target != enemy:
+        tamer.set_target(enemy)
+
+    _pending_skill = slot
+    _change_state(State.BATTLE)
+
+    # ถ้าอยู่ในระยะอยู่แล้ว ให้ลองร่ายในเฟรมนี้ทันที
+    # ลดอาการกดแล้วเหมือนไม่ตอบสนองบน Web/PC
+    if global_position.distance_to(target.global_position) <= skill.cast_range and _has_line_of_sight():
+        if _try_skill(slot):
+            _pending_skill = -1
 
 func can_use_skill_from_form(source: MonsterData, slot: int) -> bool:
     # ระบบใหม่อนุญาตเฉพาะสกิลของร่างที่กำลังสวมอยู่เท่านั้น
@@ -448,8 +481,8 @@ func prepare_digivolve() -> MonsterData:
     if not error.is_empty():
         feedback.emit(error)
         return null
-    if not tamer.consume_ds(next_data.evolution_cost):
-        feedback.emit("DS ไม่พอเปลี่ยนร่าง")
+    if not tamer.consume_mp(next_data.evolution_cost):
+        feedback.emit("MP ของ Tamer ไม่พอเปลี่ยนร่าง")
         return null
     _cancel_combat_action() # หยุด wind-up ก่อนคัตซีน
     _reserved_form = next_data
@@ -487,7 +520,7 @@ func abort_digivolve() -> void:
     if not evolution_busy:
         return
     if is_instance_valid(tamer):
-        tamer.restore_ds(_reserved_cost)
+        tamer.restore_mp(_reserved_cost)
     evolution_busy = false
     _reserved_cost = 0.0
     _reserved_form = null

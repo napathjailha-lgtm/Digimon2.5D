@@ -125,12 +125,14 @@ func run() -> void:
     InventoryManager.add_item(egg, 2)
     check(InventoryManager.use_item(InventoryManager.index_of("digitama")) and roster.members.size() == 2,
         "ใช้ไข่รับคู่หูจริงเข้า roster และกินไข่หนึ่งใบ")
+    check(int(roster.members[1].progress.level) == partner.progress.level,
+        "คู่หูที่เพิ่มใหม่รับ Shared Partner Level ปัจจุบันทันที")
     check(InventoryManager.use_item(InventoryManager.index_of("digitama")) and roster.members.size() == 3,
         "ไข่ใบถัดไปไม่ซ้ำ starter/สมาชิกเดิม")
     InventoryManager.add_item(egg, 1)
     check(not InventoryManager.use_item(InventoryManager.index_of("digitama")) and InventoryManager.count("digitama") == 1,
         "ทีมเต็มแล้วไข่ไม่สูญหาย")
-    partner.progress.restore_data({"level":3,"exp":17})
+    partner.progress.restore_data({"level":45,"exp":17})
     partner.refresh_equipment_stats()
     partner.hp = 55
     partner.digimon_mp = 31
@@ -139,14 +141,27 @@ func run() -> void:
     tap(hud.party_panel.buttons[1])
     check(roster.active_index == 1 and partner.forms[0] == roster.family(StringName(roster.members[1].id)).forms[0],
         "แตะปาร์ตี้สลับ actor/สายพัฒนาจริง")
-    check(partner.progress.level == 1 and partner.digimon_mp == 100 and tamer.ds == 63,
-        "สมาชิกใหม่ใช้ EXP/MP ของตนเองและไม่เปลี่ยน DS ของ Tamer")
+    check(partner.progress.level == 45 and partner.digimon_mp == 100 and tamer.ds == 63,
+        "สมาชิกใหม่รับ Shared Partner Level เดิมทันที และไม่เปลี่ยน Tamer MP")
+
+    # Regression: หลังสลับตัวต้องกดสกิลได้ ไม่ถูก command_attack ล้าง pending skill
+    var switch_enemy := get_tree().get_first_node_in_group("wild_monsters") as WildMonster
+    if is_instance_valid(switch_enemy):
+        switch_enemy.global_position = partner.global_position + Vector2(65, 0)
+        partner.digimon_mp = partner.digimon_max_mp
+        partner.skill_cooldowns.clear()
+        var switched_skill: MonsterSkill = partner.active_skills[0]
+        partner.command_skill(0, switch_enemy)
+        check(partner._pending_skill == 0 or partner.cooldown_remaining(switched_skill) > 0.0,
+            "หลังสลับคู่หู Skill 1 ถูก queue/ร่ายได้จริง")
+        partner.cancel_battle()
+
     partner.hp = 41
     partner.digimon_mp = 29
     roster._process(2.0)
     tap(hud.party_panel.buttons[0])
-    check(partner.hp == 55 and partner.digimon_mp == 31 and partner.progress.level == 3,
-        "กลับสมาชิกเดิมไม่แจก HP/MP/Level ใหม่")
+    check(partner.hp == 55 and partner.digimon_mp == 31 and partner.progress.level == 45,
+        "สลับกลับสมาชิกเดิมยังใช้ Shared Partner Level เดิม")
     check(is_equal_approx(partner.cooldown_remaining(skill),3.0), "CD ตัวสำรองยังนับเวลาเกม")
     check(hud.party_status.partner_hp.value == partner.hp, "สลับตัว snap HP ทันที ไม่ไหลจากค่าตัวอื่น")
     get_tree().paused = true
@@ -172,6 +187,13 @@ func run() -> void:
     roster.select_member(0)
     roster.members[1] = original_reserve
     tamer.restore_hp(tamer.max_hp)
+    var omega_test: MonsterData = hud.jogress_manager._build_omegamon_form()
+    check(omega_test != null and omega_test.validation_error().is_empty(),
+        "Omegamon runtime form มี SpriteFrames/Skill ถูกต้อง")
+    check(omega_test.sprite_frames.get_frame_count(&"attack") == 4
+        and omega_test.sprite_frames.get_frame_count(&"cast") == 4,
+        "Omegamon มี Grey Sword/Garuru Cannon animation อย่างน้อย 4 เฟรม")
+
     var saved: Dictionary = JSON.parse_string(JSON.stringify(tamer.capture_party_state()))
     var expected_id: String = str(roster.members[0].id)
     world.queue_free()
@@ -187,7 +209,8 @@ func run() -> void:
         "ทีมสามตัวรอด JSON และโหลดฉากใหม่")
     check(hud.party_roster.members[1].hp == 41 and hud.party_roster.members[1].mp == 29,
         "HP/MP ตัวสำรองไม่ถูกแทนด้วยค่าตัว active เมื่อ reload")
-    check(partner.progress.level == 3, "เลเวลแยกของคู่หูรอด reload")
+    check(partner.progress.level == 45 and hud.party_roster.shared_progress.level == 45,
+        "Shared Partner Level รอด reload และการสลับตัว")
     world.queue_free()
     await get_tree().process_frame
     GameManager.gameplay_active = false

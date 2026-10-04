@@ -1,6 +1,6 @@
 class_name HybridVitals
 extends VBoxContainer
-## ภาพ HUD กลางล่าง แยก HP/DS ของ Tamer และ HP/MP ของคู่หูอย่างชัดเจน
+## ภาพ HUD กลางล่าง แยก Tamer MP (ใช้ Digivolve) และ Partner MP (ใช้สกิล)
 var tamer_hp: HybridVitalsBar
 var partner_hp: HybridVitalsBar
 var ds_bar: HybridVitalsBar
@@ -58,8 +58,8 @@ func _ready() -> void:
     energy.mouse_filter = Control.MOUSE_FILTER_IGNORE
     energy.add_theme_constant_override("separation", 14)
     add_child(energy)
-    _ds_number = _energy_column(energy, "DS", Color("67baff"))
-    _mp_number = _energy_column(energy, "MP", Color("c7a7ed"))
+    _ds_number = _energy_column(energy, "TamerMP", Color("67baff"))
+    _mp_number = _energy_column(energy, "PartnerMP", Color("c7a7ed"))
 
 func _label(text: String, font_size: int) -> Label:
     var result := Label.new()
@@ -95,8 +95,10 @@ func _energy_column(parent: Node, node_name: String, color: Color) -> Label:
     var number: Label = _label("", 12)
     column.add_child(number)
     var bar: HybridVitalsBar = _bar(column, "Bar", color, 4)
-    if node_name == "DS": ds_bar = bar
-    else: mp_bar = bar
+    if node_name == "TamerMP":
+        ds_bar = bar
+    elif node_name == "PartnerMP":
+        mp_bar = bar
     return number
 
 func update_values(tamer: Tamer, partner: PartnerMonster, instant: bool = false) -> void:
@@ -107,11 +109,11 @@ func update_values(tamer: Tamer, partner: PartnerMonster, instant: bool = false)
     _partner_name.text = "%s · Lv%d" % [partner.current_form.monster_name if partner.is_alive() else "DIGITAMA", partner.progress.level]
     _tamer_number.text = "%d / %d" % [tamer.hp, tamer.max_hp]
     _partner_number.text = "%d / %d" % [partner.hp, partner.max_hp]
-    _ds_number.text = "DS  %.0f / %.0f" % [tamer.ds, tamer.max_ds]
-    _mp_number.text = "MP  %.0f / %.0f" % [partner.digimon_mp, partner.digimon_max_mp]
+    _ds_number.text = "T-MP  %.0f / %.0f" % [tamer.tamer_mp, tamer.max_tamer_mp]
+    _mp_number.text = "P-MP  %.0f / %.0f" % [partner.digimon_mp, partner.digimon_max_mp]
     tamer_hp.set_vitals(tamer.hp, tamer.max_hp, "", instant)
     partner_hp.set_vitals(partner.hp, partner.max_hp, "", instant)
-    ds_bar.set_vitals(tamer.ds, tamer.max_ds, "", instant)
+    ds_bar.set_vitals(tamer.tamer_mp, tamer.max_tamer_mp, "", instant)
     mp_bar.set_vitals(partner.digimon_mp, partner.digimon_max_mp, "", instant)
     hunger_bar.set_value(tamer.tamer_hunger)
     stamina_bar.set_value(tamer.tamer_stamina)

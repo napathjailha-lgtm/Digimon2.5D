@@ -6,7 +6,8 @@ signal hp_changed(current: int, maximum: int)
 signal survival_changed(hunger: float, stamina: float)
 signal battle_permission_changed(allowed: bool)
 signal digivolve_requested(partner_node: PartnerMonster)
-signal ds_changed(current: float, maximum: float)
+signal ds_changed(current: float, maximum: float) # compatibility กับเซฟ/UI เก่า
+signal mp_changed(current: float, maximum: float)
 signal target_changed(enemy: WildMonster)
 signal auto_navigation_arrived(target_node: Node2D)
 signal auto_navigation_failed(message: String)
@@ -14,8 +15,8 @@ signal auto_navigation_failed(message: String)
 @export var move_speed: float = 190.0
 @export_range(100.0, 6000.0) var acceleration: float = 1600.0
 @export_range(100.0, 6000.0) var braking: float = 2800.0
-@export var max_ds: float = 100.0
-@export var ds_regen_per_second: float = 3.0
+@export var max_ds: float = 100.0 # storage เดิม; ใช้เป็น Tamer MP
+@export var ds_regen_per_second: float = 3.0 # อัตราฟื้น Tamer MP
 @export var joystick: MobileJoystick
 @export var partner: PartnerMonster
 @export_flags_2d_physics var enemy_layer: int = 4
@@ -57,8 +58,17 @@ var tamer_ds: float = 100.0:
         if is_finite(value):
             tamer_ds = clampf(value,0,max_ds)
 var ds: float:
+    # alias เก่าสำหรับ save migration
     get: return tamer_ds
     set(value): tamer_ds = clampf(value,0,max_ds)
+
+var tamer_mp: float:
+    get: return tamer_ds
+    set(value): tamer_ds = clampf(value, 0.0, max_ds)
+
+var max_tamer_mp: float:
+    get: return max_ds
+    set(value): max_ds = maxf(1.0, value)
 var target: WildMonster
 @onready var navigation_agent: NavigationAgent2D = $NavigationAgent2D
 var _auto_target: Node2D
@@ -101,6 +111,7 @@ func _ready() -> void:
     navigation_agent.avoidance_enabled = false
     animator.update_motion(Vector2.ZERO, animation_reference_speed)
     ds_changed.emit(ds, max_ds)
+    mp_changed.emit(tamer_mp, max_tamer_mp)
     check_battle_permission()
 
 func _physics_process(delta: float) -> void:
@@ -240,21 +251,31 @@ func set_auto_battle(enabled: bool) -> void:
     if is_instance_valid(partner):
         partner.auto_battle = enabled and can_battle() and not survival.is_resting()
 
-func consume_ds(amount: float) -> bool:
-    # ตรวจและหักในจุดเดียว ป้องกันเปลี่ยนร่างโดยไม่มีพลังงาน
-    if not is_finite(amount) or amount < 0.0 or ds < amount:
+func consume_mp(amount: float) -> bool:
+    # Tamer MP ใช้สำหรับ Digivolve/Jogress และค่าใช้จ่ายในการคงร่างเท่านั้น
+    if not is_finite(amount) or amount < 0.0 or tamer_mp < amount:
         return false
-    ds = maxf(0.0, ds - amount)
-    ds_changed.emit(ds, max_ds)
+    tamer_mp = maxf(0.0, tamer_mp - amount)
+    ds_changed.emit(ds, max_ds) # compatibility
+    mp_changed.emit(tamer_mp, max_tamer_mp)
     return true
 
-func restore_ds(amount: float) -> void:
-    if not is_finite(amount) or amount <= 0:
+func restore_mp(amount: float) -> void:
+    if not is_finite(amount) or amount <= 0.0:
         return
-    var next_ds: float = clampf(ds + amount, 0.0, max_ds)
-    if not is_equal_approx(next_ds, ds):
-        ds = next_ds
-        ds_changed.emit(ds, max_ds)
+    var next_mp: float = clampf(tamer_mp + amount, 0.0, max_tamer_mp)
+    if not is_equal_approx(next_mp, tamer_mp):
+        tamer_mp = next_mp
+        ds_changed.emit(ds, max_ds) # compatibility
+        mp_changed.emit(tamer_mp, max_tamer_mp)
+
+func consume_ds(amount: float) -> bool:
+    # API เก่า: ส่งต่อไป Tamer MP เพื่อไม่ให้ save/plugin เดิมพัง
+    return consume_mp(amount)
+
+func restore_ds(amount: float) -> void:
+    # API เก่า: ส่งต่อไป Tamer MP
+    restore_mp(amount)
 
 func start_auto_navigation(target_node: Node2D) -> void:
     if not is_instance_valid(target_node) or not target_node.is_inside_tree():
@@ -360,6 +381,7 @@ func _on_equipment_changed() -> void:
     check_battle_permission()
     hp_changed.emit(hp, max_hp)
     ds_changed.emit(ds, max_ds)
+    mp_changed.emit(tamer_mp, max_tamer_mp)
     save_party_progress()
 
 func capture_party_state() -> Dictionary:

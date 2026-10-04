@@ -70,7 +70,7 @@ func _ready() -> void:
     partner.form_changed.connect(_on_form_changed)
     tamer.target_changed.connect(_refresh_target)
     tamer.battle_permission_changed.connect(_on_battle_permission)
-    for source_signal: Signal in [tamer.hp_changed, tamer.ds_changed, tamer.survival_changed, partner.mp_changed, partner.hp_changed, partner.state_changed, tamer.progress.progress_changed, partner.progress.progress_changed]:
+    for source_signal: Signal in [tamer.hp_changed, tamer.mp_changed, tamer.survival_changed, partner.mp_changed, partner.hp_changed, partner.state_changed, tamer.progress.progress_changed, partner.progress.progress_changed]:
         source_signal.connect(_refresh_bars)
     tamer.progress.leveled_up.connect(_on_tamer_level)
     partner.progress.leveled_up.connect(_on_partner_level)
@@ -226,8 +226,8 @@ func _refresh_bars(_a: Variant = null, _b: Variant = null, _c: Variant = null) -
         digimon_screen.refresh()
 
 func _status_text() -> String:
-    # รายละเอียดแยกเจ้าของชัดเจน ไม่ให้ผู้เล่นเข้าใจว่า DS กับ MP เป็นหลอดเดียวกัน
-    return "TAMER Lv%d  EXP %d/%d\nHP %d/%d  DS %.0f/%.0f\nอิ่ม %.0f/100 • แรง %.0f/100 • %s\n\nPARTNER Lv%d  EXP %d/%d\nHP %d/%d  MP %.0f/%.0f\nATK %d • SPD %.0f • %s" % [tamer.progress.level,tamer.progress.current_exp,tamer.progress.max_exp,tamer.hp,tamer.max_hp,tamer.ds,tamer.max_ds,tamer.tamer_hunger,tamer.tamer_stamina,"พร้อมสู้" if tamer.can_battle() else "ต่อสู้ไม่ได้",partner.progress.level,partner.progress.current_exp,partner.progress.max_exp,partner.hp,partner.max_hp,partner.digimon_mp,partner.digimon_max_mp,partner.attack_power,partner.move_speed,PartnerMonster.State.keys()[partner.state]]
+    # รายละเอียดแยกเจ้าของชัดเจน: Tamer MP ใช้เปลี่ยน/คงร่าง, Partner MP ใช้สกิล
+    return "TAMER Lv%d  EXP %d/%d\nHP %d/%d  MP %.0f/%.0f\nอิ่ม %.0f/100 • แรง %.0f/100 • %s\n\nPARTNER Lv%d  EXP %d/%d\nHP %d/%d  MP %.0f/%.0f\nATK %d • SPD %.0f • %s" % [tamer.progress.level,tamer.progress.current_exp,tamer.progress.max_exp,tamer.hp,tamer.max_hp,tamer.tamer_mp,tamer.max_tamer_mp,tamer.tamer_hunger,tamer.tamer_stamina,"พร้อมสู้" if tamer.can_battle() else "ต่อสู้ไม่ได้",partner.progress.level,partner.progress.current_exp,partner.progress.max_exp,partner.hp,partner.max_hp,partner.digimon_mp,partner.digimon_max_mp,partner.attack_power,partner.move_speed,PartnerMonster.State.keys()[partner.state]]
 
 func _refresh_quest(_id: StringName) -> void:
     var quest: StoryQuest = QuestManager.get_current_quest()
