@@ -28,8 +28,9 @@ func _ready() -> void:
     get_viewport().size_changed.connect(_layout)
 
 func _layout() -> void:
-    # Container จัดกลางจอ ความกว้าง adaptive สูงพอสำหรับตัวเลข/Touch 56px
-    panel.custom_minimum_size = Vector2(minf(840, get_viewport().get_visible_rect().size.x - 64), 480)
+    # Settings/Quest มีปุ่ม 300px สองคอลัมน์ จึง scale ทั้ง panel เมื่อ browser แคบ/เตี้ย
+    panel.custom_minimum_size = Vector2(840, 480)
+    ResponsiveUI.fit_centered(panel, get_viewport(), 14.0)
 
 func open_kind(value: StringName, title_text: String, content: String, options: Array[Dictionary] = []) -> bool:
     # ไม่แย่ง pause ของ Inventory/Equipment/Cutscene

@@ -68,13 +68,9 @@ func configure(tamer: Node, mobile_hud: CanvasLayer) -> void:
     _layout()
 
 func _layout() -> void:
-    # ปรับกรอบตาม Viewport logical size; เกมกำหนด Landscape 1280x720 + canvas_items
+    # Inventory เดิมออกแบบที่ 1184x640; scale ภาพและ hitbox พร้อมกันให้เหลือขอบรอบจอเสมอ
     var panel: Control = $Root/Panel
-    var extent: Vector2 = get_viewport().get_visible_rect().size
-    var factor: float = minf(1.0, minf((extent.x - 48) / 1184, (extent.y - 48) / 640))
-    panel.scale = Vector2.ONE * factor
-    panel.size = Vector2(1184, 640)
-    panel.position = (extent - panel.size * factor) * 0.5
+    ResponsiveUI.fit_absolute_design(panel, get_viewport(), Vector2(1184, 640), 14.0)
 
 func open_screen() -> bool:
     # ไม่แย่ง pause จากอุปกรณ์/คัตซีน และคืนทุก finger ก่อนหยุดเวลา

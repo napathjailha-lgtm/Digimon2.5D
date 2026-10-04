@@ -249,10 +249,9 @@ func _build() -> void:
     root.add_child(hatch_flash)
 
 func _layout() -> void:
-    var view: Vector2 = get_viewport().get_visible_rect().size
-    for side: String in ["left", "right", "top", "bottom"]:
-        safe.add_theme_constant_override("margin_" + side, 22)
-    panel.custom_minimum_size = Vector2(minf(1020.0, view.x - 44.0), minf(620.0, view.y - 44.0))
+    ResponsiveUI.apply_safe_margins(safe, get_viewport(), 12.0)
+    panel.custom_minimum_size = Vector2(1020, 620)
+    ResponsiveUI.fit_centered(panel, get_viewport(), 14.0)
 
 func _refresh() -> void:
     if not is_open or service == null or not is_instance_valid(tamer):

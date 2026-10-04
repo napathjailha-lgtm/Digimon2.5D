@@ -196,10 +196,11 @@ func _section_panel(title: String, subtitle: String, accent: Color) -> PanelCont
     return frame
 
 func _layout() -> void:
-    var view: Vector2 = get_viewport().get_visible_rect().size
-    for side: String in ["left", "right", "top", "bottom"]:
-        safe.add_theme_constant_override("margin_" + side, 22)
-    panel.custom_minimum_size = Vector2(minf(1080.0, view.x - 44.0), minf(620.0, view.y - 44.0))
+    # Child card มี minimum width ของตัวเอง จึง fit ทั้ง Panel รอบจุดกึ่งกลางแทนการบังคับ width อย่างเดียว
+    ResponsiveUI.apply_safe_margins(safe, get_viewport(), 12.0)
+    panel.custom_minimum_size = Vector2(1080, 620)
+    ResponsiveUI.fit_centered(panel, get_viewport(), 14.0)
+    # เรียกซ้ำหลัง Container sort เพื่อให้ pivot ใช้ size จริง
 
 func _refresh() -> void:
     if not is_open or roster == null:

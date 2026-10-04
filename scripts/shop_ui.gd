@@ -179,10 +179,9 @@ func _build() -> void:
     visual_fx = ModalVisualFX.attach(root, panel)
 
 func _layout() -> void:
-    var view: Vector2 = get_viewport().get_visible_rect().size
-    for side: String in ["left", "right", "top", "bottom"]:
-        safe.add_theme_constant_override("margin_" + side, 24)
-    panel.custom_minimum_size = Vector2(minf(900.0, view.x - 48.0), minf(620.0, view.y - 48.0))
+    ResponsiveUI.apply_safe_margins(safe, get_viewport(), 12.0)
+    panel.custom_minimum_size = Vector2(900, 620)
+    ResponsiveUI.fit_centered(panel, get_viewport(), 14.0)
 
 func _set_mode(value: bool) -> void:
     sell_mode = value
