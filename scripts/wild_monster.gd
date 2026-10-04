@@ -13,6 +13,8 @@ const DAMAGE_POPUP_SCENE: PackedScene = preload("res://scenes/damage_popup.tscn"
 ## Inspector เลือก LootTable ของมอนสเตอร์แต่ละชนิด; ไม่กำหนดใช้ตารางสามไอเทมตัวอย่าง
 @export var drop_table: LootTable
 @export var loot_enabled: bool = true
+## ตารางนี้ถูกอ่านเฉพาะ World Boss มอนสเตอร์ทั่วไปไม่มีสิทธิ์แจกอุปกรณ์
+@export var boss_equipment_drops: Array[EquipmentDropEntry] = []
 var _loot_rolled: bool = false
 var _loot_rng := RandomNumberGenerator.new()
 @export var max_hp: int = 160
@@ -121,6 +123,17 @@ func _spawn_loot() -> void:
         # แยกจุดตกเล็กน้อยไม่ให้ไอคอนซ้อน; Loot ไม่เป็นลูกมอนสเตอร์ที่กำลังถูกลบ
         var offset: Vector2 = Vector2.from_angle(float(index) * 2.4) * (10.0 + index * 8.0)
         InventoryManager.create_loot(drops[index].item, int(drops[index].quantity), layer, global_position + offset)
+
+    # อุปกรณ์สวมใส่ดรอปเฉพาะ World Boss และเข้ากระเป๋าอุปกรณ์โดยตรง
+    if is_world_boss:
+        var tamer := get_tree().get_first_node_in_group("tamer") as Tamer
+        if is_instance_valid(tamer):
+            for entry: EquipmentDropEntry in boss_equipment_drops:
+                if entry == null:
+                    continue
+                var equipment_item: EquipmentItemData = entry.roll(_loot_rng)
+                if equipment_item != null and tamer.equipment.grant_item(equipment_item.id, 1):
+                    tamer.equipment.feedback.emit("World Boss ดรอป: " + equipment_item.item_name)
 
 func _spawn_damage_popup(amount: int) -> void:
     var layer: Node2D = popup_layer
