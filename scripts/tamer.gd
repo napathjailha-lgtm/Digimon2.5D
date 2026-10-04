@@ -48,6 +48,7 @@ var hp: int:
     set(value): tamer_hp = value
 var attack_power: int = 0
 var defense: int = 0
+var critical_chance: float = 0.0
 var equipment := EquipmentInventory.new()
 var party_roster: PartnerRoster # สร้างโดย MobileHUD และ initialize หลัง World คืนเซฟ
 var _base_max_ds: float = 100.0
@@ -380,8 +381,9 @@ func apply_progress_stats() -> void:
     var stats: Dictionary = progress.get_effective_stats()
     var bonus: Dictionary = equipment.total_bonuses()
     max_hp = int(stats.max_hp) + int(bonus.hp)
-    attack_power = int(stats.attack)
+    attack_power = int(stats.attack) + int(bonus.attack)
     defense = int(bonus.defense)
+    critical_chance = clampf(float(bonus.critical), 0.0, 100.0)
     move_speed = float(stats.speed) + float(bonus.speed)
     max_ds = _base_max_ds + int(bonus.ds)
 
@@ -400,7 +402,8 @@ func _on_equipment_changed() -> void:
 
 func capture_party_state() -> Dictionary:
     # เก็บแต่ข้อมูลธรรมดา ไม่บันทึก Node หรือ Resource ลง JSON
-    var result: Dictionary = {"ds": ds, "tamer_hp": hp, "tamer_progress": progress.get_save_data(), "equipment": equipment.get_save_data(), "survival":survival.get_save_data()}
+    var result: Dictionary = {"ds": ds, "tamer_hp": hp, "tamer_progress": progress.get_save_data(), "equipment": equipment.get_save_data(), "survival":survival.get_save_data(),
+        "bits": GameManager.bits, "incubator": GameManager.incubator_state.duplicate(true)}
     # Singleton เก็บกระเป๋าของ Tamer ที่ bind อยู่เท่านั้น ไม่ปนข้อมูล Scene/slot เก่า
     if InventoryManager.player_node() == self:
         result["inventory"] = InventoryManager.get_save_data()

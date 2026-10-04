@@ -87,11 +87,7 @@ func _use_error(item: ItemData, player: Node) -> String:
     if item == null or not is_instance_valid(player):
         return "ไม่พบไอเทมหรือ Tamer"
     if item.item_type == ItemData.ItemType.EGG:
-        if not is_instance_valid(player.party_roster) or player.party_roster.available_hatches().is_empty():
-            return "ทีมเต็มหรือมีคู่หูครบทุกสายแล้ว ไข่ยังอยู่ในกระเป๋า"
-        if player.partner.evolution_busy:
-            return "รอคัตซีนเปลี่ยนร่างจบก่อน"
-        return ""
+        return "ต้องนำ Digitama ไปใช้ที่ Digital Incubator กลางหมู่บ้าน"
     if item.item_type != ItemData.ItemType.CONSUMABLE:
         return "ไข่เก็บไว้สำหรับระบบฟัก ส่วนชิปข้อมูลใช้เป็นไอเทมเควสต์"
     if not is_instance_valid(player.partner) or player.partner.evolution_busy:
@@ -123,18 +119,8 @@ func use_item(item_index: int) -> bool:
     var applied: bool = false
     var message: String = ""
     if item.item_type == ItemData.ItemType.EGG:
-        # ตัวอย่างฟักแบบ offline: รับสายที่ยังไม่มี จึงไม่สร้างสมาชิกซ้ำและไม่เสียไข่ฟรี
-        var choices: Array[StringName] = player.party_roster.available_hatches()
-        var selected: StringName = choices.pick_random()
-        if not player.party_roster.add_partner(selected):
-            _busy = false
-            return false
-        _remove(item_index, 1)
         _busy = false
-        changed.emit()
-        item_used.emit(item, 0)
-        feedback.emit("ฟักไข่ได้ %s · แตะรูปในทีมเพื่อสลับ" % player.party_roster.family(selected).display_name)
-        return true
+        return _fail("Digitama ฟักได้เฉพาะที่ Digital Incubator")
     match item.effect_type:
         ItemData.EffectType.TAMER_FOOD:
             var previous_hp: int = player.hp
@@ -159,6 +145,17 @@ func use_item(item_index: int) -> bool:
     changed.emit() # รวม HP/MP/Hunger/Stamina และจำนวนใหม่ใน snapshot เดียว
     item_used.emit(item,healed)
     feedback.emit("ใช้ %s — %s" % [item.item_name,message])
+    return true
+
+func remove_item(item_id: String, quantity: int = 1) -> bool:
+    # API กลางสำหรับร้านค้าและ Incubator ตัดของผ่านจุดเดียว
+    if _busy or quantity <= 0:
+        return false
+    var index: int = index_of(item_id)
+    if index < 0 or int(_items[index].quantity) < quantity:
+        return false
+    _remove(index, quantity)
+    changed.emit()
     return true
 
 func _remove(index: int, quantity: int) -> void:

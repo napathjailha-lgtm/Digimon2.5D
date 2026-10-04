@@ -9,4 +9,6 @@ slot = &"chip"
 icon = ExtResource("2")
 rarity = 1
 description = "โบนัสให้คู่หูทุกระดับร่าง เลเวลและชุดสกิลเดิมยังคงอยู่"
+attack_bonus = 4
+critical_chance_bonus = 2.0
 partner_attack_bonus = 12

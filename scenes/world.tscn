@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=23 format=3]
 [ext_resource type="Script" path="res://scripts/depth/party_depth_camera.gd" id="depth_camera"]
 [ext_resource type="Script" path="res://scripts/story_world.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/tamer.tscn" id="2"]
@@ -13,6 +13,8 @@
 [ext_resource type="Resource" path="res://data/openworld/file_island_layout.tres" id="layout"]
 [ext_resource type="PackedScene" path="res://scenes/wild_monster_crab.tscn" id="wild_crab"]
 [ext_resource type="PackedScene" path="res://scenes/safe_zone.tscn" id="safe_zone"]
+[ext_resource type="Script" path="res://scripts/world_service_controller.gd" id="service_controller"]
+[ext_resource type="Script" path="res://scripts/world_service_point.gd" id="service_point"]
 [sub_resource type="NavigationPolygon" id="nav"]
 vertices = PackedVector2Array(44, 44, 1236, 44, 1236, 676, 44, 676)
 polygons = [PackedInt32Array(0, 1, 2, 3)]
@@ -20,6 +22,8 @@ polygons = [PackedInt32Array(0, 1, 2, 3)]
 size = Vector2(1280, 24)
 [sub_resource type="RectangleShape2D" id="vertical"]
 size = Vector2(24, 720)
+[sub_resource type="CircleShape2D" id="service_shape"]
+radius = 52.0
 [node name="World" type="Node2D"]
 script = ExtResource("1")
 zone_id = &"file_island"
@@ -87,6 +91,101 @@ position = Vector2(960, 900)
 position = Vector2(2460, 1780)
 [node name="SafeZone" parent="." instance=ExtResource("safe_zone")]
 position = Vector2(850, 1080)
+
+[node name="WorldServiceController" type="Node" parent="."]
+script = ExtResource("service_controller")
+
+[node name="ArchiveNPC" type="Area2D" parent="StoryPoints"]
+position = Vector2(1080, 930)
+collision_layer = 16
+collision_mask = 0
+script = ExtResource("service_point")
+service_id = "archive"
+title = "DIGIMON ARCHIVE"
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StoryPoints/ArchiveNPC"]
+shape = SubResource("service_shape")
+position = Vector2(0, -30)
+[node name="Title" type="Label" parent="StoryPoints/ArchiveNPC"]
+offset_left = -92.0
+offset_top = -112.0
+offset_right = 92.0
+offset_bottom = -84.0
+text = "DIGIMON ARCHIVE"
+horizontal_alignment = 1
+mouse_filter = 2
+[node name="Prompt" type="Label" parent="StoryPoints/ArchiveNPC"]
+offset_left = -70.0
+offset_top = -80.0
+offset_right = 70.0
+offset_bottom = -55.0
+text = "แตะ / คลิก / E"
+horizontal_alignment = 1
+mouse_filter = 2
+[node name="Body" type="Polygon2D" parent="StoryPoints/ArchiveNPC"]
+polygon = PackedVector2Array(-26, -70, 26, -70, 32, 0, -32, 0)
+color = Color(0.15, 0.55, 0.85, 1)
+
+[node name="MerchantNPC" type="Area2D" parent="StoryPoints"]
+position = Vector2(1210, 930)
+collision_layer = 16
+collision_mask = 0
+script = ExtResource("service_point")
+service_id = "shop"
+title = "MERCHANT"
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StoryPoints/MerchantNPC"]
+shape = SubResource("service_shape")
+position = Vector2(0, -30)
+[node name="Title" type="Label" parent="StoryPoints/MerchantNPC"]
+offset_left = -80.0
+offset_top = -112.0
+offset_right = 80.0
+offset_bottom = -84.0
+text = "MERCHANT"
+horizontal_alignment = 1
+mouse_filter = 2
+[node name="Prompt" type="Label" parent="StoryPoints/MerchantNPC"]
+offset_left = -70.0
+offset_top = -80.0
+offset_right = 70.0
+offset_bottom = -55.0
+text = "แตะ / คลิก / E"
+horizontal_alignment = 1
+mouse_filter = 2
+[node name="Body" type="Polygon2D" parent="StoryPoints/MerchantNPC"]
+polygon = PackedVector2Array(-26, -70, 26, -70, 32, 0, -32, 0)
+color = Color(0.85, 0.6, 0.15, 1)
+
+[node name="DigitalIncubator" type="Area2D" parent="StoryPoints"]
+position = Vector2(930, 1080)
+collision_layer = 16
+collision_mask = 0
+script = ExtResource("service_point")
+service_id = "incubator"
+title = "DIGITAL INCUBATOR"
+interaction_radius = 145.0
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StoryPoints/DigitalIncubator"]
+shape = SubResource("service_shape")
+position = Vector2(0, -20)
+[node name="Title" type="Label" parent="StoryPoints/DigitalIncubator"]
+offset_left = -105.0
+offset_top = -100.0
+offset_right = 105.0
+offset_bottom = -72.0
+text = "DIGITAL INCUBATOR"
+horizontal_alignment = 1
+mouse_filter = 2
+[node name="Prompt" type="Label" parent="StoryPoints/DigitalIncubator"]
+offset_left = -70.0
+offset_top = -70.0
+offset_right = 70.0
+offset_bottom = -45.0
+text = "แตะ / คลิก / E"
+horizontal_alignment = 1
+mouse_filter = 2
+[node name="Machine" type="Polygon2D" parent="StoryPoints/DigitalIncubator"]
+polygon = PackedVector2Array(-42, -62, 42, -62, 52, 0, -52, 0)
+color = Color(0.5, 0.28, 0.8, 1)
+
 
 [node name="FieldSpawner0" parent="Spawners" node_paths=PackedStringArray("monster_parent", "popup_layer") instance=ExtResource("4")]
 position = Vector2(1320, 1750)

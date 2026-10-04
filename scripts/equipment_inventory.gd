@@ -12,12 +12,12 @@ var equipped: Dictionary = {}
 var owner: Node # ใช้ Node เพื่อไม่สร้างวงจร dependency กลับไปยังสคริปต์ Tamer
 
 func initialize(tamer: Node) -> void:
-    # เซฟเก่าที่ไม่มี equipment จะได้รับชุดเริ่มต้นในกระเป๋า ยังไม่สวมอัตโนมัติ
+    # เริ่มเกมโดยไม่มีอุปกรณ์ใด ๆ ตามกติกา Boss-Exclusive
+    # Catalog เป็นฐานข้อมูลอย่างเดียว ของจริงเข้ากระเป๋าเมื่อ World Boss ดรอป
     owner = tamer
-    # โหลดขณะเล่นแทน preload ในคลาสที่อ้าง Tamer กลับ เพื่อไม่ค้าง Resource ที่ exit
     catalog = load(CATALOG_PATH) as EquipmentCatalog
-    for item: EquipmentItemData in catalog.items:
-        bag[String(item.id)] = 1
+    bag.clear()
+    equipped.clear()
 
 func item_at(slot_id: StringName) -> EquipmentItemData:
     return catalog.find_item(StringName(equipped.get(String(slot_id), ""))) if catalog != null else null
@@ -85,7 +85,7 @@ func grant_item(item_id: StringName, quantity: int = 1) -> bool:
 
 func total_bonuses() -> Dictionary:
     # รวมใหม่จากช่องจริงทุกครั้ง ไม่เพิ่มซ้ำเมื่อรีเฟรช UI / เปลี่ยนร่าง
-    var result: Dictionary = {"hp":0, "ds":0, "defense":0, "speed":0.0, "partner_hp":0, "partner_attack":0, "partner_speed":0.0}
+    var result: Dictionary = {"attack":0, "hp":0, "ds":0, "defense":0, "critical":0.0, "speed":0.0, "partner_hp":0, "partner_attack":0, "partner_speed":0.0}
     for slot_id: StringName in SLOTS:
         var item: EquipmentItemData = item_at(slot_id)
         if item != null:

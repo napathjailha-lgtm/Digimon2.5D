@@ -4,8 +4,11 @@
 [resource]
 script = ExtResource("1")
 item_id = "data_chip"
-item_name = "ชิปข้อมูล"
-item_type = 1
+item_name = "Vaccine Data Chip"
+item_type = 4
 item_texture = ExtResource("2")
-description = "ชิปข้อมูลจากมอนสเตอร์ป่า เก็บเป็นวัตถุดิบเควสต์ ไม่ใช่ชิปสวมใส่ Digivice"
-effect_value = 0
+description = "ใช้ Inject ข้อมูลให้ Digitama สาย Vaccine"
+chip_family = &"vaccine"
+shop_sold = true
+buy_price = 45
+sell_price = 12

@@ -26,6 +26,10 @@ var partner_selected: StringName = &""
 var tamer_name: String = "Tamer"
 var current_level: int = 1
 var current_form: StringName = &""
+const DEFAULT_BITS: int = 500
+signal bits_changed(current: int)
+var bits: int = DEFAULT_BITS
+var incubator_state: Dictionary = {}
 var gameplay_active: bool = false
 var loading_target: String = LOGIN_SCENE
 var _transition_pending: bool = false
@@ -81,6 +85,8 @@ func login_demo(user: String, password: String, server_id: String) -> bool:
     tamer_name = "Tamer"
     current_level = 1
     current_form = &""
+    bits = DEFAULT_BITS
+    incubator_state.clear()
     load_roster()
     return true
 
@@ -208,6 +214,9 @@ func prepare_adventure() -> bool:
     current_level = int(QuestManager.party_profile.get("tamer_progress", {}).get("level", 1))
     var partner: StarterPartnerData = selected_partner_data()
     current_form = StringName(str(QuestManager.party_profile.get("form_id", partner.forms[0].id if partner != null else &"rookie")))
+    bits = maxi(0, int(QuestManager.party_profile.get("bits", DEFAULT_BITS)))
+    incubator_state = QuestManager.party_profile.get("incubator", {}).duplicate(true) if QuestManager.party_profile.get("incubator", {}) is Dictionary else {}
+    bits_changed.emit(bits)
     return true
 
 func sync_party(profile: Dictionary) -> void:
@@ -219,6 +228,24 @@ func sync_party(profile: Dictionary) -> void:
     if int(characters[selected_slot].get("level", 1)) != current_level:
         characters[selected_slot]["level"] = current_level
         save_roster()
+
+func can_afford_bits(amount: int) -> bool:
+    return amount >= 0 and bits >= amount
+
+func spend_bits(amount: int) -> bool:
+    # หัก Bits เฉพาะเมื่อยอดคงเหลือเพียงพอ
+    if amount <= 0 or bits < amount:
+        return false
+    bits -= amount
+    bits_changed.emit(bits)
+    return true
+
+func add_bits(amount: int) -> bool:
+    if amount <= 0:
+        return false
+    bits = mini(2_000_000_000, bits + amount)
+    bits_changed.emit(bits)
+    return true
 
 func import_legacy_character() -> bool:
     # คัดลอกเซฟ v15 ไปช่องใหม่ เก็บไฟล์ต้นฉบับและภาพ/ร่างคู่หูเดิมครบ
@@ -257,6 +284,8 @@ func logout() -> void:
     tamer_name = "Tamer"
     current_level = 1
     current_form = &""
+    bits = DEFAULT_BITS
+    incubator_state.clear()
     pending_character.clear()
     creation_preview.clear()
     _empty_roster()

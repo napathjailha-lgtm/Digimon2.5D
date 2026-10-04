@@ -26,6 +26,10 @@ func _ready() -> void:
     var state: Dictionary = QuestManager.party_snapshot if not QuestManager.party_snapshot.is_empty() else QuestManager.party_profile
     var tamer: Tamer = $Actors/Tamer
     var partner: PartnerMonster = $Actors/Partner
+    # คืนข้อมูล Economy/Incubator ก่อนเปิด UI บนแผนที่
+    GameManager.bits = maxi(0, int(state.get("bits", GameManager.DEFAULT_BITS)))
+    GameManager.incubator_state = state.get("incubator", {}).duplicate(true) if state.get("incubator", {}) is Dictionary else {}
+    GameManager.bits_changed.emit(GameManager.bits)
     if not state.is_empty():
         if state.get("tamer_progress", {}) is Dictionary:
             tamer.progress.restore_data(state.get("tamer_progress", {}))
