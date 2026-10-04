@@ -17,6 +17,9 @@ var _finger: int = -1
 var visual_fx: MobileButtonFX
 
 func _ready() -> void:
+    # ลงทะเบียน hitbox ของปุ่ม HUD เพื่อให้ Web/PC mouse click ไม่ทะลุไปยังสนาม
+    # โปรเจกต์เปิด emulate_touch_from_mouse จึงมีทั้ง ScreenTouch และ MouseButton จากคลิกเดียวกัน
+    add_to_group("touch_commands")
     mouse_filter = Control.MOUSE_FILTER_IGNORE
     var label := Label.new()
     label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -59,6 +62,16 @@ func _input(event: InputEvent) -> void:
     elif event is InputEventScreenDrag and event.index == _finger:
         visual_fx.set_down(not locked and visual_fx.contains_screen_point(event.position))
         get_viewport().set_input_as_handled()
+
+func contains_screen_point(screen_point: Vector2) -> bool:
+    # ใช้ hitbox พักเดียวกับระบบ Touch ป้องกัน Tween ย่อปุ่มแล้วเกิดช่องคลิกทะลุ
+    if not is_visible_in_tree():
+        return false
+    if is_instance_valid(visual_fx):
+        return visual_fx.contains_screen_point(screen_point)
+    var local: Vector2 = get_global_transform_with_canvas().affine_inverse() * screen_point
+    return Rect2(Vector2.ZERO, size).has_point(local)
+
 
 func set_caption(value: String) -> void:
     if caption == value and _label != null and _label.text == value:
