@@ -171,16 +171,17 @@ func _build() -> void:
 func _layout() -> void:
     if hud == null:
         return
-    # ใช้ขอบ Safe Area ชุดเดียวกับ HUD ป้องกันรอยบาก/แถบ gesture บังปุ่ม
-    var source: MarginContainer = hud.get_node("Root/Safe") as MarginContainer
-    for side: String in ["left", "right", "top", "bottom"]:
-        safe.add_theme_constant_override("margin_" + side, maxi(16, source.get_theme_constant("margin_" + side)))
+
+    # ใช้ Safe Area เดียวกับ HUD แล้ว scale Panel ทั้งก้อนเมื่อ child minimum size ใหญ่กว่าพื้นที่จริง
+    ResponsiveUI.apply_safe_margins(safe, get_viewport(), 12.0)
     var view: Vector2 = get_viewport().get_visible_rect().size
-    var width: float = view.x - safe.get_theme_constant("margin_left") - safe.get_theme_constant("margin_right")
-    var height: float = view.y - safe.get_theme_constant("margin_top") - safe.get_theme_constant("margin_bottom")
-    panel.custom_minimum_size = Vector2(minf(780, width), minf(660, height))
-    # Scroll ทำให้เนื้อหาไม่ดันหน้าต่างทะลุ Safe Area เมื่อพื้นที่แนวตั้งลดลง
-    scroll.custom_minimum_size = Vector2(0, minf(620, height - 40))
+    var width: float = maxf(1.0, view.x - safe.get_theme_constant("margin_left") - safe.get_theme_constant("margin_right"))
+    var height: float = maxf(1.0, view.y - safe.get_theme_constant("margin_top") - safe.get_theme_constant("margin_bottom"))
+
+    panel.custom_minimum_size = Vector2(780, 660)
+    scroll.custom_minimum_size = Vector2(0, minf(620.0, maxf(300.0, height - 40.0)))
+    ResponsiveUI.fit_centered(panel, get_viewport(), 14.0)
+
 
 func open_screen() -> bool:
     if is_open or hud == null or get_tree().paused or hud.partner.evolution_busy:
