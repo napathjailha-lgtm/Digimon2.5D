@@ -224,21 +224,54 @@ func cancel_battle() -> void:
         _change_state(State.IDLE)
 
 func command_skill(slot: int, enemy: WildMonster) -> void:
+    # Skill command จัดการ Target เอง ไม่เรียก command_attack()
+    # เพราะ command_attack() มีหน้าที่ล้าง pending action เมื่อเปลี่ยนเป้า
+    # ซึ่งทำให้คำสั่งสกิลบางจังหวะหลัง Switch/Digivolve ถูกล้างก่อน _battle_tick()
     _pending_page_skill = null
     _pending_page_form = null
+
     if evolution_busy or not can_battle() or current_form == null:
         return
     if slot < 0 or slot >= active_skills.size():
         return
+
     var skill: MonsterSkill = active_skills[slot]
-    if skill == null or cooldown_remaining(skill) > 0.0:
+    if skill == null:
         return
+    if cooldown_remaining(skill) > 0.0:
+        feedback.emit("%s ยังติดคูลดาวน์" % skill.display_name)
+        return
+    if digimon_mp < skill.mp_cost:
+        feedback.emit("Partner MP ไม่พอใช้ %s" % skill.display_name)
+        return
+
     if not is_instance_valid(enemy):
         enemy = find_nearest_enemy()
-    command_attack(enemy)
-    if is_instance_valid(target) and target == enemy:
-        # รับคำสั่งไว้ก่อน ถ้าอยู่นอกระยะจะเดินเข้าหาแล้วค่อยใช้
-        _pending_skill = slot
+    if not is_instance_valid(enemy) or not enemy.is_alive():
+        feedback.emit("ไม่พบเป้าหมายสำหรับใช้สกิล")
+        return
+    if not is_instance_valid(tamer):
+        return
+    if tamer.global_position.distance_to(enemy.global_position) > leash_distance:
+        feedback.emit("เป้าหมายอยู่ไกล Tamer เกินไป")
+        return
+
+    # เปลี่ยนเป้าได้โดยไม่ล้าง slot ที่เพิ่งกด
+    if target != enemy:
+        _cancel_combat_action()
+        _repath_left = 0.0
+    target = enemy
+    if tamer.target != enemy:
+        tamer.set_target(enemy)
+
+    _pending_skill = slot
+    _change_state(State.BATTLE)
+
+    # ถ้าอยู่ในระยะอยู่แล้ว ให้ลองร่ายในเฟรมนี้ทันที
+    # ลดอาการกดแล้วเหมือนไม่ตอบสนองบน Web/PC
+    if global_position.distance_to(target.global_position) <= skill.cast_range and _has_line_of_sight():
+        if _try_skill(slot):
+            _pending_skill = -1
 
 func can_use_skill_from_form(source: MonsterData, slot: int) -> bool:
     # ระบบใหม่อนุญาตเฉพาะสกิลของร่างที่กำลังสวมอยู่เท่านั้น
