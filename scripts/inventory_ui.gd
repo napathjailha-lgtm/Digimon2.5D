@@ -179,7 +179,7 @@ func _refresh_popup() -> void:
     use_button.locked = not InventoryManager.can_use_item(item)
     var caption: String = "ใช้ไม่ได้"
     if item.item_type == ItemData.ItemType.EGG:
-        caption = "ฟักไข่"
+        caption = "ไป Incubator"
     if item.item_type == ItemData.ItemType.CONSUMABLE:
         match item.effect_type:
             ItemData.EffectType.TAMER_FOOD: caption = "กิน • อิ่ม +%d" % item.effect_value
