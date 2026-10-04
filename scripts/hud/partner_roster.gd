@@ -11,6 +11,8 @@ const CAPACITY: int = 3
 var tamer: Tamer
 var partner: PartnerMonster
 var members: Array[Dictionary] = []
+## Storage ไม่จำกัดจำนวนและรองรับสายพันธุ์ซ้ำด้วย uid ต่อสมาชิก
+var storage: Array[Dictionary] = []
 var active_index: int = 0
 var initialized: bool = false
 var _switching: bool = false
@@ -54,6 +56,7 @@ func initialize(saved: Dictionary = {}) -> void:
     # World เรียกหลัง restore partner_progress เดิมแล้ว
     # จึงสามารถ migrate เซฟเก่าที่เคยเก็บเลเวลแยกสมาชิกได้โดยไม่ทำเลเวลหาย
     members.clear()
+    storage.clear()
 
     var raw: Variant = saved.get("members", [])
     if raw is Array:
@@ -62,9 +65,24 @@ func initialize(saved: Dictionary = {}) -> void:
                 continue
             var id := StringName(str(entry.get("id", "")))
             var data: StarterPartnerData = family(id)
-            if data == null or data.forms.is_empty() or has_partner(id):
+            if data == null or data.forms.is_empty():
                 continue
-            members.append((entry as Dictionary).duplicate(true))
+            var member: Dictionary = (entry as Dictionary).duplicate(true)
+            _ensure_uid(member)
+            members.append(member)
+
+    var raw_storage: Variant = saved.get("storage", [])
+    if raw_storage is Array:
+        for entry: Variant in raw_storage:
+            if not (entry is Dictionary):
+                continue
+            var stored_id := StringName(str(entry.get("id", "")))
+            var stored_data: StarterPartnerData = family(stored_id)
+            if stored_data == null or stored_data.forms.is_empty():
+                continue
+            var stored: Dictionary = (entry as Dictionary).duplicate(true)
+            _ensure_uid(stored)
+            storage.append(stored)
 
     shared_progress = _resolve_shared_progress(saved)
 
@@ -79,12 +97,15 @@ func initialize(saved: Dictionary = {}) -> void:
             if not starter.forms.is_empty() and starter.forms[0] == partner.forms[0]:
                 id = starter.id
                 break
-        members.append(_capture(id))
+        var first: Dictionary = _capture(id)
+        _ensure_uid(first)
+        members.append(first)
         active_index = 0
     else:
         active_index = 0
+        var saved_uid: String = str(saved.get("active_uid", ""))
         for index: int in range(members.size()):
-            if str(members[index].get("id", "")) == str(saved.get("active_id", "")):
+            if (not saved_uid.is_empty() and str(members[index].get("uid", "")) == saved_uid) or (saved_uid.is_empty() and str(members[index].get("id", "")) == str(saved.get("active_id", ""))):
                 active_index = index
                 break
         if not _apply_member(members[active_index].duplicate(true)):
@@ -139,6 +160,13 @@ func _sync_shared_progress_to_members() -> void:
         members[index]["progress"] = shared_progress.duplicate(true)
 
 
+func _make_uid(id: StringName) -> String:
+    return "%s-%d-%d" % [String(id), Time.get_ticks_usec(), randi()]
+
+func _ensure_uid(entry: Dictionary) -> void:
+    if str(entry.get("uid", "")).is_empty():
+        entry["uid"] = _make_uid(StringName(str(entry.get("id", "partner"))))
+
 func has_partner(id: StringName) -> bool:
     return members.any(
         func(member: Dictionary) -> bool:
@@ -187,15 +215,70 @@ func add_partner(id: StringName) -> bool:
 
 
 func available_hatches() -> Array[StringName]:
+    # Compatibility เท่านั้น ระบบใหม่เลือกชนิดจาก Digitama โดยตรง
     var result: Array[StringName] = []
-    if not initialized or members.size() >= CAPACITY:
-        return result
-
-    for data: StarterPartnerData in GameManager.catalog.starters:
-        if not has_partner(data.id):
+    if initialized:
+        for data: StarterPartnerData in GameManager.catalog.starters:
             result.append(data.id)
-
     return result
+
+func add_hatched_to_storage(id: StringName) -> bool:
+    # ฟักแล้วเข้าคลังเสมอ Party เต็มก็ฟักต่อได้ และเก็บสายพันธุ์ซ้ำได้
+    var data: StarterPartnerData = family(id)
+    if not initialized or data == null or data.forms.is_empty():
+        return false
+    var rookie: MonsterData = data.forms[0]
+    var hp_max: int = rookie.max_hp + int(tamer.equipment.total_bonuses().partner_hp)
+    storage.append({
+        "uid": _make_uid(id), "id": String(id), "form_id": String(rookie.id),
+        "hp": hp_max, "max_hp": hp_max, "mp": partner.digimon_max_mp, "egg": false,
+        "progress": shared_progress.duplicate(true), "cooldowns": {}, "basic_cooldown": 0.0
+    })
+    changed.emit()
+    tamer.save_party_progress()
+    return true
+
+func move_storage_to_party(storage_index: int) -> bool:
+    # เมธอดนี้เรียกจาก Digimon Archive เท่านั้น
+    if not initialized or members.size() >= CAPACITY or storage_index < 0 or storage_index >= storage.size():
+        feedback.emit("Party เต็ม 3 ตัว หรือข้อมูลคลังไม่ถูกต้อง")
+        return false
+    var entry: Dictionary = storage[storage_index]
+    if family(StringName(str(entry.get("id", "")))) == null:
+        return false
+    storage.remove_at(storage_index)
+    members.append(entry)
+    _sync_shared_progress_to_members()
+    changed.emit()
+    tamer.save_party_progress()
+    return true
+
+func move_party_to_storage(party_index: int) -> bool:
+    # ต้องเหลืออย่างน้อย 1 ตัวเพื่อให้ Partner actor ในสนามมีข้อมูลเสมอ
+    if not initialized or members.size() <= 1 or party_index < 0 or party_index >= members.size():
+        feedback.emit("ต้องเหลือคู่หูใน Party อย่างน้อย 1 ตัว")
+        return false
+    _capture_active()
+    var moving: Dictionary = members[party_index].duplicate(true)
+    if party_index == active_index:
+        var next_index: int = 1 if party_index == 0 else 0
+        _switching = true
+        if not _apply_member(members[next_index].duplicate(true)):
+            _switching = false
+            return false
+        members.remove_at(party_index)
+        active_index = next_index - 1 if party_index < next_index else next_index
+        _switching = false
+        switched.emit(active_index)
+    else:
+        members.remove_at(party_index)
+        if party_index < active_index:
+            active_index -= 1
+    storage.append(moving)
+    _sync_shared_progress_to_members()
+    changed.emit()
+    tamer.save_party_progress()
+    return true
 
 
 func select_member(index: int) -> bool:
@@ -345,13 +428,14 @@ func _finite_number(raw: Variant, minimum: float, maximum: float) -> float:
     return minimum
 
 
-func _capture(id: StringName) -> Dictionary:
+func _capture(id: StringName, uid: String = "") -> Dictionary:
     var cooldowns: Dictionary = {}
 
     for key: Variant in partner.skill_cooldowns:
         cooldowns[String(key)] = float(partner.skill_cooldowns[key])
 
     return {
+        "uid": uid if not uid.is_empty() else _make_uid(id),
         "id": String(id),
         "form_id": String(partner.current_form.id),
         "hp": partner.hp,
@@ -371,7 +455,8 @@ func _capture_active() -> void:
     # actor ปัจจุบันคือ source of truth ของ Shared Level ระหว่าง gameplay
     shared_progress = _sanitize_progress(partner.progress.get_save_data())
     members[active_index] = _capture(
-        StringName(members[active_index].get("id", ""))
+        StringName(members[active_index].get("id", "")),
+        str(members[active_index].get("uid", ""))
     )
 
 
@@ -436,8 +521,10 @@ func get_save_data() -> Dictionary:
     _sync_shared_progress_to_members()
 
     return {
-        "version": 2,
+        "version": 3,
         "active_id": members[active_index].get("id", ""),
+        "active_uid": members[active_index].get("uid", ""),
         "shared_progress": shared_progress.duplicate(true),
-        "members": members.duplicate(true)
+        "members": members.duplicate(true),
+        "storage": storage.duplicate(true)
     }
