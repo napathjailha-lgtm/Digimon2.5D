@@ -67,6 +67,8 @@ var _stuck_left: float = 0.0
 var _last_navigation_position: Vector2
 
 func _ready() -> void:
+    HybridInput.ensure_actions()
+    add_to_group("tamer")
     motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
     var initial_hp: int = 200
     if GameManager.gameplay_active:
@@ -103,9 +105,12 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
     get_target() # ล้างเป้าหมายตาย/ถูกลบ ก่อนรับคำสั่งหรืออัปเดต UI
-    # ใช้ความยาวเวกเตอร์จาก Joystick เพื่อเดินช้า/เร็วตามระยะลาก
-    var direction: Vector2 = joystick.move_vector if is_instance_valid(joystick) else Vector2.ZERO
-    # แตะ Joystick เพื่อยกเลิก Auto-Navigation แล้วกลับมาควบคุมเอง
+    # Hybrid Movement: Web/PC ใช้ WASD/Arrow และ Mobile ใช้ Virtual Joystick
+    # ถ้ามีคีย์บอร์ดกดอยู่ให้คีย์บอร์ดมีลำดับความสำคัญ เพื่อไม่ให้ drift จาก joystick ค้าง
+    var keyboard_direction := Input.get_vector(&"move_left", &"move_right", &"move_up", &"move_down")
+    var mobile_direction: Vector2 = joystick.move_vector if is_instance_valid(joystick) else Vector2.ZERO
+    var direction: Vector2 = keyboard_direction if keyboard_direction.length_squared() > 0.0025 else mobile_direction
+    # การควบคุมด้วยมือทุกแพลตฟอร์มยกเลิก Auto-Navigation แล้วกลับมาควบคุมเอง
     if direction.length_squared() > 0.0025:
         cancel_auto_navigation()
     var desired_velocity: Vector2 = direction.limit_length(1.0) * move_speed
@@ -119,8 +124,11 @@ func _physics_process(delta: float) -> void:
         restore_ds(ds_regen_per_second * delta)
 
 func _unhandled_input(event: InputEvent) -> void:
-    # UI รับและ consume touch ของตนเองก่อน จึงไม่กดเลือกศัตรูทะลุปุ่ม
+    # Mobile: แตะศัตรู / Web-PC: คลิกซ้ายศัตรู
+    # UI จะ consume input ของปุ่มก่อน จึงไม่เลือกศัตรูทะลุ HUD
     if event is InputEventScreenTouch and event.pressed and not event.canceled:
+        select_at_screen(event.position)
+    elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
         select_at_screen(event.position)
 
 func select_at_screen(screen_position: Vector2) -> void:
@@ -220,10 +228,9 @@ func command_skill(slot: int) -> void:
         partner.command_skill(slot, get_target())
 
 func command_form_skill(source: MonsterData, slot: int) -> void:
-    # ชุดสกิลต่างร่างใช้คำสั่งแยก ไม่เรียกเปลี่ยนข้อมูลตัวละคร
-    cancel_auto_navigation()
-    if can_battle() and is_instance_valid(partner):
-        partner.command_form_skill(source, slot, get_target())
+    # API เก่าเก็บไว้เพื่อ compatibility แต่ระบบใหม่ห้ามใช้สกิลข้ามร่างเด็ดขาด
+    if is_instance_valid(partner) and source == partner.current_form:
+        command_skill(slot)
 
 func command_digivolve() -> void:
     if can_battle() and is_instance_valid(partner):
