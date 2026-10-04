@@ -95,7 +95,8 @@ func _build_omegamon_form(fallback: MonsterData) -> MonsterData:
     data.require_action_animations = fallback.require_action_animations
     data.evolution_cost = 0.0
     data.ds_drain_per_second = 8.0
-    data.skills = [_grey_sword(), _garuru_cannon()]
+    var jogress_skills: Array[MonsterSkill] = [_grey_sword(), _garuru_cannon()]
+    data.skills = jogress_skills
     return data
 
 func _grey_sword() -> MonsterSkill:
