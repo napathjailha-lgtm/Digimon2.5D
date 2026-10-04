@@ -320,7 +320,7 @@ func refresh() -> void:
     _skill_list.text += "\nชุดสกิลเปลี่ยนตามร่างคู่หู\nอุปกรณ์เพิ่ม ATK ก่อนคำนวณดาเมจสกิล"
     var b: Dictionary = inventory.total_bonuses()
     _stats.text = "HP  %d / %d     DF  %d\nDS  %.0f / %.0f\nSPD  %.0f   •   Tamer สั่งการ" % [tamer.hp, tamer.max_hp, tamer.defense, tamer.ds, tamer.max_ds, tamer.move_speed]
-    _bonus.text = "HP +%d   DS +%d   DF +%d\nSPD +%.0f\nคู่หู HP +%d  ATK +%d" % [b.hp, b.ds, b.defense, b.speed, b.partner_hp, b.partner_attack]
+    _bonus.text = "ATK +%d   HP +%d   DS +%d   DF +%d\nCRIT +%.1f%%   SPD +%.0f\nคู่หู HP +%d  ATK +%d" % [b.attack, b.hp, b.ds, b.defense, b.critical, b.speed, b.partner_hp, b.partner_attack]
     _applied.text = "%s Lv.%d\nHP  %d / %d\nATK  %d    SPD  %.0f" % [tamer.partner.current_form.monster_name, tamer.partner.progress.level, tamer.partner.hp, tamer.partner.max_hp, tamer.partner.attack_power, tamer.partner.move_speed]
     _refresh_details()
 
@@ -336,7 +336,7 @@ func _refresh_details() -> void:
         return
     var bonus: Dictionary = item.bonuses()
     var lines: String = ""
-    var labels: Dictionary = {"hp":"Tamer HP", "ds":"Tamer DS", "defense":"Tamer DF", "speed":"Tamer SPD", "partner_hp":"Partner HP", "partner_attack":"Partner ATK", "partner_speed":"Partner SPD"}
+    var labels: Dictionary = {"attack":"Tamer ATK", "hp":"Tamer HP", "ds":"Tamer DS", "defense":"Tamer DF", "critical":"Tamer CRIT%", "speed":"Tamer SPD", "partner_hp":"Partner HP", "partner_attack":"Partner ATK", "partner_speed":"Partner SPD"}
     for key: String in bonus:
         if float(bonus[key]) != 0:
             lines += "%s  +%.0f   " % [labels[key], bonus[key]]
@@ -346,7 +346,7 @@ func _refresh_details() -> void:
     var previous: EquipmentItemData = inventory.item_at(destination)
     var difference: String = ""
     if selected_slot == &"":
-        var old: Dictionary = previous.bonuses() if previous != null else {"hp":0,"ds":0,"defense":0,"speed":0,"partner_hp":0,"partner_attack":0,"partner_speed":0}
+        var old: Dictionary = previous.bonuses() if previous != null else {"attack":0,"hp":0,"ds":0,"defense":0,"critical":0.0,"speed":0,"partner_hp":0,"partner_attack":0,"partner_speed":0}
         for key: String in bonus:
             var delta: float = float(bonus[key]) - float(old[key])
             if delta != 0:
