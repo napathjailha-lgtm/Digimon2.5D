@@ -20,6 +20,8 @@ var _loot_rng := RandomNumberGenerator.new()
 @export var attack_damage: int = 9
 @export var is_world_boss: bool = false
 @export_range(1.0, 10.0, 0.1) var world_boss_multiplier: float = 2.5
+@export_range(80.0, 1000.0, 10.0) var world_boss_aggro_radius: float = 360.0
+@export_range(0.2, 3.0, 0.05) var world_boss_attack_interval: float = 0.65
 var _base_max_hp: int
 var _base_attack_damage: int
 var _scaled_partner_level: int = 1
@@ -146,11 +148,17 @@ func _physics_process(delta: float) -> void:
     if is_instance_valid(_attacker):
         if not bool(_attacker.call("is_alive")) or _home.distance_to(_attacker.global_position) > leash_distance:
             _attacker = null
+    # World Boss เป็นฝ่าย Aggro เอง ต่างจากมอนสเตอร์ทั่วไปที่โต้กลับเมื่อถูกตี
+    if is_world_boss and not is_instance_valid(_attacker):
+        var tamer := get_tree().get_first_node_in_group("tamer") as Tamer
+        if is_instance_valid(tamer) and is_instance_valid(tamer.partner) and tamer.partner.is_alive():
+            if global_position.distance_to(tamer.partner.global_position) <= world_boss_aggro_radius:
+                _attacker = tamer.partner
     if is_instance_valid(_attacker):
         if global_position.distance_to(_attacker.global_position) > attack_range:
             velocity = _movement_direction(_attacker.global_position) * move_speed
         elif _attack_left <= 0.0:
-            _attack_left = 1.0
+            _attack_left = world_boss_attack_interval if is_world_boss else 1.0
             _attacker.call("take_damage", attack_damage, self)
     else:
         _wander_left -= delta
