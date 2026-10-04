@@ -130,7 +130,7 @@ func run() -> void:
     InventoryManager.add_item(egg, 1)
     check(not InventoryManager.use_item(InventoryManager.index_of("digitama")) and InventoryManager.count("digitama") == 1,
         "ทีมเต็มแล้วไข่ไม่สูญหาย")
-    partner.progress.restore_data({"level":3,"exp":17})
+    partner.progress.restore_data({"level":45,"exp":17})
     partner.refresh_equipment_stats()
     partner.hp = 55
     partner.digimon_mp = 31
@@ -140,13 +140,14 @@ func run() -> void:
     check(roster.active_index == 1 and partner.forms[0] == roster.family(StringName(roster.members[1].id)).forms[0],
         "แตะปาร์ตี้สลับ actor/สายพัฒนาจริง")
     check(partner.progress.level == 1 and partner.digimon_mp == 100 and tamer.ds == 63,
-        "สมาชิกใหม่ใช้ EXP/MP ของตนเองและไม่เปลี่ยน DS ของ Tamer")
+        "สมาชิกใหม่ใช้ EXP/MP ของตนเองและไม่เปลี่ยน Tamer MP")
+
     partner.hp = 41
     partner.digimon_mp = 29
     roster._process(2.0)
     tap(hud.party_panel.buttons[0])
-    check(partner.hp == 55 and partner.digimon_mp == 31 and partner.progress.level == 3,
-        "กลับสมาชิกเดิมไม่แจก HP/MP/Level ใหม่")
+    check(partner.hp == 55 and partner.digimon_mp == 31 and partner.progress.level == 45,
+        "สลับกลับสมาชิกเดิมต้องคืนเลเวลเดิม ไม่รีเซ็ตเป็น Lv1")
     check(is_equal_approx(partner.cooldown_remaining(skill),3.0), "CD ตัวสำรองยังนับเวลาเกม")
     check(hud.party_status.partner_hp.value == partner.hp, "สลับตัว snap HP ทันที ไม่ไหลจากค่าตัวอื่น")
     get_tree().paused = true
@@ -187,7 +188,7 @@ func run() -> void:
         "ทีมสามตัวรอด JSON และโหลดฉากใหม่")
     check(hud.party_roster.members[1].hp == 41 and hud.party_roster.members[1].mp == 29,
         "HP/MP ตัวสำรองไม่ถูกแทนด้วยค่าตัว active เมื่อ reload")
-    check(partner.progress.level == 3, "เลเวลแยกของคู่หูรอด reload")
+    check(partner.progress.level == 45, "เลเวลแยกของคู่หูรอด reload และการสลับตัว")
     world.queue_free()
     await get_tree().process_frame
     GameManager.gameplay_active = false
