@@ -121,11 +121,15 @@ func select_member(index: int) -> bool:
     var candidate: StarterPartnerData = family(StringName(members[index].id))
     if candidate == null or candidate.forms.is_empty():
         return false
+    # บันทึกตัวปัจจุบันก่อน และใช้ deep snapshot ของทั้งสองฝั่ง
+    # ป้องกัน Dictionary อ้างอิงร่วมถูก callback/signal แก้ระหว่างกำลังสลับ
     _capture_active()
     var previous_index: int = active_index
+    var previous_snapshot: Dictionary = members[previous_index].duplicate(true)
+    var target_snapshot: Dictionary = members[index].duplicate(true)
     _switching = true
-    if not _apply_member(members[index]):
-        _apply_member(members[previous_index])
+    if not _apply_member(target_snapshot):
+        _apply_member(previous_snapshot)
         _switching = false
         return false
     active_index = index
@@ -133,13 +137,21 @@ func select_member(index: int) -> bool:
     _capture_active()
     changed.emit()
     switched.emit(index)
+    feedback.emit("สลับคู่หูเป็น %s • Lv%d" % [candidate.display_name, partner.progress.level])
     tamer.save_party_progress()
     return true
 
 func _apply_member(entry: Dictionary) -> bool:
-    var data: StarterPartnerData = family(StringName(entry.id))
+    var data: StarterPartnerData = family(StringName(entry.get("id", "")))
     if data == null or data.forms.is_empty():
         return false
+    # สมาชิกที่เคยถูกสร้างแล้วต้องมี progress ของตัวเองเสมอ
+    # ห้าม fallback เป็น {} แล้ว restore_data() กลับ Lv1 แบบเงียบ ๆ
+    var raw_progress: Variant = entry.get("progress", null)
+    if not (raw_progress is Dictionary) or not raw_progress.has("level"):
+        feedback.emit("ข้อมูลเลเวลของคู่หูไม่สมบูรณ์ จึงยกเลิกการสลับเพื่อป้องกันเลเวลรีเซ็ต")
+        return false
+    var saved_progress: Dictionary = (raw_progress as Dictionary).duplicate(true)
     # ยกเลิก wind-up/คำสั่งสกิลค้างก่อนสวมสมาชิกใหม่ ไม่ส่ง impact ของตัวเก่าไปสร้างดาเมจ
     partner.auto_battle = false
     partner.cancel_page_skill()
@@ -148,10 +160,9 @@ func _apply_member(entry: Dictionary) -> bool:
     partner.velocity = Vector2.ZERO
     if partner._morph_tween != null and partner._morph_tween.is_valid():
         partner._morph_tween.kill()
-    partner.progress.restore_data(entry.get("progress", {}) if entry.get("progress") is Dictionary else {})
+    partner.progress.restore_data(saved_progress)
     partner.forms.assign(data.forms)
     var form: MonsterData = data.forms[0]
-    var saved_progress: Dictionary = entry.get("progress", {}) if entry.get("progress", {}) is Dictionary else {}
     var saved_level: int = clampi(int(saved_progress.get("level", 1)), 1, EvolutionRules.MAX_LEVEL)
     # โหลดร่างที่เซฟไว้ได้ต่อเมื่อเลเวลถึงจริง; ถ้าเซฟเก่าเกินสิทธิ์ให้ลดลงเป็นร่างสูงสุดที่เลเวลรองรับ
     for index: int in range(data.forms.size()):
