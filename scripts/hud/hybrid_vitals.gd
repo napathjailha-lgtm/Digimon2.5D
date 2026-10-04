@@ -58,8 +58,8 @@ func _ready() -> void:
     energy.mouse_filter = Control.MOUSE_FILTER_IGNORE
     energy.add_theme_constant_override("separation", 14)
     add_child(energy)
-    _ds_number = _energy_column(energy, "Tamer MP", Color("67baff"))
-    _mp_number = _energy_column(energy, "Partner MP", Color("c7a7ed"))
+    _ds_number = _energy_column(energy, "TamerMP", Color("67baff"))
+    _mp_number = _energy_column(energy, "PartnerMP", Color("c7a7ed"))
 
 func _label(text: String, font_size: int) -> Label:
     var result := Label.new()
@@ -95,8 +95,10 @@ func _energy_column(parent: Node, node_name: String, color: Color) -> Label:
     var number: Label = _label("", 12)
     column.add_child(number)
     var bar: HybridVitalsBar = _bar(column, "Bar", color, 4)
-    if node_name == "DS": ds_bar = bar
-    else: mp_bar = bar
+    if node_name == "TamerMP":
+        ds_bar = bar
+    elif node_name == "PartnerMP":
+        mp_bar = bar
     return number
 
 func update_values(tamer: Tamer, partner: PartnerMonster, instant: bool = false) -> void:
