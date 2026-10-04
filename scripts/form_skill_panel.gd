@@ -2,7 +2,7 @@ class_name FormSkillPanel
 extends Control
 ## หน้า UI เป็นเพียงแหล่งสกิล ไม่ใช่ร่างจริงของคู่หู; Resource ไม่ถูกแก้ตอนสลับหน้า
 signal skill_requested(slot: int)
-signal form_skill_requested(source: MonsterData, slot: int)
+signal form_skill_requested(source: MonsterData, slot: int) # compatibility; ระบบใหม่จะไม่ emit ข้ามร่าง
 signal page_changed(title: String, index: int, count: int)
 @export var partner: PartnerMonster
 @export var tamer: Tamer
@@ -31,20 +31,19 @@ func configure(owner_partner: PartnerMonster, owner_tamer: Tamer) -> void:
     rebuild(partner.active_skills)
 
 func rebuild(_skills: Array[MonsterSkill]) -> void:
-    # เปลี่ยนร่างจริงแล้วกลับมาหน้าแรกของร่างนั้น; จำนวนเกิน 4 แบ่งเป็นหลายหน้า
+    # แสดงเฉพาะสกิลของร่างปัจจุบัน ร่างอื่น "มองไม่เห็น" ตามกฎใหม่
     pages.clear()
     page_index = 0
-    for source: MonsterData in partner.forms:
-        if source == null:
-            continue
-        for offset: int in range(0, maxi(1, _form_skills(source).size()), 4):
-            if source == partner.current_form and offset == 0:
-                page_index = pages.size()
-            pages.append({"form": source, "offset": offset})
+    if not is_instance_valid(partner) or partner.current_form == null:
+        _draw_page()
+        return
+    var source: MonsterData = partner.current_form
+    for offset: int in range(0, maxi(1, partner.active_skills.size()), SLOT_COUNT):
+        pages.append({"form": source, "offset": offset})
     _draw_page()
 
 func cycle_page() -> void:
-    # ไม่โหลด MonsterData ไม่รีเซ็ต HP/DS/CD; ยกเลิกคำสั่งจากหน้าก่อนที่ยังเดินไปหาเป้า
+    # ใช้เฉพาะกรณีร่างปัจจุบันมีสกิลเกิน 4 ช่อง ไม่ใช้เปลี่ยนไปดูสกิลต่างร่าง
     if pages.size() < 2:
         return
     partner.cancel_page_skill()
@@ -90,7 +89,7 @@ func _draw_page() -> void:
 
 func _page_title() -> String:
     var source: MonsterData = pages[page_index].form
-    return "%s • %d/%d%s" % [source.monster_name, page_index + 1, pages.size(), " • ล็อกเควสต์" if not QuestManager.can_use_form(source) else ""]
+    return "%s • %d/%d" % [source.monster_name, page_index + 1, pages.size()]
 
 func _process(delta: float) -> void:
     # อ่าน CD 20 Hz ก็ลื่นพอสำหรับเลข/วงแหวน; ตอนกดตรวจค่าจริงซ้ำเสมอ
@@ -114,7 +113,7 @@ func _refresh_buttons(_evolving: bool = false) -> void:
             continue
         var remaining: float = partner.cooldown_remaining(skill)
         button.locked = not partner.can_use_skill_from_form(source, slot) or partner.evolution_busy or not partner.can_battle() or remaining > 0.0 or partner.digimon_mp < skill.mp_cost
-        button.set_caption("ล็อก" if not QuestManager.can_use_form(source) else skill.display_name)
+        button.set_caption(skill.display_name)
         (button as HybridCommand).set_cooldown(remaining, skill.cooldown)
 
 func _request_slot(slot: int, expected_id: StringName, expected_revision: int) -> void:
@@ -127,15 +126,15 @@ func _request_slot(slot: int, expected_id: StringName, expected_revision: int) -
     var skill: MonsterSkill = _form_skills(source)[slot]
     if skill.id != expected_id or partner.cooldown_remaining(skill) > 0 or partner.digimon_mp < skill.mp_cost or not partner.can_battle() or partner.evolution_busy:
         return
-    if source == partner.current_form:
-        skill_requested.emit(slot)
-    else:
-        form_skill_requested.emit(source, slot)
+    # source ต้องเป็น current_form จาก guard ด้านบนเสมอ
+    skill_requested.emit(slot)
 
 func release_input() -> void:
     for button: TouchCommand in buttons:
         button.release_input()
 
 func _form_skills(source: MonsterData) -> Array[MonsterSkill]:
-    # ชุด runtime ของร่างปัจจุบันอาจถูกระบบ buff/อุปกรณ์ปรับโดยไม่แก้ Resource
-    return partner.active_skills if source == partner.current_form else source.skills
+    # ต่างร่างคืน Array ว่างเพื่อป้องกันทั้ง UI และ callback เก่าเข้าถึงสกิลข้ามร่าง
+    if not is_instance_valid(partner) or source != partner.current_form:
+        return []
+    return partner.active_skills
