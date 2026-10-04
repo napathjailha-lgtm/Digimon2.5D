@@ -94,6 +94,8 @@ func _ready() -> void:
     if is_instance_valid(tamer):
         tamer.battle_permission_changed.connect(_on_tamer_battle_permission)
     _damage_rng.randomize()
+    # ดิจิมอนมีเลเวลสูงสุด 90 ตามระบบวิวัฒนาการใหม่
+    progress.level_cap = EvolutionRules.MAX_LEVEL
     progress.leveled_up.connect(_on_level_up)
     egg_sprite.hide()
     QuestManager.unlocks_changed.connect(_on_story_unlocks_changed)
@@ -144,7 +146,9 @@ func _physics_process(delta: float) -> void:
         cancel_battle()
 
     if current_form.ds_drain_per_second > 0.0:
-        if not tamer.consume_ds(current_form.ds_drain_per_second * delta):
+        # ลดการใช้ DS ระหว่างคงร่างพัฒนาเหลือ 50% ของค่าที่กำหนดใน Resource
+        var balanced_drain: float = current_form.ds_drain_per_second * 0.5
+        if not tamer.consume_ds(balanced_drain * delta):
             # DS หมดกลับร่างพื้นฐาน ไม่เสีย HP และไม่รีเซ็ตคูลดาวน์
             tamer.consume_ds(tamer.ds)
             _apply_form(0, true)
@@ -237,29 +241,16 @@ func command_skill(slot: int, enemy: WildMonster) -> void:
         _pending_skill = slot
 
 func can_use_skill_from_form(source: MonsterData, slot: int) -> bool:
-    # Skill Cycle ไม่ยกฐาน ATK/HP ของร่างอื่นมาใช้ และไม่ข้ามล็อกเควสต์
-    if source == null or source not in forms or not QuestManager.can_use_form(source):
+    # ระบบใหม่อนุญาตเฉพาะสกิลของร่างที่กำลังสวมอยู่เท่านั้น
+    # ต่อให้ UI/สคริปต์เก่าส่ง Resource ร่างอื่นเข้ามาก็ถูกปฏิเสธที่ gameplay layer
+    if source == null or source != current_form:
         return false
-    var skills: Array[MonsterSkill] = active_skills if source == current_form else source.skills
-    return slot >= 0 and slot < skills.size() and skills[slot] != null
+    return slot >= 0 and slot < active_skills.size() and active_skills[slot] != null
 
 func command_form_skill(source: MonsterData, slot: int, enemy: WildMonster) -> void:
-    # รับ Resource ของร่างในสายคู่หูจริง ไม่รับสกิลปลอมจาก UI หรือ index ค้าง
-    if not can_use_skill_from_form(source, slot) or not can_battle() or evolution_busy:
-        return
+    # Compatibility API: ห้ามข้ามร่าง และส่งต่อเฉพาะร่างปัจจุบัน
     if source == current_form:
         command_skill(slot, enemy)
-        return
-    var skill: MonsterSkill = source.skills[slot]
-    if cooldown_remaining(skill) > 0.0 or not is_instance_valid(tamer) or digimon_mp < skill.mp_cost:
-        return
-    if not is_instance_valid(enemy):
-        enemy = find_nearest_enemy()
-    command_attack(enemy)
-    if is_instance_valid(target) and target == enemy:
-        _pending_skill = -1
-        _pending_page_skill = skill
-        _pending_page_form = source
 
 func cancel_page_skill() -> void:
     # เรียกเมื่อเลือกเป้าหมายใหม่/กลับ Idle/เปลี่ยนร่าง ไม่ทิ้งคำสั่งเดินไปร่ายเก่าไว้
@@ -439,12 +430,19 @@ func get_next_form() -> MonsterData:
     return forms[index] if form_index >= 0 and index < forms.size() else null
 
 func prepare_digivolve() -> MonsterData:
-    # จอง DS เมื่อสุขภาพ Tamer พร้อม เมืองพักเปลี่ยนร่างได้แต่ไม่โจมตี
+    # ปลดล็อกร่างตามเลเวล: Champion 15 / Ultimate 60 / Mega 90
     if evolution_busy or not is_alive() or not is_instance_valid(tamer) or not tamer.can_battle():
         return null
     var next_data: MonsterData = get_next_form()
-    if next_data == null or not QuestManager.can_use_form(next_data):
-        feedback.emit("ร่างถัดไปยังล็อกหรืออยู่ร่างสูงสุดแล้ว")
+    var next_index: int = form_index + 1
+    if next_data == null:
+        feedback.emit("อยู่ร่างสูงสุดแล้ว")
+        return null
+    if not EvolutionRules.can_use_form(progress.level, next_index):
+        feedback.emit("ต้องเลเวล %d เพื่อปลดล็อกร่าง %s" % [EvolutionRules.minimum_level_for_form_index(next_index), next_data.monster_name])
+        return null
+    if not QuestManager.has_flag(next_data.required_story_flag):
+        feedback.emit("ร่างนี้ยังต้องปลดล็อกเงื่อนไขเนื้อเรื่อง")
         return null
     var error: String = next_data.validation_error()
     if not error.is_empty():
@@ -466,7 +464,7 @@ func finish_digivolve() -> bool:
     # Commit หลังคัตซีนจบ ตรวจสิทธิ์อีกครั้งก่อนเปลี่ยนตัวจริงในสนาม
     if not evolution_busy:
         return false
-    if not is_alive() or not is_instance_valid(tamer) or not tamer.can_battle() or current_form != _reserved_previous or not QuestManager.can_use_form(_reserved_form):
+    if not is_alive() or not is_instance_valid(tamer) or not tamer.can_battle() or current_form != _reserved_previous or not _form_unlocked(_reserved_form):
         abort_digivolve()
         return false
     _internal_load = true
@@ -517,8 +515,8 @@ func load_monster_data(data: MonsterData, preserve_hp: bool = true) -> bool:
         feedback.emit(error)
         return false
 
-    if not QuestManager.can_use_form(data):
-        feedback.emit("ร่างนี้ยังล็อกด้วยเควสต์เนื้อเรื่อง")
+    if not _form_unlocked(data):
+        feedback.emit("ร่างนี้ยังไม่ปลดล็อกตามเลเวลหรือเงื่อนไขเนื้อเรื่อง")
         return false
 
     # คำนวณ HP จากค่าระหว่างเล่นก่อนสวมข้อมูลร่างใหม่
@@ -694,8 +692,11 @@ func refresh_equipment_stats() -> void:
         agent.max_speed = move_speed
     hp_changed.emit(hp, max_hp)
 
-func _on_level_up(_new_level: int) -> void:
+func _on_level_up(new_level: int) -> void:
     # โบนัสสเตตัสเป็นค่าคำนวณใหม่ ร่างไข่จะยัง HP 0 ไม่ชุบด้วย Level Up
+    var unlocked_index: int = EvolutionRules.max_form_index_for_level(new_level)
+    if unlocked_index > form_index and unlocked_index < forms.size():
+        feedback.emit("ปลดล็อกร่าง: %s" % forms[unlocked_index].monster_name)
     var previous_max: int = max_hp
     var stats: Dictionary = _effective_stats()
     max_hp = int(stats.max_hp)
@@ -715,11 +716,20 @@ func _change_state(next_state: State) -> void:
         state_changed.emit(state)
 
 func _on_story_unlocks_changed(max_stage: int) -> void:
-    # อ่านค่าปัจจุบันตอน _ready ด้วย เพื่อรองรับโหลด Save / เปลี่ยน Scene
+    # stage เดิมยังเก็บไว้เพื่อ compatibility แต่การปลดร่างหลักใช้เลเวลเป็นตัวกำหนด
     max_story_stage = max_stage
-    if current_form != null and not QuestManager.can_use_form(current_form) and not forms.is_empty():
+    if current_form != null and not QuestManager.has_flag(current_form.required_story_flag) and not forms.is_empty():
         abort_digivolve()
         load_monster_data(forms[0])
+
+func _form_unlocked(data: MonsterData) -> bool:
+    if data == null:
+        return false
+    # Jogress เป็นร่าง runtime พิเศษ ไม่ได้อยู่ใน forms จึงอนุญาตเมื่อ Manager ผ่านเงื่อนไขแล้ว
+    if data.id == &"omegamon":
+        return true
+    var index: int = forms.find(data)
+    return index >= 0 and EvolutionRules.can_use_form(progress.level, index) and QuestManager.has_flag(data.required_story_flag)
 
 func _start_basic_attack() -> bool:
     if not can_battle():

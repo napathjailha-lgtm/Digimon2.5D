@@ -18,6 +18,13 @@ var _loot_rng := RandomNumberGenerator.new()
 @export var max_hp: int = 160
 @export var move_speed: float = 95.0
 @export var attack_damage: int = 9
+@export var is_world_boss: bool = false
+@export_range(1.0, 10.0, 0.1) var world_boss_multiplier: float = 2.5
+@export_range(80.0, 1000.0, 10.0) var world_boss_aggro_radius: float = 360.0
+@export_range(0.2, 3.0, 0.05) var world_boss_attack_interval: float = 0.65
+var _base_max_hp: int
+var _base_attack_damage: int
+var _scaled_partner_level: int = 1
 @export var attack_range: float = 58.0
 @export var wander_radius: float = 100.0
 # Spawner กำหนดให้เดินสุ่มรอบศูนย์กลางจุดเกิด ไม่ใช่รอบตำแหน่งสุ่มแรก
@@ -37,8 +44,15 @@ var _path_goal: Vector2 = Vector2.INF
 
 func _ready() -> void:
     add_to_group("wild_monsters")
+    _base_max_hp = max_hp
+    _base_attack_damage = attack_damage
+    _apply_scaling_from_active_partner()
     hp = max_hp
     _loot_rng.randomize()
+    var tamer := get_tree().get_first_node_in_group("tamer") as Tamer
+    if is_instance_valid(tamer) and is_instance_valid(tamer.partner):
+        # progress_changed ทำงานทั้งตอน Level Up และตอนสลับสมาชิกในทีม
+        tamer.partner.progress.progress_changed.connect(_on_partner_progress_changed)
     if drop_table == null:
         drop_table = load("res://data/items/default_loot.tres") as LootTable
     _home = home_anchor.global_position if is_instance_valid(home_anchor) else global_position
@@ -134,11 +148,17 @@ func _physics_process(delta: float) -> void:
     if is_instance_valid(_attacker):
         if not bool(_attacker.call("is_alive")) or _home.distance_to(_attacker.global_position) > leash_distance:
             _attacker = null
+    # World Boss เป็นฝ่าย Aggro เอง ต่างจากมอนสเตอร์ทั่วไปที่โต้กลับเมื่อถูกตี
+    if is_world_boss and not is_instance_valid(_attacker):
+        var tamer := get_tree().get_first_node_in_group("tamer") as Tamer
+        if is_instance_valid(tamer) and is_instance_valid(tamer.partner) and tamer.partner.is_alive():
+            if global_position.distance_to(tamer.partner.global_position) <= world_boss_aggro_radius:
+                _attacker = tamer.partner
     if is_instance_valid(_attacker):
         if global_position.distance_to(_attacker.global_position) > attack_range:
             velocity = _movement_direction(_attacker.global_position) * move_speed
         elif _attack_left <= 0.0:
-            _attack_left = 1.0
+            _attack_left = world_boss_attack_interval if is_world_boss else 1.0
             _attacker.call("take_damage", attack_damage, self)
     else:
         _wander_left -= delta
@@ -173,3 +193,25 @@ func _movement_direction(goal: Vector2) -> Vector2:
     if _navigation.is_navigation_finished():
         return Vector2.ZERO
     return global_position.direction_to(_navigation.get_next_path_position())
+
+
+func _apply_scaling_from_active_partner() -> void:
+    # Dynamic Scaling: HP/ATK โตตามเลเวลคู่หูที่ใช้งานอยู่
+    var tamer := get_tree().get_first_node_in_group("tamer") as Tamer
+    var level: int = 1
+    if is_instance_valid(tamer) and is_instance_valid(tamer.partner):
+        level = clampi(tamer.partner.progress.level, 1, EvolutionRules.MAX_LEVEL)
+    _scaled_partner_level = level
+
+    # เส้นโค้งค่อนข้างนุ่ม: Lv90 ประมาณ 5.45x จากฐาน
+    var level_scale: float = 1.0 + float(level - 1) * 0.05
+    var boss_scale: float = world_boss_multiplier if is_world_boss else 1.0
+    max_hp = maxi(1, roundi(float(_base_max_hp) * level_scale * boss_scale))
+    attack_damage = maxi(1, roundi(float(_base_attack_damage) * level_scale * boss_scale))
+
+func _on_partner_progress_changed(_level: int, _current_exp: int, _max_exp: int) -> void:
+    # มอนสเตอร์ที่เกิดอยู่แล้วปรับตามเลเวล/สมาชิกใหม่ โดยรักษา %HP เดิมไม่ฮีลฟรี
+    var old_max: int = maxi(1, max_hp)
+    var ratio: float = clampf(float(hp) / float(old_max), 0.0, 1.0)
+    _apply_scaling_from_active_partner()
+    hp = clampi(roundi(float(max_hp) * ratio), 0, max_hp)

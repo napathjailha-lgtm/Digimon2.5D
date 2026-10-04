@@ -70,6 +70,24 @@ func initialize(saved: Dictionary = {}) -> void:
 func has_partner(id: StringName) -> bool:
     return members.any(func(member: Dictionary) -> bool: return str(member.id) == String(id))
 
+func active_member_id() -> StringName:
+    if not initialized or members.is_empty():
+        return &""
+    _capture_active()
+    return StringName(str(members[active_index].get("id", "")))
+
+func member_level(id: StringName) -> int:
+    # Jogress อ่านเลเวลจาก roster ทั้งตัว active และตัวสำรอง โดยไม่ต้องสลับลงสนาม
+    if not initialized:
+        return 0
+    _capture_active()
+    for member: Dictionary in members:
+        if StringName(str(member.get("id", ""))) == id:
+            var progress_data: Variant = member.get("progress", {})
+            if progress_data is Dictionary:
+                return clampi(int(progress_data.get("level", 1)), 1, EvolutionRules.MAX_LEVEL)
+    return 0
+
 func add_partner(id: StringName) -> bool:
     # จุดเชื่อม Hatching/Quest reward; ไม่อนุญาตเกิน 3 ตัวหรือใช้ ID ที่ไม่มีใน Catalog
     var data: StarterPartnerData = family(id)
@@ -133,9 +151,15 @@ func _apply_member(entry: Dictionary) -> bool:
     partner.progress.restore_data(entry.get("progress", {}) if entry.get("progress") is Dictionary else {})
     partner.forms.assign(data.forms)
     var form: MonsterData = data.forms[0]
-    for possible: MonsterData in data.forms:
-        if String(possible.id) == str(entry.get("form_id", "")) and QuestManager.can_use_form(possible) and tamer.can_battle():
-            form = possible
+    var saved_progress: Dictionary = entry.get("progress", {}) if entry.get("progress", {}) is Dictionary else {}
+    var saved_level: int = clampi(int(saved_progress.get("level", 1)), 1, EvolutionRules.MAX_LEVEL)
+    # โหลดร่างที่เซฟไว้ได้ต่อเมื่อเลเวลถึงจริง; ถ้าเซฟเก่าเกินสิทธิ์ให้ลดลงเป็นร่างสูงสุดที่เลเวลรองรับ
+    for index: int in range(data.forms.size()):
+        var possible: MonsterData = data.forms[index]
+        if possible == null or not EvolutionRules.can_use_form(saved_level, index) or not QuestManager.has_flag(possible.required_story_flag):
+            continue
+        form = possible
+        if String(possible.id) == str(entry.get("form_id", "")):
             break
     if not form.validation_error().is_empty():
         return false

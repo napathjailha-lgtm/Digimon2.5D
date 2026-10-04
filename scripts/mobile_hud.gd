@@ -43,6 +43,7 @@ var _target_refresh_left: float = 0.0
 var _message_left: float = 0.0
 var chat_editing: bool = false
 var party_roster: PartnerRoster
+var jogress_manager: JogressManager
 var safe_inset_override := Vector4(-1, -1, -1, -1) # ใช้ทดสอบรอยบาก; ค่า -1 ให้อ่าน OS จริง
 
 func _ready() -> void:
@@ -54,6 +55,12 @@ func _ready() -> void:
     tamer.add_child(party_roster)
     tamer.party_roster = party_roster
     party_roster.configure(tamer)
+    jogress_manager = JogressManager.new()
+    jogress_manager.name = "JogressManager"
+    tamer.add_child(jogress_manager)
+    jogress_manager.configure(tamer, partner, party_roster)
+    jogress_manager.availability_changed.connect(func(_available: bool): _refresh_combat_controls())
+    jogress_manager.jogress_changed.connect(func(_active: bool): _refresh_combat_controls())
     party_panel.configure(party_roster)
     party_panel.switch_requested.connect(_switch_party)
     party_panel.empty_pressed.connect(func(): _show_message("ฟักไข่ในกระเป๋าเพื่อเพิ่มคู่หูในทีม"))
@@ -72,8 +79,10 @@ func _ready() -> void:
     skill_panel.page_changed.connect(_on_page_changed)
     skill_panel.configure(partner, tamer)
     skill_panel.skill_requested.connect(tamer.command_skill)
+    # form_skill_requested เก็บ signal ไว้เพื่อ compatibility แต่ UI ใหม่ไม่ emit สกิลต่างร่าง
     skill_panel.form_skill_requested.connect(tamer.command_form_skill)
-    cycle_button.pressed.connect(skill_panel.cycle_page)
+    cycle_button.set_caption("Jogress [J]")
+    cycle_button.pressed.connect(jogress_manager.request_jogress)
     attack_button.pressed.connect(tamer.command_attack)
     evolve_button.pressed.connect(tamer.command_digivolve)
     auto_button.pressed.connect(_toggle_auto)
@@ -346,6 +355,30 @@ func _request_digivolve(partner_node: PartnerMonster) -> void:
         return
     active_cutscene = cutscene
 
+func _unhandled_input(event: InputEvent) -> void:
+    # Web/PC shortcuts: Space = โจมตี, 1-4 = สกิลปัจจุบัน, J = Jogress
+    # ใช้ unhandled_input เพื่อไม่แย่งปุ่มจาก LineEdit/เมนูที่กำลังรับคีย์บอร์ด
+    if chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open):
+        return
+    if event.is_action_pressed(&"basic_attack"):
+        tamer.command_attack()
+        get_viewport().set_input_as_handled()
+    elif event.is_action_pressed(&"skill_1"):
+        tamer.command_skill(0)
+        get_viewport().set_input_as_handled()
+    elif event.is_action_pressed(&"skill_2"):
+        tamer.command_skill(1)
+        get_viewport().set_input_as_handled()
+    elif event.is_action_pressed(&"skill_3"):
+        tamer.command_skill(2)
+        get_viewport().set_input_as_handled()
+    elif event.is_action_pressed(&"skill_4"):
+        tamer.command_skill(3)
+        get_viewport().set_input_as_handled()
+    elif event.is_action_pressed(&"jogress") and is_instance_valid(jogress_manager):
+        jogress_manager.request_jogress()
+        get_viewport().set_input_as_handled()
+
 func _input(event: InputEvent) -> void:
     # บัง touch เฉพาะ card ที่แสดง ปล่อยพื้นที่สนามที่เหลือให้เลือกศัตรู
     if event is InputEventScreenTouch:
@@ -466,10 +499,12 @@ func _refresh_combat_controls() -> void:
     auto_button.locked = attack_button.locked
     auto_button.set_caption("Auto ON" if partner.auto_battle else "Auto OFF")
     var next_index: int = partner.form_index + 1
-    evolve_button.locked = blocked or partner.evolution_busy or not partner.is_alive() or not tamer.can_battle() or next_index >= partner.forms.size()
+    evolve_button.locked = blocked or partner.evolution_busy or not partner.is_alive() or not tamer.can_battle() or next_index < 0 or next_index >= partner.forms.size()
     if not evolve_button.locked:
-        evolve_button.locked = not QuestManager.can_use_form(partner.forms[next_index])
-    cycle_button.locked = blocked or partner.evolution_busy or skill_panel.pages.size() < 2
+        evolve_button.locked = not EvolutionRules.can_use_form(partner.progress.level, next_index) or not QuestManager.has_flag(partner.forms[next_index].required_story_flag)
+    # ปุ่ม Cycle เดิมถูกใช้เป็น Jogress; แสดงได้ตลอดแต่ล็อกจน Agumon/Gabumon Lv90 ทั้งคู่
+    cycle_button.set_caption("Omegamon" if is_instance_valid(jogress_manager) and jogress_manager.active else "Jogress [J]")
+    cycle_button.locked = blocked or not is_instance_valid(jogress_manager) or not jogress_manager.can_jogress() or jogress_manager.active
 
 
 func _on_battle_permission(allowed: bool) -> void:
