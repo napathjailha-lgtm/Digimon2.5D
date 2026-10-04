@@ -148,11 +148,11 @@ func _physics_process(delta: float) -> void:
     if current_form.ds_drain_per_second > 0.0:
         # ลดการใช้ DS ระหว่างคงร่างพัฒนาเหลือ 50% ของค่าที่กำหนดใน Resource
         var balanced_drain: float = current_form.ds_drain_per_second * 0.5
-        if not tamer.consume_ds(balanced_drain * delta):
-            # DS หมดกลับร่างพื้นฐาน ไม่เสีย HP และไม่รีเซ็ตคูลดาวน์
-            tamer.consume_ds(tamer.ds)
+        if not tamer.consume_mp(balanced_drain * delta):
+            # Tamer MP หมดกลับร่างพื้นฐาน ไม่เสีย HP และไม่รีเซ็ตคูลดาวน์
+            tamer.consume_mp(tamer.tamer_mp)
             _apply_form(0, true)
-            feedback.emit("DS หมด: กลับร่างพื้นฐาน")
+            feedback.emit("MP ของ Tamer หมด: กลับร่างพื้นฐาน")
 
     # ตาย/ถูกลบ/ห่าง Tamer เกินกำหนด ให้เลิกไล่และกลับไปเดินตาม
     if is_instance_valid(target):
@@ -448,8 +448,8 @@ func prepare_digivolve() -> MonsterData:
     if not error.is_empty():
         feedback.emit(error)
         return null
-    if not tamer.consume_ds(next_data.evolution_cost):
-        feedback.emit("DS ไม่พอเปลี่ยนร่าง")
+    if not tamer.consume_mp(next_data.evolution_cost):
+        feedback.emit("MP ของ Tamer ไม่พอเปลี่ยนร่าง")
         return null
     _cancel_combat_action() # หยุด wind-up ก่อนคัตซีน
     _reserved_form = next_data
@@ -487,7 +487,7 @@ func abort_digivolve() -> void:
     if not evolution_busy:
         return
     if is_instance_valid(tamer):
-        tamer.restore_ds(_reserved_cost)
+        tamer.restore_mp(_reserved_cost)
     evolution_busy = false
     _reserved_cost = 0.0
     _reserved_form = null
