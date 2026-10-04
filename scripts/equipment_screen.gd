@@ -233,10 +233,8 @@ func _build_bag() -> void:
         _bag_buttons[String(item.id)] = button
 
 func _layout() -> void:
-    var available: Vector2 = get_viewport().get_visible_rect().size
-    var factor: float = minf(1.0, minf(available.x / 1220.0, available.y / 700.0))
-    _content.scale = Vector2.ONE * factor
-    _content.position = (available - _content.size * factor) * 0.5
+    # Equipment ใช้ absolute layout 1184x660 จึงย่อทั้งก้อนเพื่อรักษาตำแหน่ง slot และ hitbox
+    ResponsiveUI.fit_absolute_design(_content, get_viewport(), Vector2(1184, 660), 14.0)
 
 func _select_tab(index: int) -> void:
     active_tab = index
