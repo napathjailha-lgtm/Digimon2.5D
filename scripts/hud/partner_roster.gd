@@ -151,7 +151,8 @@ func _apply_member(entry: Dictionary) -> bool:
     partner.progress.restore_data(entry.get("progress", {}) if entry.get("progress") is Dictionary else {})
     partner.forms.assign(data.forms)
     var form: MonsterData = data.forms[0]
-    var saved_level: int = clampi(int((entry.get("progress", {}) as Dictionary).get("level", 1)), 1, EvolutionRules.MAX_LEVEL) if entry.get("progress", {}) is Dictionary else 1
+    var saved_progress: Dictionary = entry.get("progress", {}) if entry.get("progress", {}) is Dictionary else {}
+    var saved_level: int = clampi(int(saved_progress.get("level", 1)), 1, EvolutionRules.MAX_LEVEL)
     # โหลดร่างที่เซฟไว้ได้ต่อเมื่อเลเวลถึงจริง; ถ้าเซฟเก่าเกินสิทธิ์ให้ลดลงเป็นร่างสูงสุดที่เลเวลรองรับ
     for index: int in range(data.forms.size()):
         var possible: MonsterData = data.forms[index]
