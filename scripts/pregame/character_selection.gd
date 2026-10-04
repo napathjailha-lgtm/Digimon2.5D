@@ -86,6 +86,9 @@ func refresh() -> void:
     $Margin/Column/Header/Subtitle.text = "%s  /  %s  •  5 ช่องตัวละคร" % [GameManager.username, GameManager.server_selected]
 
 func _continue() -> void:
+    # Start Game เป็น user gesture สำรองสำหรับ Safari/Chrome
+    AudioManager.unlock_audio()
+    AudioManager.play_sfx(&"ui_click")
     if not GameManager.characters[GameManager.selected_slot].is_empty():
         if GameManager.enter_world():
             action_button.disabled = true
