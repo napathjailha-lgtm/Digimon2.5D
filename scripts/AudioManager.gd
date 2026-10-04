@@ -82,7 +82,8 @@ func unlock_audio() -> void:
     var master_index: int = AudioServer.get_bus_index(&"Master")
     if master_index >= 0:
         AudioServer.set_bus_mute(master_index, false)
-    play_sfx(&"ui_click", -18.0)
+    # stream เงียบเกือบสนิท ใช้เพื่อเปิด context โดยไม่ทำให้ Login มีเสียงคลิกซ้ำ
+    play_sfx(&"web_unlock", -50.0)
 
 func is_audio_unlocked() -> bool:
     return _audio_unlocked
@@ -208,6 +209,8 @@ func _get_sfx(id: StringName) -> AudioStream:
 
     var stream: AudioStreamWAV
     match id:
+        &"web_unlock":
+            stream = _make_chirp(0.025, 220.0, 240.0, 0.001)
         &"ui_click":
             stream = _make_chirp(0.055, 720.0, 1180.0, 0.16)
         &"evolution_start":
