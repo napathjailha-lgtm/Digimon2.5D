@@ -351,7 +351,7 @@ func _show_notice(text: String) -> void:
     if not is_open:
         return
     notice.text = text
-    var color: Color = ServiceUIStyle.RED if "แตก" in text else (ServiceUIStyle.GREEN if "สำเร็จ" in text else ServiceUIStyle.GOLD)
+    var color: Color = ServiceUIStyle.RED if text.contains("แตก") else (ServiceUIStyle.GREEN if text.contains("สำเร็จ") else ServiceUIStyle.GOLD)
     notice.add_theme_color_override("font_color", color)
 
 func _deferred_refresh(_a: Variant = null, _b: Variant = null) -> void:
