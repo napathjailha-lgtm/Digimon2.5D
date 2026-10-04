@@ -11,6 +11,7 @@ var _previous_back_quit: bool = true
 var _refresh_pending: bool = false
 var slots: Array[EquipmentButton] = []
 var visual_fx: ModalVisualFX
+var equipment_shortcut: EquipmentButton
 @onready var root: Control = $Root
 @onready var grid: GridContainer = $Root/Panel/Margin/Column/Body/Bag/Inner/Stack/Grid
 @onready var count_label: Label = $Root/Panel/Margin/Column/Header/Count
@@ -43,6 +44,12 @@ func _ready() -> void:
         grid.add_child(button)
         slots.append(button)
     close_button.pressed.connect(close_screen)
+    # เข้าหน้าสวมใส่จาก Inventory โดยตรง ตาม flow มือถือ/เว็บเดียวกัน
+    equipment_shortcut = EquipmentButton.new()
+    equipment_shortcut.caption = "อุปกรณ์"
+    equipment_shortcut.custom_minimum_size = Vector2(110, 42)
+    equipment_shortcut.pressed.connect(_open_equipment)
+    close_button.get_parent().add_child(equipment_shortcut)
     use_button.pressed.connect(_use_selected)
     drop_button.pressed.connect(_drop_selected)
     InventoryManager.changed.connect(_request_refresh)
@@ -94,12 +101,19 @@ func close_screen() -> void:
         return
     visual_fx.reset()
     root.hide()
-    for button: EquipmentButton in slots + [close_button, use_button, drop_button]:
+    for button: EquipmentButton in slots + [close_button, use_button, drop_button, equipment_shortcut]:
         button.release_input()
     is_open = false
     _restore_pause()
     if is_instance_valid(player):
         player.save_party_progress()
+
+func _open_equipment() -> void:
+    # ปิด Inventory ก่อนเพื่อคืน pause ownership แล้วเปิด EquipmentScreen ในเฟรมถัดไป
+    if not is_instance_valid(hud) or hud.equipment_screen == null:
+        return
+    close_screen()
+    hud.equipment_screen.open_screen.call_deferred()
 
 func _restore_pause() -> void:
     # ถือ ownership เฉพาะ pause ที่หน้าต่างนี้เปิดเอง
