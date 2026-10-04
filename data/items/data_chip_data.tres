@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/items/data_chip.svg" id="2"]
+[resource]
+script = ExtResource("1")
+item_id = "data_chip_data"
+item_name = "Data Type Data Chip"
+item_type = 4
+item_texture = ExtResource("2")
+description = "Data Chip สำหรับ Inject Digitama สาย Data เช่น Gabumon และ Palmon"
+chip_family = &"data"
+shop_sold = true
+buy_price = 45
+sell_price = 12
