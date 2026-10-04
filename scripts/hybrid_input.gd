@@ -14,6 +14,7 @@ static func ensure_actions() -> void:
     _ensure_keys(&"skill_4", [KEY_4])
     _ensure_keys(&"basic_attack", [KEY_SPACE])
     _ensure_keys(&"jogress", [KEY_J])
+    _ensure_keys(&"interact", [KEY_E])
 
 static func _ensure_keys(action: StringName, keys: Array) -> void:
     if not InputMap.has_action(action):
