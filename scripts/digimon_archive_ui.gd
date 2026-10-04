@@ -201,7 +201,6 @@ func _layout() -> void:
     panel.custom_minimum_size = Vector2(1080, 620)
     ResponsiveUI.fit_centered(panel, get_viewport(), 14.0)
     # เรียกซ้ำหลัง Container sort เพื่อให้ pivot ใช้ size จริง
-    ResponsiveUI.fit_centered.call_deferred(panel, get_viewport(), 14.0)
 
 func _refresh() -> void:
     if not is_open or roster == null:
