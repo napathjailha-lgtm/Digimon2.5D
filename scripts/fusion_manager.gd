@@ -1,10 +1,10 @@
-class_name JogressManager
+class_name FusionManager
 extends Node
 ## Fusion ของ Emberclaw + Frostfang เมื่อ Shared Partner Level ถึง 90
-## ใช้ภาพ Omegamon ที่ generate ใหม่จริง + JogressCutscene ก่อน commit ร่าง
+## ใช้ Prismforge original fusion asset + FusionCutscene ก่อน commit ร่าง
 
 signal availability_changed(available: bool)
-signal jogress_changed(active: bool)
+signal fusion_changed(active: bool)
 
 const REQUIRED_LEVEL: int = 90
 const REQUIRED_IDS: Array[StringName] = [&"emberclaw", &"frostfang"]
@@ -13,9 +13,9 @@ var tamer: Tamer
 var partner: PartnerMonster
 var roster: PartnerRoster
 var active: bool = false
-var _omegamon_form: MonsterData
+var _fusion_form: MonsterData
 var _last_available: bool = false
-var _cutscene: JogressCutscene
+var _cutscene: FusionCutscene
 
 func configure(owner_tamer: Tamer, owner_partner: PartnerMonster, owner_roster: PartnerRoster) -> void:
     tamer = owner_tamer
@@ -29,7 +29,7 @@ func configure(owner_tamer: Tamer, owner_partner: PartnerMonster, owner_roster: 
         partner.progress.progress_changed.connect(func(_level: int, _exp: int, _max_exp: int): _refresh_available())
     _refresh_available()
 
-func can_jogress() -> bool:
+func can_fusion() -> bool:
     if not is_instance_valid(tamer) or not is_instance_valid(partner) or not is_instance_valid(roster):
         return false
     if not partner.is_alive() or partner.evolution_busy or not tamer.can_battle():
@@ -42,60 +42,60 @@ func can_jogress() -> bool:
             return false
     return true
 
-func request_jogress() -> bool:
+func request_fusion() -> bool:
     if active or is_instance_valid(_cutscene):
         return false
-    if not can_jogress():
+    if not can_fusion():
         if is_instance_valid(partner):
             partner.feedback.emit("Fusion ต้องมี Emberclaw และ Frostfang ในทีม และ Shared Partner Level 90")
         return false
 
-    _omegamon_form = _build_omegamon_form()
-    if _omegamon_form == null or not _omegamon_form.validation_error().is_empty():
-        partner.feedback.emit("สร้างข้อมูล Omegamon ไม่สำเร็จ")
+    _fusion_form = _build_fusion_form()
+    if _fusion_form == null or not _fusion_form.validation_error().is_empty():
+        partner.feedback.emit("สร้างข้อมูล Prismforge ไม่สำเร็จ")
         return false
 
     partner.auto_battle = false
     partner.cancel_battle()
 
-    _cutscene = JogressCutscene.new()
+    _cutscene = FusionCutscene.new()
     get_tree().root.add_child(_cutscene)
-    _cutscene.finished.connect(_finish_jogress)
+    _cutscene.finished.connect(_finish_fusion)
 
-    if not _cutscene.play(partner, _omegamon_form):
+    if not _cutscene.play(partner, _fusion_form):
         _cutscene.queue_free()
         _cutscene = null
         return false
 
-    partner.feedback.emit("Jogress Evolution...")
+    partner.feedback.emit("Fusion Ascension...")
     return true
 
 
-func _finish_jogress(success: bool) -> void:
+func _finish_fusion(success: bool) -> void:
     _cutscene = null
     if not success or not is_instance_valid(partner):
         return
 
     partner._internal_load = true
-    var ok: bool = partner.load_monster_data(_omegamon_form, true)
+    var ok: bool = partner.load_monster_data(_fusion_form, true)
     partner._internal_load = false
 
     if not ok:
-        partner.feedback.emit("Jogress ล้มเหลว: โหลดร่าง Omegamon ไม่สำเร็จ")
+        partner.feedback.emit("Fusion ล้มเหลว: โหลดร่าง Prismforge ไม่สำเร็จ")
         return
 
     active = true
-    partner.feedback.emit("Jogress Evolution: Omegamon")
-    jogress_changed.emit(true)
+    partner.feedback.emit("Fusion Ascension: Prismforge")
+    fusion_changed.emit(true)
     _refresh_available()
 
     if is_instance_valid(tamer):
         tamer.save_party_progress()
 
-func _build_omegamon_form() -> MonsterData:
+func _build_fusion_form() -> MonsterData:
     var data := MonsterData.new()
-    data.id = &"omegamon"
-    data.monster_name = "Omegamon"
+    data.id = &"prismforge_fusion"
+    data.monster_name = "Prismforge"
     data.evolution_stage = MonsterData.EvolutionStage.MEGA
     data.max_hp = 1200
     data.attack = 155
@@ -109,7 +109,7 @@ func _build_omegamon_form() -> MonsterData:
     data.block_chance = 8.0
     data.evasion_chance = 5.0
 
-    var frames: SpriteFrames = _build_omegamon_frames()
+    var frames: SpriteFrames = _build_fusion_frames()
     if frames == null:
         return null
 
@@ -130,20 +130,19 @@ func _build_omegamon_form() -> MonsterData:
     data.evolution_cost = 0.0
     data.ds_drain_per_second = 8.0
 
-    var jogress_skills: Array[MonsterSkill] = [
-        _grey_sword(),
-        _garuru_cannon()
+    var fusion_skills: Array[MonsterSkill] = [
+        _radiant_blade(),
+        _spectrum_cannon()
     ]
-    data.skills = jogress_skills
+    data.skills = fusion_skills
     return data
 
 
-func _build_omegamon_frames() -> SpriteFrames:
-    # ใช้ภาพ Omegamon ที่ generate ใหม่และตัดพื้นหลังแล้ว
-    # ไม่ใช้ SVG placeholder เดิมอีกต่อไป
-    var generated := load("res://assets/jogress/omegamon_generated.png") as Texture2D
+func _build_fusion_frames() -> SpriteFrames:
+    # ใช้ภาพ fusion original ที่ครอปจาก sprite sheet ของโปรเจกต์
+    var generated := load("res://assets/original_monsters/prismforge_fusion.png") as Texture2D
     if generated == null:
-        push_error("JogressManager: ไม่พบภาพ Omegamon ที่ generate ใหม่")
+        push_error("FusionManager: ไม่พบภาพ Prismforge fusion")
         return null
 
     var frames := SpriteFrames.new()
@@ -151,7 +150,7 @@ func _build_omegamon_frames() -> SpriteFrames:
         frames.remove_animation(&"default")
 
     # ภาพหลักเป็น key art เดียวกัน แต่แบ่ง state animation ให้ CombatAction
-    # ใช้ VFX/scale/impact frame ทำให้ Grey Sword และ Garuru Cannon มีจังหวะร่ายจริง
+    # ใช้ VFX/scale/impact frame ทำให้ Radiant Blade และ Spectrum Cannon มีจังหวะร่ายจริง
     _add_generated_animation(frames, &"idle", generated, 2, 2.2, true)
     _add_generated_animation(frames, &"walk", generated, 2, 4.0, true)
     _add_generated_animation(frames, &"attack", generated, 4, 10.0, false)
@@ -175,10 +174,10 @@ func _add_generated_animation(
         frames.add_frame(animation, texture)
 
 
-func _grey_sword() -> MonsterSkill:
+func _radiant_blade() -> MonsterSkill:
     var skill := MonsterSkill.new()
-    skill.id = &"omegamon_grey_sword"
-    skill.display_name = "Grey Sword"
+    skill.id = &"prismforge_radiant_blade"
+    skill.display_name = "Radiant Blade"
     skill.icon = load("res://assets/skills_painted/fire.png") as Texture2D
     skill.vfx_style = "claw"
     skill.animation_prefix = &"attack"
@@ -192,10 +191,10 @@ func _grey_sword() -> MonsterSkill:
     skill.effect_size = 44.0
     return skill
 
-func _garuru_cannon() -> MonsterSkill:
+func _spectrum_cannon() -> MonsterSkill:
     var skill := MonsterSkill.new()
-    skill.id = &"omegamon_garuru_cannon"
-    skill.display_name = "Garuru Cannon"
+    skill.id = &"prismforge_spectrum_cannon"
+    skill.display_name = "Spectrum Cannon"
     skill.icon = load("res://assets/skills_painted/ice.png") as Texture2D
     skill.vfx_style = "ice"
     skill.animation_prefix = &"cast"
@@ -211,13 +210,13 @@ func _garuru_cannon() -> MonsterSkill:
     return skill
 
 func _on_form_changed(data: MonsterData) -> void:
-    if active and (data == null or data.id != &"omegamon"):
+    if active and (data == null or data.id != &"prismforge_fusion"):
         active = false
-        jogress_changed.emit(false)
+        fusion_changed.emit(false)
     _refresh_available()
 
 func _refresh_available() -> void:
-    var next_available := can_jogress() and not active
+    var next_available := can_fusion() and not active
     if next_available != _last_available:
         _last_available = next_available
         availability_changed.emit(next_available)

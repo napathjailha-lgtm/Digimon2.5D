@@ -13,7 +13,7 @@ static func ensure_actions() -> void:
     _ensure_keys(&"skill_3", [KEY_3])
     _ensure_keys(&"skill_4", [KEY_4])
     _ensure_keys(&"basic_attack", [KEY_SPACE])
-    _ensure_keys(&"jogress", [KEY_J])
+    _ensure_keys(&"fusion", [KEY_J])
     _ensure_keys(&"interact", [KEY_E])
 
 static func _ensure_keys(action: StringName, keys: Array) -> void:

@@ -1,7 +1,7 @@
-class_name JogressCutscene
+class_name FusionCutscene
 extends CanvasLayer
-## คัตซีน Jogress แบบ runtime ไม่ต้องมี Scene แยก:
-## Aegisdrake + Cryoblaster -> Digital Burst -> Fusion form
+## คัตซีน Fusion แบบ runtime ไม่ต้องมี Scene แยก:
+## Aegisdrake + Cryoblaster -> Prism Burst -> Prismforge
 
 signal finished(success: bool)
 
@@ -15,7 +15,7 @@ var _root: Control
 var _flash: ColorRect
 var _left: TextureRect
 var _right: TextureRect
-var _omega: TextureRect
+var _fusion: TextureRect
 var _title: Label
 var _caption: Label
 
@@ -25,16 +25,16 @@ func _ready() -> void:
     layer = 120
 
 
-func play(partner: PartnerMonster, omegamon: MonsterData) -> bool:
-    if _running or not is_instance_valid(partner) or omegamon == null:
+func play(partner: PartnerMonster, fusion_data: MonsterData) -> bool:
+    if _running or not is_instance_valid(partner) or fusion_data == null:
         return false
     if get_tree().paused:
         return false
 
-    var omega_texture: Texture2D = omegamon.sprite_frames.get_frame_texture(
-        omegamon.idle_animation, 0
+    var fusion_texture: Texture2D = fusion_data.sprite_frames.get_frame_texture(
+        fusion_data.idle_animation, 0
     )
-    if omega_texture == null:
+    if fusion_texture == null:
         return false
 
     _build_ui()
@@ -48,7 +48,7 @@ func play(partner: PartnerMonster, omegamon: MonsterData) -> bool:
             WOLF_MEGA.idle_animation, 0
         )
     )
-    _omega.texture = WalkTextureTools.visible_texture(omega_texture)
+    _fusion.texture = WalkTextureTools.visible_texture(fusion_texture)
 
     _running = true
     _previous_paused = get_tree().paused
@@ -82,31 +82,31 @@ func _build_ui() -> void:
 
     _left = _portrait()
     _right = _portrait()
-    _omega = _portrait()
+    _fusion = _portrait()
     _root.add_child(_left)
     _root.add_child(_right)
-    _root.add_child(_omega)
+    _root.add_child(_fusion)
 
     _left.anchor_left = 0.5
     _left.anchor_top = 0.5
     _right.anchor_left = 0.5
     _right.anchor_top = 0.5
-    _omega.anchor_left = 0.5
-    _omega.anchor_top = 0.5
+    _fusion.anchor_left = 0.5
+    _fusion.anchor_top = 0.5
 
     _left.position = Vector2(-430, -165)
     _right.position = Vector2(170, -165)
-    _omega.position = Vector2(-130, -190)
-    _omega.size = Vector2(260, 380)
+    _fusion.position = Vector2(-130, -190)
+    _fusion.size = Vector2(260, 380)
 
     _left.modulate.a = 0.0
     _right.modulate.a = 0.0
-    _omega.modulate.a = 0.0
-    _omega.scale = Vector2(0.42, 0.42)
-    _omega.pivot_offset = _omega.size * 0.5
+    _fusion.modulate.a = 0.0
+    _fusion.scale = Vector2(0.42, 0.42)
+    _fusion.pivot_offset = _fusion.size * 0.5
 
     _title = Label.new()
-    _title.text = "JOGRESS EVOLUTION"
+    _title.text = "FUSION ASCENSION"
     _title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     _title.add_theme_font_size_override("font_size", 38)
     _title.add_theme_color_override("font_color", Color("8feaff"))
@@ -174,7 +174,7 @@ func _animate() -> void:
     merge.tween_property(_right, "modulate", Color(1.5, 0.75, 0.35, 0.15), 0.48)
     await merge.finished
 
-    # 3) Digital flash
+    # 3) Prism flash
     var burst := create_tween()
     burst.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
     burst.tween_property(_flash, "modulate:a", 0.98, 0.10)
@@ -184,16 +184,16 @@ func _animate() -> void:
 
     _left.hide()
     _right.hide()
-    _omega.modulate = Color.WHITE
-    _omega.modulate.a = 1.0
-    _caption.text = "OMEGAMON"
+    _fusion.modulate = Color.WHITE
+    _fusion.modulate.a = 1.0
+    _caption.text = "PRISMFORGE"
     _caption.add_theme_font_size_override("font_size", 30)
 
-    # 4) Omegamon reveal
+    # 4) Prismforge reveal
     var reveal := create_tween()
     reveal.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-    reveal.tween_property(_omega, "scale", Vector2(1.12, 1.12), 0.48).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-    reveal.tween_property(_omega, "scale", Vector2.ONE, 0.20)
+    reveal.tween_property(_fusion, "scale", Vector2(1.12, 1.12), 0.48).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+    reveal.tween_property(_fusion, "scale", Vector2.ONE, 0.20)
     reveal.tween_interval(0.48)
     await reveal.finished
 
