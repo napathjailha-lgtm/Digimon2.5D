@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/items/tamer_ration.svg" id="2"]
+[resource]
+script = ExtResource("1")
+item_id = "tamer_ration"
+item_name = "เสบียง Tamer"
+item_type = 0
+item_texture = ExtResource("2")
+description = "อาหารฉุกเฉินสำหรับ Tamer: เพิ่มความอิ่ม 50 และแรง 15 ใช้เมื่อค่าหิวหรือแรงยังไม่เต็ม"
+effect_type = 1
+effect_value = 50
+tamer_hp_restore = 0
+tamer_stamina_restore = 15.0
+shop_sold = true
+buy_price = 24
+sell_price = 6
