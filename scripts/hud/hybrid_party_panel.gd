@@ -71,7 +71,10 @@ func refresh() -> void:
                 portrait.region = Rect2(0, 0, visible_frame.get_width(), visible_frame.get_height() * 0.5)
                 button.icon = portrait
                 button.set_meta("frame", frame)
-            button.set_caption("DIGITAMA" if bool(entry.get("egg", false)) else form.monster_name)
+            var progress_data: Dictionary = entry.get("progress", {"level":1, "exp":0}) as Dictionary
+            var member_level: int = clampi(int(progress_data.get("level", 1)), 1, EvolutionRules.MAX_LEVEL)
+            var member_name: String = "DIGITAMA" if bool(entry.get("egg", false)) else form.monster_name
+            button.set_caption("%s\nLv.%d" % [member_name, member_level])
             _bars[index].set_vitals(int(entry.get("hp", 0)), int(entry.get("max_hp", 1)), "", true)
         button._label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
         button._label.offset_bottom = -8
