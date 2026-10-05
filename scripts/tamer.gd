@@ -5,7 +5,7 @@ extends CharacterBody2D
 signal hp_changed(current: int, maximum: int)
 signal survival_changed(hunger: float, stamina: float)
 signal battle_permission_changed(allowed: bool)
-signal digivolve_requested(partner_node: PartnerMonster)
+signal evolution_requested(partner_node: PartnerMonster)
 signal ds_changed(current: float, maximum: float) # compatibility กับเซฟ/UI เก่า
 signal mp_changed(current: float, maximum: float)
 signal target_changed(enemy: WildMonster)
@@ -156,7 +156,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _is_command_ui_at(screen_position: Vector2) -> bool:
-    # ปุ่ม Attack/Skill/Digivolve/Auto ฯลฯ สืบทอด TouchCommand และอยู่ใน group นี้
+    # ปุ่ม Attack/Skill/Evolution/Auto ฯลฯ สืบทอด TouchCommand และอยู่ใน group นี้
     # ตรวจเฉพาะปุ่มที่มองเห็น เพื่อไม่ให้ Control ที่ซ่อนอยู่บังการเลือกมอนสเตอร์
     for node: Node in get_tree().get_nodes_in_group("touch_commands"):
         var command := node as TouchCommand
@@ -265,16 +265,16 @@ func command_form_skill(source: MonsterData, slot: int) -> void:
     if is_instance_valid(partner) and source == partner.current_form:
         command_skill(slot)
 
-func command_digivolve() -> void:
+func command_evolution() -> void:
     if can_battle() and is_instance_valid(partner):
-        digivolve_requested.emit(partner)
+        evolution_requested.emit(partner)
 
 func set_auto_battle(enabled: bool) -> void:
     if is_instance_valid(partner):
         partner.auto_battle = enabled and can_battle() and not survival.is_resting()
 
 func consume_mp(amount: float) -> bool:
-    # Tamer MP ใช้สำหรับ Digivolve/Jogress และค่าใช้จ่ายในการคงร่างเท่านั้น
+    # Tamer MP ใช้สำหรับ Evolution/Fusion และค่าใช้จ่ายในการคงร่างเท่านั้น
     if not is_finite(amount) or amount < 0.0 or tamer_mp < amount:
         return false
     tamer_mp = maxf(0.0, tamer_mp - amount)
@@ -416,7 +416,7 @@ func capture_party_state() -> Dictionary:
         result["inventory"] = InventoryManager.get_save_data()
     if is_instance_valid(partner) and partner.current_form != null:
         result.merge({
-            "form_id": String(partner.current_form.id), "hp": partner.hp, "digimon_mp":partner.digimon_mp,
+            "form_id": String(partner.current_form.id), "hp": partner.hp, "partner_mp":partner.partner_mp,
             "egg": partner.state in [PartnerMonster.State.FAINTED, PartnerMonster.State.EGG],
             "partner_progress": partner.progress.get_save_data()
         })
