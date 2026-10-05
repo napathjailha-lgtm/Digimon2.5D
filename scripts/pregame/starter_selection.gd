@@ -6,7 +6,7 @@ extends AdventureMenuScreen
 @onready var path_label: Label = $Margin/Column/Body/Selection/Inner/Stack/EvolutionPath
 @onready var description_label: Label = $Margin/Column/Body/Selection/Inner/Stack/Description
 @onready var confirm_button: Button = $Margin/Column/Body/Selection/Inner/Stack/Confirm
-var partner_selected: StringName = &"agumon"
+var partner_selected: StringName = &"cinderling"
 var card_buttons: Array[Button] = []
 
 func _ready() -> void:
@@ -30,7 +30,7 @@ func select_partner(partner_id: StringName) -> void:
         return
     partner_selected = partner_id
     portrait.texture = data.portrait
-    title_label.text = data.display_name + " · Rookie"
+    title_label.text = data.display_name + " · Base Form"
     var rookie: MonsterData = data.forms[0]
     stats_label.text = "%s / %s\n\nHP %d   ATK %d   SPD %.0f\n\nสกิล: %s" % [data.attribute_name, data.element_name, rookie.max_hp, rookie.attack, rookie.move_speed, rookie.skills[0].display_name]
     path_label.text = data.evolution_path()
