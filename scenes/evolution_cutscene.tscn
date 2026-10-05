@@ -1,0 +1,94 @@
+[gd_scene load_steps=7 format=3]
+[ext_resource type="Script" path="res://scripts/evolution_cutscene.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/digital_tunnel.gd" id="2"]
+[ext_resource type="FontFile" path="res://assets/fonts/NotoSansThai.ttf" id="3"]
+[sub_resource type="Theme" id="theme"]
+default_font = ExtResource("3")
+[sub_resource type="Animation" id="animation"]
+resource_name = "evolve"
+length = 2.7
+tracks/0/type = "value"
+tracks/0/path = NodePath("Root/Backdrop:phase")
+tracks/0/interp = 1
+tracks/0/keys = {"times": PackedFloat32Array(0, 2.7), "transitions": PackedFloat32Array(1, 1), "update": 0, "values": [0.0, 12.56637]}
+tracks/1/type = "value"
+tracks/1/path = NodePath(".:old_size_multiplier")
+tracks/1/interp = 1
+tracks/1/keys = {"times": PackedFloat32Array(0, 0.35, 1.25, 1.45, 2.7), "transitions": PackedFloat32Array(1, 1, 1, 1, 1), "update": 0, "values": [0.8, 1.0, 1.2, 0.01, 0.01]}
+tracks/2/type = "value"
+tracks/2/path = NodePath(".:new_size_multiplier")
+tracks/2/interp = 1
+tracks/2/keys = {"times": PackedFloat32Array(0, 1.45, 1.85, 2.3, 2.7), "transitions": PackedFloat32Array(1, 1, 1, 1, 1), "update": 0, "values": [0.05, 0.05, 1.07, 1.0, 1.0]}
+tracks/3/type = "value"
+tracks/3/path = NodePath(".:flash_amount")
+tracks/3/interp = 1
+tracks/3/keys = {"times": PackedFloat32Array(0, 0.95, 1.32, 1.5, 2.7), "transitions": PackedFloat32Array(1, 1, 1, 1, 1), "update": 0, "values": [0.0, 0.0, 1.0, 0.0, 0.0]}
+tracks/4/type = "value"
+tracks/4/path = NodePath("Root/Stage/OldSprite:rotation")
+tracks/4/interp = 1
+tracks/4/keys = {"times": PackedFloat32Array(0, 0.35, 1.3, 1.45, 2.7), "transitions": PackedFloat32Array(1, 1, 1, 1, 1), "update": 0, "values": [0.0, 0.0, 0.06, 0.12, 0.12]}
+tracks/5/type = "value"
+tracks/5/path = NodePath("Root/Stage/OldSprite:modulate")
+tracks/5/interp = 1
+tracks/5/keys = {"times": PackedFloat32Array(0, 1.3, 1.45, 2.7), "transitions": PackedFloat32Array(1, 1, 1, 1), "update": 0, "values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0.55), Color(1, 1, 1, 0), Color(1, 1, 1, 0)]}
+tracks/6/type = "value"
+tracks/6/path = NodePath("Root/Stage/NewSprite:modulate")
+tracks/6/interp = 1
+tracks/6/keys = {"times": PackedFloat32Array(0, 1.4, 1.55, 2.7), "transitions": PackedFloat32Array(1, 1, 1, 1), "update": 0, "values": [Color(1, 1, 1, 0), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 1)]}
+tracks/7/type = "value"
+tracks/7/path = NodePath("Root/Flash:modulate")
+tracks/7/interp = 1
+tracks/7/keys = {"times": PackedFloat32Array(0, 1.1, 1.42, 1.75, 2.7), "transitions": PackedFloat32Array(1, 1, 1, 1, 1), "update": 0, "values": [Color(1, 1, 1, 0), Color(1, 1, 1, 0), Color(1, 1, 1, 0.55), Color(1, 1, 1, 0), Color(1, 1, 1, 0)]}
+tracks/8/type = "method"
+tracks/8/path = NodePath(".")
+tracks/8/keys = {"times": PackedFloat32Array(1.37), "transitions": PackedFloat32Array(1), "values": [{"method": &"energy_burst", "args": []}]}
+[sub_resource type="AnimationLibrary" id="library"]
+_data = {&"evolve": SubResource("animation")}
+[node name="EvolutionCutscene" type="CanvasLayer"]
+process_mode = 3
+layer = 100
+script = ExtResource("1")
+[node name="Root" type="Control" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = SubResource("theme")
+[node name="Backdrop" type="Control" parent="Root"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("2")
+[node name="Stage" type="Node2D" parent="Root"]
+position = Vector2(640, 350)
+[node name="OldSprite" type="Sprite2D" parent="Root/Stage"]
+[node name="NewSprite" type="Sprite2D" parent="Root/Stage"]
+[node name="Flash" type="ColorRect" parent="Root"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+modulate = Color(1, 1, 1, 0)
+[node name="Title" type="Label" parent="Root"]
+anchor_right = 1.0
+offset_top = 45.0
+offset_bottom = 130.0
+text = "SIGNAL EVOLUTION"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 42
+theme_override_colors/font_color = Color(0.5, 0.95, 1, 1)
+mouse_filter = 2
+[node name="Caption" type="Label" parent="Root"]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -155.0
+offset_bottom = -70.0
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 26
+mouse_filter = 2
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {&"": SubResource("library")}
+[node name="Watchdog" type="Timer" parent="."]
+wait_time = 4.2
+one_shot = true
