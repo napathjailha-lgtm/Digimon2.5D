@@ -19,8 +19,8 @@ extends CanvasLayer
 @onready var settings_shortcut: TouchCommand = $Root/Safe/Layout/TopLeft/MapRow/Shortcuts/Settings
 @onready var menu: CollapsibleHudMenu = $Root/Safe/Layout/Menu
 @onready var message: Label = $Root/Message
-const CUTSCENE_SCENE: PackedScene = preload("res://scenes/digivolve_cutscene.tscn")
-var active_cutscene: DigivolveCutscene
+const CUTSCENE_SCENE: PackedScene = preload("res://scenes/evolution_cutscene.tscn")
+var active_cutscene: EvolutionCutscene
 var preferences := HudPreferences.new()
 var equipment_button: EquipmentButton
 var inventory_button: EquipmentButton
@@ -29,7 +29,7 @@ var stats_panel: Label
 var equipment_screen: EquipmentScreen
 var inventory_screen: InventoryUI
 var smart_panel: HudSmartPanel
-var digimon_screen: DigimonStatusScreen
+var creature_screen: CreatureStatusScreen
 var exp_strip: ProgressBar
 var chat_panel: MobileChatPanel
 var minimap: MobileMinimap
@@ -43,7 +43,7 @@ var _target_refresh_left: float = 0.0
 var _message_left: float = 0.0
 var chat_editing: bool = false
 var party_roster: PartnerRoster
-var jogress_manager: JogressManager
+var fusion_manager: FusionManager
 var _rotate_overlay: ColorRect
 var safe_inset_override := Vector4(-1, -1, -1, -1) # ใช้ทดสอบรอยบาก; ค่า -1 ให้อ่าน OS จริง
 
@@ -57,18 +57,18 @@ func _ready() -> void:
     tamer.add_child(party_roster)
     tamer.party_roster = party_roster
     party_roster.configure(tamer)
-    jogress_manager = JogressManager.new()
-    jogress_manager.name = "JogressManager"
-    tamer.add_child(jogress_manager)
-    jogress_manager.configure(tamer, partner, party_roster)
-    jogress_manager.availability_changed.connect(func(_available: bool): _refresh_combat_controls())
-    jogress_manager.jogress_changed.connect(func(_active: bool): _refresh_combat_controls())
+    fusion_manager = FusionManager.new()
+    fusion_manager.name = "FusionManager"
+    tamer.add_child(fusion_manager)
+    fusion_manager.configure(tamer, partner, party_roster)
+    fusion_manager.availability_changed.connect(func(_available: bool): _refresh_combat_controls())
+    fusion_manager.fusion_changed.connect(func(_active: bool): _refresh_combat_controls())
     party_panel.configure(party_roster)
     party_panel.switch_requested.connect(_switch_party)
     party_panel.empty_pressed.connect(func(): _show_message("ฟักไข่ในกระเป๋าเพื่อเพิ่มคู่หูในทีม"))
     party_roster.feedback.connect(_show_message)
     party_roster.switched.connect(_on_party_switched)
-    tamer.digivolve_requested.connect(_request_digivolve)
+    tamer.evolution_requested.connect(_request_evolution)
     partner.form_changed.connect(_on_form_changed)
     tamer.target_changed.connect(_refresh_target)
     tamer.battle_permission_changed.connect(_on_battle_permission)
@@ -83,10 +83,10 @@ func _ready() -> void:
     skill_panel.skill_requested.connect(tamer.command_skill)
     # form_skill_requested เก็บ signal ไว้เพื่อ compatibility แต่ UI ใหม่ไม่ emit สกิลต่างร่าง
     skill_panel.form_skill_requested.connect(tamer.command_form_skill)
-    cycle_button.set_caption("Jogress [J]")
-    cycle_button.pressed.connect(jogress_manager.request_jogress)
+    cycle_button.set_caption("Fusion [J]")
+    cycle_button.pressed.connect(fusion_manager.request_fusion)
     attack_button.pressed.connect(tamer.command_attack)
-    evolve_button.pressed.connect(tamer.command_digivolve)
+    evolve_button.pressed.connect(tamer.command_evolution)
     auto_button.pressed.connect(_toggle_auto)
     recover_button.pressed.connect(partner.recover)
     menu.action_requested.connect(_menu_action)
@@ -96,7 +96,7 @@ func _ready() -> void:
     menu.buttons[&"character"].set_meta("unavailable", not GameManager.gameplay_active)
     equipment_button = menu.buttons[&"equipment"]
     inventory_button = menu.buttons[&"inventory"]
-    stats_button = menu.buttons[&"digimon"]
+    stats_button = menu.buttons[&"partner"]
     equipment_screen = EquipmentScreen.new()
     add_child(equipment_screen)
     equipment_screen.configure(tamer, self)
@@ -110,9 +110,9 @@ func _ready() -> void:
     smart_panel.action_requested.connect(_modal_action)
     smart_panel.closed.connect(_sync_skill_input)
     stats_panel = smart_panel.details
-    digimon_screen = DigimonStatusScreen.new()
-    add_child(digimon_screen)
-    digimon_screen.configure(self)
+    creature_screen = CreatureStatusScreen.new()
+    add_child(creature_screen)
+    creature_screen.configure(self)
     InventoryManager.feedback.connect(_show_message)
     InventoryManager.item_picked_up.connect(_on_item_picked_up)
     _build_extras()
@@ -306,12 +306,12 @@ func _refresh_bars(_a: Variant = null, _b: Variant = null, _c: Variant = null) -
     exp_strip.value = tamer.progress.current_exp
     recover_button.visible = not partner.is_alive()
     attack_button.visible = not recover_button.visible
-    if is_instance_valid(digimon_screen) and digimon_screen.is_open:
-        digimon_screen.refresh()
+    if is_instance_valid(creature_screen) and creature_screen.is_open:
+        creature_screen.refresh()
 
 func _status_text() -> String:
     # รายละเอียดแยกเจ้าของชัดเจน: Tamer MP ใช้เปลี่ยน/คงร่าง, Partner MP ใช้สกิล
-    return "TAMER Lv%d  EXP %d/%d\nHP %d/%d  MP %.0f/%.0f\nอิ่ม %.0f/100 • แรง %.0f/100 • %s\n\nPARTNER Lv%d  EXP %d/%d\nHP %d/%d  MP %.0f/%.0f\nATK %d • SPD %.0f • %s" % [tamer.progress.level,tamer.progress.current_exp,tamer.progress.max_exp,tamer.hp,tamer.max_hp,tamer.tamer_mp,tamer.max_tamer_mp,tamer.tamer_hunger,tamer.tamer_stamina,"พร้อมสู้" if tamer.can_battle() else "ต่อสู้ไม่ได้",partner.progress.level,partner.progress.current_exp,partner.progress.max_exp,partner.hp,partner.max_hp,partner.digimon_mp,partner.digimon_max_mp,partner.attack_power,partner.move_speed,PartnerMonster.State.keys()[partner.state]]
+    return "TAMER Lv%d  EXP %d/%d\nHP %d/%d  MP %.0f/%.0f\nอิ่ม %.0f/100 • แรง %.0f/100 • %s\n\nPARTNER Lv%d  EXP %d/%d\nHP %d/%d  MP %.0f/%.0f\nATK %d • SPD %.0f • %s" % [tamer.progress.level,tamer.progress.current_exp,tamer.progress.max_exp,tamer.hp,tamer.max_hp,tamer.tamer_mp,tamer.max_tamer_mp,tamer.tamer_hunger,tamer.tamer_stamina,"พร้อมสู้" if tamer.can_battle() else "ต่อสู้ไม่ได้",partner.progress.level,partner.progress.current_exp,partner.progress.max_exp,partner.hp,partner.max_hp,partner.partner_mp,partner.partner_max_mp,partner.attack_power,partner.move_speed,PartnerMonster.State.keys()[partner.state]]
 
 func _refresh_quest(_id: StringName) -> void:
     var quest: StoryQuest = QuestManager.get_current_quest()
@@ -327,7 +327,7 @@ func _menu_action(action: StringName) -> void:
     match action:
         &"inventory": inventory_screen.open_screen()
         &"equipment": equipment_screen.open_screen()
-        &"digimon": _toggle_stats()
+        &"partner": _toggle_stats()
         &"quest":
             var quest: StoryQuest = QuestManager.get_current_quest()
             var detail: String = "ผ่านเควสต์หลักครบแล้ว"
@@ -346,10 +346,10 @@ func _menu_action(action: StringName) -> void:
 
 func _toggle_stats() -> void:
     # เก็บชื่อเมธอดเดิมไว้สำหรับผู้เรียกเก่า แต่ใช้หน้าดิจิมอนใหม่ทั้งหมด
-    if digimon_screen.is_open:
-        digimon_screen.close_screen()
+    if creature_screen.is_open:
+        creature_screen.close_screen()
     else:
-        digimon_screen.open_screen()
+        creature_screen.open_screen()
 
 func _settings_options() -> Array[Dictionary]:
     # ตัวเลือกภาพอ่านเป็นภาษาผู้เล่น ไม่ต้องรู้คำว่า shader หรือ renderer
@@ -408,7 +408,7 @@ func _on_chat_editing(editing: bool) -> void:
     _sync_skill_input()
 
 func _sync_skill_input() -> void:
-    var blocked: bool = chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open)
+    var blocked: bool = chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(creature_screen) and creature_screen.is_open)
     skill_panel.process_mode = Node.PROCESS_MODE_DISABLED if blocked else Node.PROCESS_MODE_INHERIT
     party_panel.process_mode = skill_panel.process_mode
 
@@ -427,11 +427,11 @@ func release_for_equipment() -> void:
     for button: TouchCommand in [attack_button,evolve_button,auto_button,recover_button,cycle_button]:
         button.release_input()
 
-func _request_digivolve(partner_node: PartnerMonster) -> void:
+func _request_evolution(partner_node: PartnerMonster) -> void:
     if is_instance_valid(active_cutscene) or get_tree().paused:
         return
     release_for_equipment()
-    var cutscene: DigivolveCutscene = CUTSCENE_SCENE.instantiate() as DigivolveCutscene
+    var cutscene: EvolutionCutscene = CUTSCENE_SCENE.instantiate() as EvolutionCutscene
     get_tree().root.add_child(cutscene)
     cutscene.finished.connect(_on_cutscene_finished)
     if not cutscene.play_for(partner_node):
@@ -440,9 +440,9 @@ func _request_digivolve(partner_node: PartnerMonster) -> void:
     active_cutscene = cutscene
 
 func _unhandled_input(event: InputEvent) -> void:
-    # Web/PC shortcuts: Space = โจมตี, 1-4 = สกิลปัจจุบัน, J = Jogress
+    # Web/PC shortcuts: Space = โจมตี, 1-4 = สกิลปัจจุบัน, J = Fusion
     # ใช้ unhandled_input เพื่อไม่แย่งปุ่มจาก LineEdit/เมนูที่กำลังรับคีย์บอร์ด
-    if chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open):
+    if chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(creature_screen) and creature_screen.is_open):
         return
     if event.is_action_pressed(&"basic_attack"):
         tamer.command_attack()
@@ -459,8 +459,8 @@ func _unhandled_input(event: InputEvent) -> void:
     elif event.is_action_pressed(&"skill_4"):
         tamer.command_skill(3)
         get_viewport().set_input_as_handled()
-    elif event.is_action_pressed(&"jogress") and is_instance_valid(jogress_manager):
-        jogress_manager.request_jogress()
+    elif event.is_action_pressed(&"fusion") and is_instance_valid(fusion_manager):
+        fusion_manager.request_fusion()
         get_viewport().set_input_as_handled()
 
 func _input(event: InputEvent) -> void:
@@ -577,8 +577,8 @@ func _return_to_characters() -> void:
 
 
 func _refresh_combat_controls() -> void:
-    # Cannot Battle ปิด Attack/Auto/Digivolve/สกิล แต่ Recover/อาหารยังใช้งานได้
-    var blocked: bool = chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open)
+    # Cannot Battle ปิด Attack/Auto/Evolution/สกิล แต่ Recover/อาหารยังใช้งานได้
+    var blocked: bool = chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(creature_screen) and creature_screen.is_open)
     attack_button.locked = blocked or not partner.can_battle() or partner.evolution_busy
     recover_button.locked = blocked or partner.evolution_busy
     auto_button.locked = attack_button.locked
@@ -587,9 +587,9 @@ func _refresh_combat_controls() -> void:
     evolve_button.locked = blocked or partner.evolution_busy or not partner.is_alive() or not tamer.can_battle() or next_index < 0 or next_index >= partner.forms.size()
     if not evolve_button.locked:
         evolve_button.locked = not EvolutionRules.can_use_form(partner.progress.level, next_index) or not QuestManager.has_flag(partner.forms[next_index].required_story_flag)
-    # ปุ่ม Cycle เดิมถูกใช้เป็น Jogress; แสดงได้ตลอดแต่ล็อกจน Agumon/Gabumon Lv90 ทั้งคู่
-    cycle_button.set_caption("Omegamon" if is_instance_valid(jogress_manager) and jogress_manager.active else "Jogress [J]")
-    cycle_button.locked = blocked or not is_instance_valid(jogress_manager) or not jogress_manager.can_jogress() or jogress_manager.active
+    # ปุ่ม Cycle เดิมถูกใช้เป็น Fusion; แสดงได้ตลอดแต่ล็อกจน Emberling/Frostkin Lv90 ทั้งคู่
+    cycle_button.set_caption("Nova Aegis" if is_instance_valid(fusion_manager) and fusion_manager.active else "Fusion [J]")
+    cycle_button.locked = blocked or not is_instance_valid(fusion_manager) or not fusion_manager.can_fuse() or fusion_manager.active
 
 
 func _on_battle_permission(allowed: bool) -> void:
