@@ -3,12 +3,12 @@
 [ext_resource type="Texture2D" path="res://assets/items/digitama.svg" id="2"]
 [resource]
 script = ExtResource("1")
-item_id = "digitama_piyomon"
-item_name = "Piyomon Digitama"
+item_id = "egg_verdwing"
+item_name = "Verdwing Egg"
 item_type = 2
 item_texture = ExtResource("2")
-description = "Digitama ระบุสายพันธุ์แน่นอน: ฟักสำเร็จจะได้ Piyomon 100%"
-egg_partner_id = &"piyomon"
+description = "ไข่สายพันธุ์ Verdwing • ฟักสำเร็จจะได้ Verdwing 100%"
+egg_partner_id = &"verdwing"
 required_chip_id = "data_chip"
 inject_goal = 5
 inject_success_chance = 0.72

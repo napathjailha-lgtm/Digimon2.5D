@@ -127,6 +127,8 @@ func _migrate_legacy_partner_ids(data: Dictionary) -> Dictionary:
             result["starter"] = "emberclaw"
         "gabumon":
             result["starter"] = "frostfang"
+        "piyomon":
+            result["starter"] = "verdwing"
     return result
 
 func _valid_record(data: Dictionary) -> bool:
@@ -228,7 +230,8 @@ func prepare_adventure() -> bool:
     var saved_form: String = str(QuestManager.party_profile.get("form_id", partner.forms[0].id if partner != null else &"emberclaw_0"))
     var legacy_forms: Dictionary = {
         "agumon_0":"emberclaw_0", "agumon_1":"flarewing_1", "agumon_2":"cindergear_2", "agumon_3":"aegisdrake_3",
-        "gabumon_0":"frostfang_0", "gabumon_1":"regalwolf_1", "gabumon_2":"steelhowl_2", "gabumon_3":"cryoblaster_3"
+        "gabumon_0":"frostfang_0", "gabumon_1":"regalwolf_1", "gabumon_2":"steelhowl_2", "gabumon_3":"cryoblaster_3",
+        "piyomon_0":"verdwing_0", "piyomon_1":"galeguard_1", "piyomon_2":"solarcrest_2"
     }
     current_form = StringName(str(legacy_forms.get(saved_form, saved_form)))
     bits = maxi(0, int(QuestManager.party_profile.get("bits", DEFAULT_BITS)))

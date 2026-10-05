@@ -1,20 +1,20 @@
 [gd_resource type="Resource" script_class="MonsterData" load_steps=5 format=3]
 [ext_resource type="Script" path="res://scripts/monster_data.gd" id="s"]
-[ext_resource type="SpriteFrames" path="res://data/pregame/piyomon_2_frames.tres" id="f"]
-[ext_resource type="Resource" path="res://data/pregame/piyomon_2_skill.tres" id="k"]
+[ext_resource type="SpriteFrames" path="res://data/pregame/solarcrest_frames.tres" id="f"]
+[ext_resource type="Resource" path="res://data/pregame/solarcrest_solar_tempest.tres" id="k"]
 [ext_resource type="Script" path="res://scripts/skill_data.gd" id="kt"]
 [resource]
 script = ExtResource("s")
-id = &"piyomon_2"
-monster_name = "Garudamon"
+id = &"solarcrest_2"
+monster_name = "Solarcrest"
 evolution_stage = 2
 max_hp = 385
 attack = 60
 move_speed = 285.0
 sprite_frames = ExtResource("f")
-sprite_scale = Vector2(0.605714, 0.605714)
-attack_sprite_scale = Vector2(0.605714, 0.605714)
-cast_sprite_scale = Vector2(0.605714, 0.605714)
+sprite_scale = Vector2(0.64, 0.64)
+attack_sprite_scale = Vector2(0.64, 0.64)
+cast_sprite_scale = Vector2(0.64, 0.64)
 animation_reference_speed = 285.0
 idle_animation = &"idle_down"
 walk_animation = &"walk_down"

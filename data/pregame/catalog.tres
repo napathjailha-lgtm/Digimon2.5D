@@ -9,7 +9,7 @@
 [ext_resource type="Resource" path="res://data/pregame/mimi.tres" id="t4"]
 [ext_resource type="Resource" path="res://data/pregame/emberclaw.tres" id="p0"]
 [ext_resource type="Resource" path="res://data/pregame/frostfang.tres" id="p1"]
-[ext_resource type="Resource" path="res://data/pregame/piyomon.tres" id="p2"]
+[ext_resource type="Resource" path="res://data/pregame/verdwing.tres" id="p2"]
 [ext_resource type="Resource" path="res://data/pregame/tentomon.tres" id="p3"]
 [ext_resource type="Resource" path="res://data/pregame/palmon.tres" id="p4"]
 [resource]

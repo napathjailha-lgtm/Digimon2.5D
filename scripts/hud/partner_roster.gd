@@ -51,12 +51,15 @@ func _migrate_family_id(id: StringName) -> StringName:
         return &"emberclaw"
     if id == &"gabumon":
         return &"frostfang"
+    if id == &"piyomon":
+        return &"verdwing"
     return id
 
 func _migrate_form_id(raw: String) -> String:
     var map: Dictionary = {
         "agumon_0":"emberclaw_0", "agumon_1":"flarewing_1", "agumon_2":"cindergear_2", "agumon_3":"aegisdrake_3",
-        "gabumon_0":"frostfang_0", "gabumon_1":"regalwolf_1", "gabumon_2":"steelhowl_2", "gabumon_3":"cryoblaster_3"
+        "gabumon_0":"frostfang_0", "gabumon_1":"regalwolf_1", "gabumon_2":"steelhowl_2", "gabumon_3":"cryoblaster_3",
+        "piyomon_0":"verdwing_0", "piyomon_1":"galeguard_1", "piyomon_2":"solarcrest_2"
     }
     return str(map.get(raw, raw))
 
@@ -201,8 +204,7 @@ func active_member_id() -> StringName:
 
 
 func member_level(id: StringName) -> int:
-    # Jogress ยังเช็ก Agumon/Gabumon แยกว่ามีในทีม
-    # แต่เลเวลเป็น Shared Partner Level จึงเท่ากันทุกสมาชิก
+    # Fusion/ระบบทีมอ่าน Shared Partner Level เดียวกันทุกสมาชิก
     if not initialized or not has_partner(id):
         return 0
     return clampi(int(shared_progress.get("level", 1)), 1, EvolutionRules.MAX_LEVEL)
