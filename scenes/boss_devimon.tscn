@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=20 format=3]
 [ext_resource type="PackedScene" path="res://scenes/wild_monster.tscn" id="1"]
 [ext_resource type="Script" path="res://scripts/quest_target.gd" id="2"]
 [ext_resource type="Texture2D" path="res://assets/art/boss_devimon_art.tres" id="boss_art"]
@@ -7,6 +7,10 @@
 [ext_resource type="Resource" path="res://data/equipment/power_chip.tres" id="chip"]
 [ext_resource type="Resource" path="res://data/equipment/reinforced_cap.tres" id="cap"]
 
+[ext_resource type="Resource" path="res://data/equipment/sentinel_coat.tres" id="new_item_0"]
+[ext_resource type="Resource" path="res://data/equipment/assault_chip.tres" id="new_item_1"]
+[ext_resource type="Resource" path="res://data/equipment/hunter_ring.tres" id="new_item_2"]
+[ext_resource type="Resource" path="res://data/equipment/sync_device.tres" id="new_item_3"]
 [sub_resource type="Resource" id="ring_drop"]
 script = ExtResource("drop_script")
 item = ExtResource("ring")
@@ -21,6 +25,27 @@ chance = 0.20
 script = ExtResource("drop_script")
 item = ExtResource("cap")
 chance = 0.18
+
+[sub_resource type="Resource" id="new_drop_0"]
+equipment_drops = Array[ExtResource("drop_script")]([SubResource("new_drop_0"), SubResource("new_drop_1"), SubResource("new_drop_2"), SubResource("new_drop_3")])
+script = ExtResource("drop_script")
+item = ExtResource("new_item_0")
+chance = 0.18
+
+[sub_resource type="Resource" id="new_drop_1"]
+script = ExtResource("drop_script")
+item = ExtResource("new_item_1")
+chance = 0.20
+
+[sub_resource type="Resource" id="new_drop_2"]
+script = ExtResource("drop_script")
+item = ExtResource("new_item_2")
+chance = 0.12
+
+[sub_resource type="Resource" id="new_drop_3"]
+script = ExtResource("drop_script")
+item = ExtResource("new_item_3")
+chance = 0.08
 
 [node name="Boss" instance=ExtResource("1")]
 monster_id = &"devimon"

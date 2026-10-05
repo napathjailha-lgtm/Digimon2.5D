@@ -1,13 +1,111 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=40 format=3]
 [ext_resource type="Script" path="res://scripts/wild_monster.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/art/wild_leaf.tres" id="2"]
 [ext_resource type="Script" path="res://scripts/target_ring.gd" id="3"]
 [ext_resource type="Script" path="res://scripts/art_shadow.gd" id="art_shadow"]
 [ext_resource type="Script" path="res://scripts/actor_nameplate.gd" id="nameplate_script"]
+[ext_resource type="Script" path="res://scripts/equipment_drop_entry.gd" id="equip_drop_script"]
+[ext_resource type="Resource" path="res://data/equipment/field_cap.tres" id="equip_item_0"]
+[ext_resource type="Resource" path="res://data/equipment/goggles.tres" id="equip_item_1"]
+[ext_resource type="Resource" path="res://data/equipment/field_jacket.tres" id="equip_item_2"]
+[ext_resource type="Resource" path="res://data/equipment/cargo_pants.tres" id="equip_item_3"]
+[ext_resource type="Resource" path="res://data/equipment/trail_gloves.tres" id="equip_item_4"]
+[ext_resource type="Resource" path="res://data/equipment/trail_boots.tres" id="equip_item_5"]
+[ext_resource type="Resource" path="res://data/equipment/travel_pack.tres" id="equip_item_6"]
+[ext_resource type="Resource" path="res://data/equipment/memory_pendant.tres" id="equip_item_7"]
+[ext_resource type="Resource" path="res://data/equipment/azure_ring.tres" id="equip_item_8"]
+[ext_resource type="Resource" path="res://data/equipment/signal_band.tres" id="equip_item_9"]
+[ext_resource type="Resource" path="res://data/equipment/field_belt.tres" id="equip_item_10"]
+[ext_resource type="Resource" path="res://data/equipment/hope_charm.tres" id="equip_item_11"]
+[ext_resource type="Resource" path="res://data/equipment/stormguard_helm.tres" id="equip_item_12"]
+[ext_resource type="Resource" path="res://data/equipment/prism_visor.tres" id="equip_item_13"]
+[ext_resource type="Resource" path="res://data/equipment/breaker_gloves.tres" id="equip_item_14"]
+[ext_resource type="Resource" path="res://data/equipment/gale_boots.tres" id="equip_item_15"]
+[sub_resource type="Resource" id="equip_drop_0"]
+script = ExtResource("equip_drop_script")
+item = ExtResource("equip_item_0")
+chance = 0.015
+
+[sub_resource type="Resource" id="equip_drop_1"]
+script = ExtResource("equip_drop_script")
+item = ExtResource("equip_item_1")
+chance = 0.012
+
+[sub_resource type="Resource" id="equip_drop_2"]
+script = ExtResource("equip_drop_script")
+item = ExtResource("equip_item_2")
+chance = 0.010
+
+[sub_resource type="Resource" id="equip_drop_3"]
+script = ExtResource("equip_drop_script")
+item = ExtResource("equip_item_3")
+chance = 0.010
+
+[sub_resource type="Resource" id="equip_drop_4"]
+script = ExtResource("equip_drop_script")
+item = ExtResource("equip_item_4")
+chance = 0.012
+
+[sub_resource type="Resource" id="equip_drop_5"]
+script = ExtResource("equip_drop_script")
+item = ExtResource("equip_item_5")
+chance = 0.010
+
+[sub_resource type="Resource" id="equip_drop_6"]
+script = ExtResource("equip_drop_script")
+item = ExtResource("equip_item_6")
+chance = 0.006
+
+[sub_resource type="Resource" id="equip_drop_7"]
+script = ExtResource("equip_drop_script")
+item = ExtResource("equip_item_7")
+chance = 0.006
+
+[sub_resource type="Resource" id="equip_drop_8"]
+script = ExtResource("equip_drop_script")
+item = ExtResource("equip_item_8")
+chance = 0.008
+
+[sub_resource type="Resource" id="equip_drop_9"]
+script = ExtResource("equip_drop_script")
+item = ExtResource("equip_item_9")
+chance = 0.008
+
+[sub_resource type="Resource" id="equip_drop_10"]
+script = ExtResource("equip_drop_script")
+item = ExtResource("equip_item_10")
+chance = 0.010
+
+[sub_resource type="Resource" id="equip_drop_11"]
+script = ExtResource("equip_drop_script")
+item = ExtResource("equip_item_11")
+chance = 0.006
+
+[sub_resource type="Resource" id="equip_drop_12"]
+script = ExtResource("equip_drop_script")
+item = ExtResource("equip_item_12")
+chance = 0.003
+
+[sub_resource type="Resource" id="equip_drop_13"]
+script = ExtResource("equip_drop_script")
+item = ExtResource("equip_item_13")
+chance = 0.003
+
+[sub_resource type="Resource" id="equip_drop_14"]
+script = ExtResource("equip_drop_script")
+item = ExtResource("equip_item_14")
+chance = 0.003
+
+[sub_resource type="Resource" id="equip_drop_15"]
+script = ExtResource("equip_drop_script")
+item = ExtResource("equip_item_15")
+chance = 0.003
+
 [sub_resource type="CircleShape2D" id="body"]
 radius = 24.0
 [node name="WildMonster" type="CharacterBody2D"]
 script = ExtResource("1")
+equipment_drops = Array[ExtResource("equip_drop_script")]([SubResource("equip_drop_0"), SubResource("equip_drop_1"), SubResource("equip_drop_2"), SubResource("equip_drop_3"), SubResource("equip_drop_4"), SubResource("equip_drop_5"), SubResource("equip_drop_6"), SubResource("equip_drop_7"), SubResource("equip_drop_8"), SubResource("equip_drop_9"), SubResource("equip_drop_10"), SubResource("equip_drop_11"), SubResource("equip_drop_12"), SubResource("equip_drop_13"), SubResource("equip_drop_14"), SubResource("equip_drop_15")])
 collision_layer = 4
 collision_mask = 1
 [node name="TargetRing" type="Node2D" parent="."]

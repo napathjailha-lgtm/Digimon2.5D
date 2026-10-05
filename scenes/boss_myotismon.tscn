@@ -1,7 +1,33 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=13 format=3]
 [ext_resource type="PackedScene" path="res://scenes/wild_monster.tscn" id="1"]
 [ext_resource type="Script" path="res://scripts/quest_target.gd" id="2"]
 [ext_resource type="Texture2D" path="res://assets/art/boss_myotismon_art.tres" id="boss_art"]
+[ext_resource type="Script" path="res://scripts/equipment_drop_entry.gd" id="drop_script"]
+[ext_resource type="Resource" path="res://data/equipment/phantom_lens.tres" id="new_item_0"]
+[ext_resource type="Resource" path="res://data/equipment/prism_pendant.tres" id="new_item_1"]
+[ext_resource type="Resource" path="res://data/equipment/quantum_band.tres" id="new_item_2"]
+[ext_resource type="Resource" path="res://data/equipment/nexus_device.tres" id="new_item_3"]
+[sub_resource type="Resource" id="new_drop_0"]
+equipment_drops = Array[ExtResource("drop_script")]([SubResource("new_drop_0"), SubResource("new_drop_1"), SubResource("new_drop_2"), SubResource("new_drop_3")])
+script = ExtResource("drop_script")
+item = ExtResource("new_item_0")
+chance = 0.16
+
+[sub_resource type="Resource" id="new_drop_1"]
+script = ExtResource("drop_script")
+item = ExtResource("new_item_1")
+chance = 0.12
+
+[sub_resource type="Resource" id="new_drop_2"]
+script = ExtResource("drop_script")
+item = ExtResource("new_item_2")
+chance = 0.12
+
+[sub_resource type="Resource" id="new_drop_3"]
+script = ExtResource("drop_script")
+item = ExtResource("new_item_3")
+chance = 0.04
+
 [node name="Boss" instance=ExtResource("1")]
 monster_id = &"myotismon"
 max_hp = 500

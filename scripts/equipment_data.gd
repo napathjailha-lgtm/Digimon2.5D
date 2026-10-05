@@ -8,7 +8,7 @@ extends Resource
 @export_multiline var description: String = ""
 @export var slot: StringName = &"head"
 @export_range(1, 99) var required_level: int = 1
-@export_enum("Common", "Rare", "Epic") var rarity: int = 0
+@export_enum("Common", "Rare", "Epic", "Legendary") var rarity: int = 0
 @export var icon: Texture2D
 
 @export_group("ค่าสเตตัสหลัก")
@@ -22,4 +22,7 @@ func fits_slot(slot_id: StringName) -> bool:
     return slot == slot_id or (slot == &"chip" and slot_id in [&"chip_a", &"chip_b"])
 
 func rarity_color() -> Color:
-    return [Color("93b9cc"), Color("49cbe9"), Color("c799ff")][clampi(rarity, 0, 2)]
+    return [Color("93b9cc"), Color("49cbe9"), Color("c799ff"), Color("ffbf55")][clampi(rarity, 0, 3)]
+
+func rarity_name() -> String:
+    return ["Common", "Rare", "Epic", "Legendary"][clampi(rarity, 0, 3)]

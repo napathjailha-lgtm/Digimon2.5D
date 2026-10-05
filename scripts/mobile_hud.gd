@@ -100,6 +100,8 @@ func _ready() -> void:
     equipment_screen = EquipmentScreen.new()
     add_child(equipment_screen)
     equipment_screen.configure(tamer, self)
+    # แจ้งของสวมใส่ที่ดรอปแม้ไม่ได้เปิดหน้า Equipment
+    tamer.equipment.feedback.connect(_show_message)
     inventory_screen = preload("res://scenes/inventory_ui.tscn").instantiate() as InventoryUI
     add_child(inventory_screen)
     inventory_screen.configure(tamer, self)

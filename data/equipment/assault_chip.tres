@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EquipmentItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/equipment_item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/equipment/chip.svg" id="2"]
+[resource]
+script = ExtResource("1")
+id = &"assault_chip"
+item_name = "Assault Chip"
+slot = &"chip"
+icon = ExtResource("2")
+rarity = 1
+required_level = 10
+description = "ชิปโจมตี เพิ่ม ATK ของ Tamer และ Partner"
+attack_bonus = 3
+critical_chance_bonus = 1
+partner_attack_bonus = 14
+strength_bonus = 1

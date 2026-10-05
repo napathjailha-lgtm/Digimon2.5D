@@ -6,6 +6,7 @@ signal feedback(message: String)
 const SLOTS: Array[StringName] = [&"head", &"face", &"chest", &"legs", &"gloves", &"boots", &"back", &"neck", &"ring", &"bracelet", &"belt", &"charm", &"device", &"chip_a", &"chip_b"]
 const LABELS: Dictionary = {"head":"ศีรษะ", "face":"แว่นตา", "chest":"เสื้อ", "legs":"กางเกง", "gloves":"ถุงมือ", "boots":"รองเท้า", "back":"หลัง", "neck":"สร้อย", "ring":"แหวน", "bracelet":"ข้อมือ", "belt":"เข็มขัด", "charm":"เครื่องราง", "device":"Digivice", "chip_a":"Chip A", "chip_b":"Chip B"}
 const CATALOG_PATH: String = "res://data/equipment/catalog.tres"
+const SAVE_VERSION: int = 2
 var catalog: EquipmentCatalog
 var bag: Dictionary = {}
 var equipped: Dictionary = {}
@@ -85,7 +86,8 @@ func grant_item(item_id: StringName, quantity: int = 1) -> bool:
 
 func total_bonuses() -> Dictionary:
     # รวมใหม่จากช่องจริงทุกครั้ง ไม่เพิ่มซ้ำเมื่อรีเฟรช UI / เปลี่ยนร่าง
-    var result: Dictionary = {"attack":0, "hp":0, "ds":0, "defense":0, "critical":0.0, "speed":0.0, "partner_hp":0, "partner_attack":0, "partner_speed":0.0}
+    var result: Dictionary = {"attack":0, "hp":0, "ds":0, "defense":0, "critical":0.0, "speed":0.0, "partner_hp":0, "partner_attack":0, "partner_speed":0.0,
+        "str":0, "dex":0, "int":0, "vit":0, "agi":0}
     for slot_id: StringName in SLOTS:
         var item: EquipmentItemData = item_at(slot_id)
         if item != null:
@@ -95,13 +97,15 @@ func total_bonuses() -> Dictionary:
     return result
 
 func get_save_data() -> Dictionary:
-    # JSON มีแต่ ID/จำนวน ไม่มี Node, Texture หรือ Resource
-    return {"version":1, "bag":bag.duplicate(), "equipped":equipped.duplicate()}
+    # v2 = ไม่มี starter gear อีกต่อไป ทุกชิ้นต้องมาจาก drop/reward หลังระบบใหม่
+    return {"version":SAVE_VERSION, "bag":bag.duplicate(), "equipped":equipped.duplicate()}
 
 func restore_data(data: Dictionary) -> void:
-    # เซฟที่มีกระเป๋าว่างเป็นข้อมูลจริง ไม่แจก starter ซ้ำ
+    # Migration ครั้งเดียว: v1 เป็นยุคที่ prototype แจก starter gear จึงไม่ยกของเดิมเข้ากติกาใหม่
     bag.clear()
     equipped.clear()
+    if int(data.get("version", 0)) < SAVE_VERSION:
+        return
     var saved_bag: Variant = data.get("bag", {})
     if saved_bag is Dictionary:
         for key: Variant in saved_bag:

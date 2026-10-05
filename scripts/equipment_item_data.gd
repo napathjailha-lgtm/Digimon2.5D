@@ -6,6 +6,13 @@ extends EquipmentData
 @export_range(0, 9999) var ds_bonus: int = 0
 @export_range(0.0, 200.0) var speed_bonus: float = 0.0
 
+@export_group("ค่าสเตตัสอุปกรณ์")
+@export_range(0, 99) var strength_bonus: int = 0
+@export_range(0, 99) var dexterity_bonus: int = 0
+@export_range(0, 99) var intelligence_bonus: int = 0
+@export_range(0, 99) var vitality_bonus: int = 0
+@export_range(0, 99) var agility_bonus: int = 0
+
 @export_group("โบนัสคู่หูจาก Digivice / Chip")
 @export_range(0, 9999) var partner_hp_bonus: int = 0
 @export_range(0, 999) var partner_attack_bonus: int = 0
@@ -22,5 +29,10 @@ func bonuses() -> Dictionary:
         "speed": speed_bonus,
         "partner_hp": partner_hp_bonus,
         "partner_attack": partner_attack_bonus,
-        "partner_speed": partner_speed_bonus
+        "partner_speed": partner_speed_bonus,
+        "str": strength_bonus,
+        "dex": dexterity_bonus,
+        "int": intelligence_bonus,
+        "vit": vitality_bonus,
+        "agi": agility_bonus
     }

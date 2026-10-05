@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EquipmentItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/equipment_item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/equipment/chest.svg" id="2"]
+[resource]
+script = ExtResource("1")
+id = &"sentinel_coat"
+item_name = "Sentinel Coat"
+slot = &"chest"
+icon = ExtResource("2")
+rarity = 1
+required_level = 8
+description = "เสื้อเกราะลาดตระเวน เน้น HP/DEF/VIT"
+hp_bonus = 90
+defense_bonus = 6
+vitality_bonus = 3

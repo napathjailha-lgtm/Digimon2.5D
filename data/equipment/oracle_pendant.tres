@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EquipmentItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/equipment_item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/equipment/neck.svg" id="2"]
+[resource]
+script = ExtResource("1")
+id = &"oracle_pendant"
+item_name = "Oracle Pendant"
+slot = &"neck"
+icon = ExtResource("2")
+rarity = 1
+required_level = 10
+description = "จี้ประมวลผลพลัง เพิ่ม INT และ DS"
+ds_bonus = 25
+intelligence_bonus = 3
+dexterity_bonus = 1

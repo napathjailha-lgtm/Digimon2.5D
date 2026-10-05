@@ -44,7 +44,10 @@ func run() -> void:
     var base_speed: float = tamer.move_speed
     var base_atk: int = partner.attack_power
     var base_partner_hp: int = partner.max_hp
-    check(inventory.catalog.items.size() == 18 and inventory.equipped.is_empty(), "18 ไอเทมเริ่มในกระเป๋า ไม่เปลี่ยนฐาน v14")
+    check(inventory.catalog.items.size() == 48 and inventory.equipped.is_empty() and inventory.bag.is_empty(), "ตัวละครใหม่เริ่มไม่มีอุปกรณ์ทั้ง Bag และ Equipped")
+    check(inventory.catalog.find_item(&"stormguard_helm").bonuses().vit == 2, "Catalog ใหม่มี STR/DEX/INT/VIT/AGI")
+    for starter_test_id: StringName in [&"field_jacket",&"crest_ring",&"field_cap",&"reinforced_cap",&"trail_boots",&"goggles",&"digi_device",&"power_chip",&"vital_chip",&"runner_chip"]:
+        check(inventory.grant_item(starter_test_id), "Test fixture เพิ่มอุปกรณ์ " + String(starter_test_id))
     check(not inventory.put_on(&"missing"), "ไม่รับ ID ที่ไม่มี")
     check(not inventory.put_on(&"field_jacket", &"head") and inventory.count(&"field_jacket") == 1, "ช่องไม่ตรงไม่กินไอเทม")
     check(not inventory.put_on(&"crest_ring") and inventory.count(&"crest_ring") == 1, "ไอเทม Lv6 ปฏิเสธ Lv1")
@@ -102,9 +105,11 @@ func run() -> void:
     other.initialize(tamer)
     other.restore_data(saved)
     check(JSON.parse_string(JSON.stringify(other.get_save_data())) == saved and other.total_bonuses() == totals, "Equipment save JSON round trip")
-    other.restore_data({"bag":{}, "equipped":{}})
+    other.restore_data({"version":EquipmentInventory.SAVE_VERSION, "bag":{}, "equipped":{}})
     check(other.bag.is_empty() and other.equipped.is_empty(), "bag ว่างที่เซฟไว้ไม่รับ starter ซ้ำ")
-    other.restore_data({"bag":{"unknown":5,"field_cap":-20},"equipped":{"head":"field_jacket","boots":"unknown","ring":"crest_ring"}})
+    other.restore_data({"version":1, "bag":{"field_cap":1}, "equipped":{"head":"field_cap"}})
+    check(other.bag.is_empty() and other.equipped.is_empty(), "เซฟ equipment v1 ถูกล้าง starter gear ตอน migrate เป็น v2")
+    other.restore_data({"version":EquipmentInventory.SAVE_VERSION,"bag":{"unknown":5,"field_cap":-20},"equipped":{"head":"field_jacket","boots":"unknown","ring":"crest_ring"}})
     check(other.count(&"field_cap") == 0 and other.item_at(&"head") == null and other.item_at(&"boots") == null, "กรอง unknown/ผิดช่อง/จำนวนติดลบตอนโหลด")
     check(other.item_at(&"ring") == null and other.count(&"crest_ring") == 1, "เซฟของระดับสูงเกินคืนเข้ากระเป๋า")
     # ทดสอบ pipeline touch จริง ขณะ paused: ไม่เรียก callback โดยตรงแทนการแตะ
@@ -186,7 +191,7 @@ func run() -> void:
     get_tree().root.add_child(migrated)
     await get_tree().process_frame
     var old_tamer: Tamer = migrated.get_node("Actors/Tamer")
-    check(old_tamer.equipment.count(&"field_cap") == 1 and old_tamer.equipment.equipped.is_empty(), "เซฟ v14 ไม่มี equipment ยังคงเล่นและรับ starter ใน bag")
+    check(old_tamer.equipment.bag.is_empty() and old_tamer.equipment.equipped.is_empty(), "เซฟเก่าที่ไม่มี equipment ไม่ได้รับ starter gear")
     migrated.queue_free()
     await get_tree().process_frame
     DirAccess.remove_absolute(ProjectSettings.globalize_path(QuestManager.save_path))
