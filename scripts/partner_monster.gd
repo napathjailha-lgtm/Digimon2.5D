@@ -762,7 +762,11 @@ func _form_unlocked(data: MonsterData) -> bool:
     if data.id == &"omegamon":
         return true
     var index: int = forms.find(data)
-    return index >= 0 and EvolutionRules.can_use_form(progress.level, index, data) and QuestManager.has_flag(data.required_story_flag)
+    # ร่างฐานของสายเล่นได้เสมอ (Tailmon เป็น Champion ตามข้อมูลแต่เป็น starter ได้)
+    # ร่างถัดไปต้องผ่านทั้ง Level และ Story stage ของ EP1
+    if index == 0:
+        return true
+    return index > 0 and EvolutionRules.can_use_form(progress.level, index, data) and QuestManager.can_use_form(data)
 
 func _start_basic_attack() -> bool:
     if not can_battle():
