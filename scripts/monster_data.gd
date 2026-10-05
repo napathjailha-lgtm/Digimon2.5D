@@ -1,15 +1,15 @@
 class_name MonsterData
 extends Resource
-## Template ข้อมูลแต่ละร่าง: สร้าง .tres แยก Rookie / Champion / Ultimate / Mega
+## Template ข้อมูลแต่ละร่าง: สร้าง .tres แยก Base / Growth / Ascended / Apex
 ## Resource เป็นข้อมูลต้นแบบที่หลายตัวอ่านร่วมกัน ห้ามเก็บ HP ปัจจุบันที่นี่
 
-enum EvolutionStage { ROOKIE, CHAMPION, ULTIMATE, MEGA }
+enum EvolutionStage { BASE, GROWTH, ASCENDED, APEX }
 
 @export_group("ข้อมูลมอนสเตอร์")
-@export var id: StringName = &"rookie"
-@export var monster_name: String = "Rookie"
-@export var evolution_stage: EvolutionStage = EvolutionStage.ROOKIE
-# ว่าง = ใช้ระดับร่างอย่างเดียว; เช่น Angemon กำหนด &"angemon"
+@export var id: StringName = &"base"
+@export var monster_name: String = "Base"
+@export var evolution_stage: EvolutionStage = EvolutionStage.BASE
+# ว่าง = ใช้ระดับร่างอย่างเดียว; เช่นร่างเนื้อเรื่องกำหนด flag เฉพาะของเกม
 @export var required_story_flag: StringName = &""
 
 @export_group("สเตตัสพื้นฐาน")
