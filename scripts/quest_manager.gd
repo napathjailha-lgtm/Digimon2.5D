@@ -160,6 +160,13 @@ func load_progress() -> bool:
     _clear_progress()
     # รับเฉพาะ prefix ที่เรียงตามเนื้อเรื่อง ป้องกัน save ข้าม prerequisites
     var raw_completed: Array = parsed.get("completed", [])
+    # Migration: เซฟก่อน EP1 ใช้ q03_devimon เป็นบอสแรก
+    # ผู้เล่นที่เคยผ่านแล้วไม่ถูกบังคับให้ย้อนทำ Forest Hunt/Mini Boss ซ้ำ
+    if "q03_devimon" in raw_completed:
+        if "q03_green_hunt" not in raw_completed:
+            raw_completed.append("q03_green_hunt")
+        if "q04_forest_guardian" not in raw_completed:
+            raw_completed.append("q04_forest_guardian")
     for quest: StoryQuest in catalog.quests:
         if String(quest.id) not in raw_completed:
             break
