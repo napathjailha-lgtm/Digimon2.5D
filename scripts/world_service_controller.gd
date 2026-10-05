@@ -14,16 +14,25 @@ var incubator_service := IncubatorService.new()
 # ปุ่ม E เสมือนสำหรับมือถือ แสดงเฉพาะเมื่อมี ServicePoint อยู่ในระยะ
 var mobile_interact_button: TouchCommand
 var _mobile_interact_point: WorldServicePoint
+var _services_initialized: bool = false
 
 func _ready() -> void:
     process_mode = Node.PROCESS_MODE_ALWAYS
     add_to_group("world_service_controller")
     HybridInput.ensure_actions()
+    _try_initialize_services()
+
+
+func _try_initialize_services() -> void:
+    if _services_initialized:
+        return
+
     tamer = get_tree().get_first_node_in_group("tamer") as Tamer
     hud = get_parent().get_node_or_null("MobileHUD") as MobileHUD
 
-    if not is_instance_valid(tamer) or not is_instance_valid(tamer.party_roster):
-        push_warning("WorldServiceController: Tamer/PartnerRoster ยังไม่พร้อม")
+    # Sibling _ready order ต่างกันได้ระหว่าง editor/Web/Android
+    # ห้าม return ถาวร: _process จะลองใหม่จน MobileHUD สร้าง PartnerRoster เสร็จ
+    if not is_instance_valid(tamer) or not is_instance_valid(tamer.party_roster) or not is_instance_valid(hud):
         return
 
     _build_mobile_interact_button()
@@ -41,7 +50,14 @@ func _ready() -> void:
     add_child(incubator_ui)
     incubator_ui.configure(incubator_service, tamer)
 
+    _services_initialized = true
+
 func _process(_delta: float) -> void:
+    if not _services_initialized:
+        _try_initialize_services()
+    if not _services_initialized:
+        return
+
     # Desktop ไม่ต้องมีปุ่มนี้ เพราะใช้ E/Mouse ได้ตามเดิม
     if not is_instance_valid(mobile_interact_button):
         return
@@ -63,7 +79,8 @@ func _process(_delta: float) -> void:
 
 func _build_mobile_interact_button() -> void:
     # ใช้ TouchCommand เพื่อรองรับ multi-touch จริง ไม่ต้องอาศัย mouse emulation
-    if not HybridPlatform.use_mobile_layout(get_viewport()) or not is_instance_valid(hud):
+    # Android/iOS native ต้องได้ปุ่มแม้ viewport ใหญ่หรือ feature mobile ไม่ถูกใส่มาใน export
+    if not HybridPlatform.is_touch_device() or not is_instance_valid(hud):
         return
 
     var hud_root := hud.get_node_or_null("Root") as Control
@@ -169,7 +186,9 @@ func _nearest_service_point() -> WorldServicePoint:
 
 func open_service(service_id: StringName) -> void:
     # หยุดการควบคุมสนามและคืน finger state ก่อน pause modal
-    if not is_instance_valid(tamer) or get_tree().paused:
+    if not _services_initialized:
+        _try_initialize_services()
+    if not _services_initialized or not is_instance_valid(tamer) or get_tree().paused:
         return
 
     if is_instance_valid(mobile_interact_button):
