@@ -12,7 +12,7 @@ var catalog: QuestCatalog = preload("res://data/quest_catalog.tres")
 const ZONE_ORDER: Array[StringName] = [&"file_island", &"server_continent", &"odaiba", &"spiral_mountain"]
 var save_path: String = "user://story_progress.json"
 var current_zone: StringName = &"file_island"
-var max_unlocked_stage: int = MonsterData.EvolutionStage.CHAMPION
+var max_unlocked_stage: int = MonsterData.EvolutionStage.ROOKIE
 var party_profile: Dictionary = {} # เซฟ HP/ร่าง/เลเวลของปาร์ตี้ข้ามการเปิดเกม
 var party_snapshot: Dictionary = {} # เก็บ DS/HP/ร่างระหว่างเปลี่ยน Scene ใน session
 var _completed: Array[StringName] = []
@@ -68,6 +68,7 @@ func report_event(kind: StoryQuest.Objective, target_id: StringName, amount: int
         # Commit ก่อน emit: event ซ้ำจะไม่แจก reward ซ้ำ
         _completed.append(quest.id)
         _rebuild_unlocks()
+        _grant_rewards(quest)
         save_progress()
         unlocks_changed.emit(max_unlocked_stage)
         quest_completed.emit(quest.id)
@@ -75,6 +76,17 @@ func report_event(kind: StoryQuest.Objective, target_id: StringName, amount: int
         save_progress()
     quest_updated.emit(quest.id)
     return true
+
+func _grant_rewards(quest: StoryQuest) -> void:
+    # รางวัลถูกเรียกหลัง append completed แล้ว จึงไม่มีทางแจกซ้ำจาก event เดิม
+    if quest == null:
+        return
+    var tamer := get_tree().get_first_node_in_group("tamer") as Tamer
+    if quest.reward_exp > 0 and is_instance_valid(tamer):
+        tamer.grant_party_exp(quest.reward_exp)
+    if quest.reward_bits > 0:
+        GameManager.add_bits(quest.reward_bits)
+
 
 func has_flag(flag: StringName) -> bool:
     return flag == &"" or flag in _flags
@@ -93,7 +105,7 @@ func set_current_zone(zone_id: StringName) -> void:
 
 func _rebuild_unlocks() -> void:
     # รางวัลคำนวณจากเควสต์ที่จบ ไม่บันทึกซ้ำเป็นอีกแหล่งข้อมูล
-    max_unlocked_stage = MonsterData.EvolutionStage.CHAMPION
+    max_unlocked_stage = MonsterData.EvolutionStage.ROOKIE
     _flags.clear()
     _zones.assign([&"file_island"])
     for quest: StoryQuest in catalog.quests:
