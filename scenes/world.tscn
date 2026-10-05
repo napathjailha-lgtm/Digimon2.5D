@@ -5,12 +5,12 @@
 [ext_resource type="PackedScene" path="res://scenes/partner.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/monster_spawner.tscn" id="4"]
 [ext_resource type="PackedScene" path="res://scenes/mobile_hud.tscn" id="5"]
-[ext_resource type="PackedScene" path="res://scenes/boss_devimon.tscn" id="boss"]
+[ext_resource type="PackedScene" path="res://scenes/boss_void_harrower.tscn" id="boss"]
 [ext_resource type="Script" path="res://scripts/world_population.gd" id="population"]
-[ext_resource type="PackedScene" path="res://scenes/npc_agumon.tscn" id="npc"]
+[ext_resource type="PackedScene" path="res://scenes/npc_emberling.tscn" id="npc"]
 [ext_resource type="PackedScene" path="res://scenes/reach_friends_reunion.tscn" id="reach"]
 [ext_resource type="Script" path="res://scripts/open_world_environment.gd" id="environment"]
-[ext_resource type="Resource" path="res://data/openworld/file_island_layout.tres" id="layout"]
+[ext_resource type="Resource" path="res://data/openworld/lumen_isle_layout.tres" id="layout"]
 [ext_resource type="PackedScene" path="res://scenes/wild_monster_crab.tscn" id="wild_crab"]
 [ext_resource type="PackedScene" path="res://scenes/safe_zone.tscn" id="safe_zone"]
 [ext_resource type="Script" path="res://scripts/world_service_controller.gd" id="service_controller"]
@@ -29,7 +29,7 @@ size = Vector2(24, 720)
 radius = 52.0
 [node name="World" type="Node2D"]
 script = ExtResource("1")
-zone_id = &"file_island"
+zone_id = &"lumen_isle"
 world_extent = Vector2(10240, 6400)
 open_world_enabled = true
 y_sort_enabled = true
@@ -104,7 +104,7 @@ collision_layer = 16
 collision_mask = 0
 script = ExtResource("service_point")
 service_id = "archive"
-title = "DIGIMON ARCHIVE"
+title = "CREATURE ARCHIVE"
 interaction_radius = 135.0
 accent_color = Color(0.33, 0.78, 0.9, 1)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StoryPoints/ArchiveNPC"]
@@ -119,7 +119,7 @@ offset_left = -110.0
 offset_top = -198.0
 offset_right = 110.0
 offset_bottom = -164.0
-text = "DIGIMON ARCHIVE"
+text = "CREATURE ARCHIVE"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 17
 mouse_filter = 2
@@ -139,7 +139,7 @@ collision_layer = 16
 collision_mask = 0
 script = ExtResource("service_point")
 service_id = "shop"
-title = "DIGITAL MERCHANT"
+title = "SIGNAL MERCHANT"
 interaction_radius = 135.0
 accent_color = Color(0.88, 0.74, 0.45, 1)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StoryPoints/MerchantNPC"]
@@ -154,7 +154,7 @@ offset_left = -112.0
 offset_top = -198.0
 offset_right = 112.0
 offset_bottom = -164.0
-text = "DIGITAL MERCHANT"
+text = "SIGNAL MERCHANT"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 17
 mouse_filter = 2
@@ -174,7 +174,7 @@ collision_layer = 16
 collision_mask = 0
 script = ExtResource("service_point")
 service_id = "incubator"
-title = "DIGITAL INCUBATOR"
+title = "CORE INCUBATOR"
 interaction_radius = 150.0
 accent_color = Color(0.73, 0.58, 0.96, 1)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StoryPoints/DigitalIncubator"]
@@ -189,7 +189,7 @@ offset_left = -120.0
 offset_top = -215.0
 offset_right = 120.0
 offset_bottom = -181.0
-text = "DIGITAL INCUBATOR"
+text = "CORE INCUBATOR"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 17
 mouse_filter = 2
