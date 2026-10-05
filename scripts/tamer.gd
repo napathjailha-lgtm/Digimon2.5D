@@ -28,7 +28,7 @@ signal auto_navigation_failed(message: String)
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var animator: DirectionalAnimator = $DirectionalAnimator
 @onready var progress: CharacterProgress = $Progress
-var display_name: String = "Tamer"
+var display_name: String = "Warden"
 # เจ้าของสเตตัสเป็น Tamer เท่านั้น ชื่อ hp/max_hp/ds เดิมเป็น alias ไม่ใช่ข้อมูลอีกชุด
 var tamer_max_hp: int = 200
 var tamer_hp: int = 200:
@@ -156,7 +156,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _is_command_ui_at(screen_position: Vector2) -> bool:
-    # ปุ่ม Attack/Skill/Digivolve/Auto ฯลฯ สืบทอด TouchCommand และอยู่ใน group นี้
+    # ปุ่ม Attack/Skill/Ascend/Auto ฯลฯ สืบทอด TouchCommand และอยู่ใน group นี้
     # ตรวจเฉพาะปุ่มที่มองเห็น เพื่อไม่ให้ Control ที่ซ่อนอยู่บังการเลือกมอนสเตอร์
     for node: Node in get_tree().get_nodes_in_group("touch_commands"):
         var command := node as TouchCommand
@@ -274,7 +274,7 @@ func set_auto_battle(enabled: bool) -> void:
         partner.auto_battle = enabled and can_battle() and not survival.is_resting()
 
 func consume_mp(amount: float) -> bool:
-    # Tamer MP ใช้สำหรับ Digivolve/Jogress และค่าใช้จ่ายในการคงร่างเท่านั้น
+    # Tamer MP ใช้สำหรับ Ascension/Resonance และค่าใช้จ่ายในการคงร่างเท่านั้น
     if not is_finite(amount) or amount < 0.0 or tamer_mp < amount:
         return false
     tamer_mp = maxf(0.0, tamer_mp - amount)
