@@ -13,8 +13,8 @@ var list_box: VBoxContainer
 var bits_label: Label
 var mode_label: Label
 var notice: Label
-var buy_tab: DigimonTouchButton
-var sell_tab: DigimonTouchButton
+var buy_tab: CreatureTouchButton
+var sell_tab: CreatureTouchButton
 var visual_fx: ModalVisualFX
 var sell_mode: bool = false
 var _owns_pause: bool = false
@@ -206,7 +206,7 @@ func _refresh() -> void:
             rows += 1
         if rows == 0:
             list_box.add_child(_empty_state("ไม่มีของที่ร้านรับซื้อ", "วัตถุดิบและ Data Chip ที่มีราคาขายจะแสดงตรงนี้"))
-        notice.text = "ขายทีละ 1 ชิ้น • Digitama และอุปกรณ์ Boss ไม่รับซื้อ"
+        notice.text = "ขายทีละ 1 ชิ้น • Core Egg และอุปกรณ์ Boss ไม่รับซื้อ"
     else:
         for item: ItemData in InventoryManager.catalog.items:
             if item.shop_sold and item.buy_price > 0:
@@ -281,8 +281,8 @@ func _empty_state(title: String, subtitle: String) -> PanelContainer:
     stack.add_child(b)
     return frame
 
-func _button(text: String, minimum: Vector2, callback: Callable, accent: Color) -> DigimonTouchButton:
-    var button := DigimonTouchButton.new()
+func _button(text: String, minimum: Vector2, callback: Callable, accent: Color) -> CreatureTouchButton:
+    var button := CreatureTouchButton.new()
     button.text = text
     button.custom_minimum_size = minimum
     ServiceUIStyle.button(button, accent)
@@ -307,5 +307,5 @@ func _clear_list() -> void:
 
 func _release_buttons() -> void:
     for node: Node in root.find_children("*", "", true, false):
-        if node is DigimonTouchButton:
-            (node as DigimonTouchButton).release_input()
+        if node is CreatureTouchButton:
+            (node as CreatureTouchButton).release_input()
