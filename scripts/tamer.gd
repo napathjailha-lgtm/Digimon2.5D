@@ -365,7 +365,8 @@ func take_damage(amount: int, _attacker: Node2D = null) -> void:
         hp_changed.emit(hp, max_hp)
 
 func grant_party_exp(amount: int) -> void:
-    # เครดิตการฆ่าหนึ่งตัวให้ทั้ง Tamer และคู่หู ไม่แบ่งครึ่ง
+    # เครดิตการฆ่าหนึ่งตัวให้ Tamer + Digimon ที่กำลังลงสนามเท่านั้น
+    # สมาชิกสำรอง/ใน Archive ไม่ได้รับ EXP จึงมี Level/EXP แยกกันจริง
     progress.add_exp(amount)
     if is_instance_valid(partner):
         partner.progress.add_exp(amount)
