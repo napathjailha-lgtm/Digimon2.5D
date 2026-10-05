@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="ItemCatalog" load_steps=16 format=3]
+[gd_resource type="Resource" script_class="ItemCatalog" load_steps=18 format=3]
 [ext_resource type="Script" path="res://scripts/item_catalog.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/item_data.gd" id="2"]
 [ext_resource type="Resource" path="res://data/items/meat.tres" id="3"]
@@ -14,6 +14,8 @@
 [ext_resource type="Resource" path="res://data/items/tailmon_digitama.tres" id="tailmon_egg"]
 [ext_resource type="Resource" path="res://data/items/patamon_digitama.tres" id="patamon_egg"]
 [ext_resource type="Resource" path="res://data/items/gomamon_digitama.tres" id="gomamon_egg"]
+[ext_resource type="Resource" path="res://data/items/tamer_ration.tres" id="tamer_ration"]
+[ext_resource type="Resource" path="res://data/items/tamer_medkit.tres" id="tamer_medkit"]
 [resource]
 script = ExtResource("1")
 items = Array[ExtResource("2")]([
@@ -29,5 +31,7 @@ items = Array[ExtResource("2")]([
     ExtResource("12"),
     ExtResource("tailmon_egg"),
     ExtResource("patamon_egg"),
-    ExtResource("gomamon_egg")
+    ExtResource("gomamon_egg"),
+    ExtResource("tamer_ration"),
+    ExtResource("tamer_medkit")
 ])
