@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="StarterPartnerData" load_steps=7 format=3]
+[ext_resource type="Script" path="res://scripts/pregame/starter_partner_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/original/creatures/voltbug_0.svg" id="p"]
+[ext_resource type="Script" path="res://scripts/monster_data.gd" id="mt"]
+[ext_resource type="Resource" path="res://data/pregame/voltbug_0.tres" id="f0"]
+[ext_resource type="Resource" path="res://data/pregame/voltbug_1.tres" id="f1"]
+[ext_resource type="Resource" path="res://data/pregame/voltbug_2.tres" id="f2"]
+[resource]
+script = ExtResource("s")
+id = &"voltbug"
+display_name = "Voltbug"
+attribute_name = "Radiant"
+element_name = "สายฟ้า"
+description = "คู่หูต้นฉบับธาตุสายฟ้า • สายวิวัฒนาการเฉพาะของ Signal Frontier"
+portrait = ExtResource("p")
+forms = Array[ExtResource("mt")]([ExtResource("f0"),ExtResource("f1"),ExtResource("f2")])

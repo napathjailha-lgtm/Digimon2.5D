@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/skills_painted/lightning.png" id="icon"]
+[resource]
+script = ExtResource("s")
+id = &"voltbug_2_skill"
+display_name = "Thunder Ram"
+icon = ExtResource("icon")
+multiplier = 3.4
+cooldown = 8.0
+cast_range = 320.0
+mp_cost = 15.0
+impact_radius = 80.0
+projectile_speed = 600.0
+effect_color = Color(1,0.9,0.42,1)
+effect_size = 30.0
+vfx_style = "lightning"

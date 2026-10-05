@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/skills_painted/lightning.png" id="icon"]
+[resource]
+script = ExtResource("s")
+id = &"voltbug_0_skill"
+display_name = "Static Pulse"
+icon = ExtResource("icon")
+multiplier = 1.2
+cooldown = 3.0
+cast_range = 220.0
+mp_cost = 5.0
+impact_radius = 0.0
+projectile_speed = 600.0
+effect_color = Color(1,0.9,0.42,1)
+effect_size = 12.0
+vfx_style = "lightning"

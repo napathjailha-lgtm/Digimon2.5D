@@ -1,0 +1,4 @@
+[gd_resource type="SpriteFrames" load_steps=2 format=3]
+[ext_resource type="Texture2D" path="res://assets/original/creatures/voltbug_1.svg" id="1"]
+[resource]
+animations = [{"frames":[{"duration":1.0,"texture":ExtResource("1")}],"loop":true,"name":&"idle","speed":1.0},{"frames":[{"duration":1.0,"texture":ExtResource("1")}],"loop":true,"name":&"walk","speed":5.0},{"frames":[{"duration":1.0,"texture":ExtResource("1")}],"loop":false,"name":&"attack","speed":9.0},{"frames":[{"duration":1.0,"texture":ExtResource("1")}],"loop":false,"name":&"cast","speed":9.0}]
