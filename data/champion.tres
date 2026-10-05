@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="MonsterData" load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/monster_data.gd" id="1"]
-[ext_resource type="SpriteFrames" path="res://data/champion_frames.tres" id="2"]
+[ext_resource type="SpriteFrames" path="res://data/pregame/flarewing_frames.tres" id="2"]
 [ext_resource type="Resource" path="res://data/champion_claw.tres" id="3"]
 [ext_resource type="Resource" path="res://data/champion_flare.tres" id="4"]
 [ext_resource type="Resource" path="res://data/champion_burst.tres" id="5"]
@@ -11,7 +11,7 @@
 [resource]
 script = ExtResource("1")
 id = &"champion"
-monster_name = "Champion"
+monster_name = "Flarewing"
 evolution_stage = 1
 sprite_frames = ExtResource("2")
 sprite_scale = Vector2(0.526316, 0.526316)
