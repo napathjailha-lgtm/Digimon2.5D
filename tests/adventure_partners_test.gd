@@ -89,6 +89,13 @@ func run() -> void:
     player.survival.autosave_enabled = false
     partner.set_physics_process(false)
     roster.set_process(false)
+
+    # EXP curve แยก owner: ช่วง Rookie เหมือนกันเพื่อ onboarding แต่หลัง Champion Digimon ช้ากว่า
+    check(player.progress.exp_required(10) == 550 and partner.progress.exp_required(10) == 550, "Tamer and Digimon share early onboarding pace")
+    check(player.progress.exp_required(30) == 1550 and partner.progress.exp_required(30) == 2225, "Digimon EXP curve separates after Champion")
+    check(player.progress.exp_required(60) == 3050 and partner.progress.exp_required(60) == 7775, "Digimon high-level EXP curve is steeper than Tamer")
+    check(partner.progress.level_cap == 90 and player.progress.level_cap == 99, "Digimon caps at 90 while Tamer keeps level 99 cap")
+
     player.position = Vector2(200, 200)
     partner.position = Vector2(280, 200)
     for enemy: Node in get_tree().get_nodes_in_group("wild_monsters"):
