@@ -18,7 +18,7 @@ var selected_target: Label
 var chip_count: Label
 var progress_text: Label
 var progress_bar: ProgressBar
-var inject_button: CompanionTouchButton
+var inject_button: DigimonTouchButton
 var notice: Label
 var visual_fx: ModalVisualFX
 var hatch_flash: ColorRect
@@ -340,8 +340,8 @@ func _empty_state() -> PanelContainer:
     stack.add_child(b)
     return frame
 
-func _button(text: String, minimum: Vector2, callback: Callable, accent: Color) -> CompanionTouchButton:
-    var button := CompanionTouchButton.new()
+func _button(text: String, minimum: Vector2, callback: Callable, accent: Color) -> DigimonTouchButton:
+    var button := DigimonTouchButton.new()
     button.text = text
     button.custom_minimum_size = minimum
     ServiceUIStyle.button(button, accent)
@@ -386,5 +386,5 @@ func _clear_egg_list() -> void:
 
 func _release_buttons() -> void:
     for node: Node in root.find_children("*", "", true, false):
-        if node is CompanionTouchButton:
-            (node as CompanionTouchButton).release_input()
+        if node is DigimonTouchButton:
+            (node as DigimonTouchButton).release_input()
