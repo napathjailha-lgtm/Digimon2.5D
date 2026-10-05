@@ -44,7 +44,9 @@ func animate_open() -> void:
     _stop()
     _rest_scale = panel.scale
     panel.pivot_offset = panel.size * 0.5
-    var use_blur: bool = GameVisualSettings.blur_enabled and not GameVisualSettings.low_effects
+    # BackBufferCopy + blur shader มีโอกาสได้ framebuffer ไม่พร้อมใน first-open บน Android/Web touch.
+    # มือถือใช้ dim overlay ที่เสถียรกว่าและเบากว่า ส่วน Desktop ยังคง blur ตาม setting เดิม.
+    var use_blur: bool = GameVisualSettings.blur_enabled and not GameVisualSettings.low_effects and not HybridPlatform.is_touch_device()
     copy.copy_mode = BackBufferCopy.COPY_MODE_VIEWPORT if use_blur else BackBufferCopy.COPY_MODE_DISABLED
     blur.material = _material if use_blur else null
     blur.color = Color.WHITE if use_blur else Color(0.01, 0.025, 0.06, 0.56)
@@ -53,6 +55,7 @@ func animate_open() -> void:
     _material.set_shader_parameter("strength", 1.0)
     if not GameVisualSettings.motion_enabled:
         panel.scale = _rest_scale
+        panel.modulate.a = 1.0
         return
     panel.scale = _rest_scale * 0.8
     panel.modulate.a = 0.0
