@@ -4,11 +4,11 @@
 [resource]
 script = ExtResource("1")
 item_id = "data_chip"
-item_name = "Vaccine Data Chip"
+item_name = "Energy Pattern Chip"
 item_type = 4
 item_texture = ExtResource("2")
-description = "ใช้ Inject ข้อมูลให้ Digitama สาย Vaccine"
-chip_family = &"vaccine"
+description = "ชิปพลังงานสำหรับเสริม Core Egg กลุ่ม Ember / Aerial / Arc"
+chip_family = &"energy"
 shop_sold = true
 buy_price = 45
 sell_price = 12
