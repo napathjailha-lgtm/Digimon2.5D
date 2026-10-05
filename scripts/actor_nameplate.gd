@@ -34,7 +34,7 @@ func _process(delta: float) -> void:
         _name.modulate = Color("9af8eb")
     elif _actor is PartnerMonster:
         var actor := _actor as PartnerMonster
-        _name.text = actor.current_form.monster_name if actor.is_alive() else "Digitama"
+        _name.text = actor.current_form.monster_name if actor.is_alive() else "Core Egg"
         texture = actor.sprite.sprite_frames.get_frame_texture(actor.sprite.animation, actor.sprite.frame) if actor.is_alive() else actor.egg_sprite.texture
         scale_y = actor.sprite.scale.y if actor.is_alive() else actor.egg_sprite.scale.y
         _name.modulate = Color("ffdc8e")
