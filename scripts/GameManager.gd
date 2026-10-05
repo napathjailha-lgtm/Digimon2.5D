@@ -7,8 +7,8 @@ const LOADING_SCENE: String = "res://scenes/pregame/loading_screen.tscn"
 const LOGIN_SCENE: String = "res://scenes/pregame/login_screen.tscn"
 const CHARACTER_SCENE: String = "res://scenes/pregame/character_selection.tscn"
 const STARTER_SCENE: String = "res://scenes/pregame/starter_selection.tscn"
-const ZONE_SCENES: Dictionary = {"file_island":"res://scenes/world.tscn", "server_continent":"res://scenes/world.tscn", "odaiba":"res://scenes/world.tscn", "spiral_mountain":"res://scenes/world.tscn"}
-const SERVERS: Array[Dictionary] = [{"id":"file_1","name":"File Island · Server 1"}, {"id":"file_2","name":"File Island · Server 2"}]
+const ZONE_SCENES: Dictionary = {"shard_isle":"res://scenes/world.tscn", "nexus_reach":"res://scenes/nexus_reach.tscn", "neon_harbor":"res://scenes/neon_harbor.tscn", "fracture_spire":"res://scenes/fracture_spire.tscn"}
+const SERVERS: Array[Dictionary] = [{"id":"file_1","name":"Shard Isle · Realm 1"}, {"id":"file_2","name":"Shard Isle · Realm 2"}]
 const CATALOG_PATH: String = "res://data/pregame/catalog.tres"
 const SLOT_COUNT: int = 5
 var catalog: PregameCatalog
@@ -23,7 +23,7 @@ var pending_character: Dictionary = {}
 var creation_preview: Dictionary = {} # เก็บชื่อ/โมเดล draft กลับจาก Starter โดยยังไม่กิน slot
 var tamer_selected: StringName = &""
 var partner_selected: StringName = &""
-var tamer_name: String = "Tamer"
+var tamer_name: String = "Warden"
 var current_level: int = 1
 var current_form: StringName = &""
 const DEFAULT_BITS: int = 500
@@ -82,7 +82,7 @@ func login_demo(user: String, password: String, server_id: String) -> bool:
     creation_preview.clear()
     tamer_selected = &""
     partner_selected = &""
-    tamer_name = "Tamer"
+    tamer_name = "Warden"
     current_level = 1
     current_form = &""
     bits = DEFAULT_BITS
@@ -157,9 +157,9 @@ func begin_creation(model_id: StringName, name_text: String) -> bool:
     var model: TamerModelData = catalog.tamer_by_id(model_id)
     var clean: String = name_text.strip_edges()
     if model == null:
-        return _fail("โมเดล Tamer ไม่ถูกต้อง")
+        return _fail("โมเดล Warden ไม่ถูกต้อง")
     if clean.length() < 2 or clean.length() > 16 or _has_control_chars(clean):
-        return _fail("ชื่อ Tamer ต้องยาว 2–16 ตัวอักษร")
+        return _fail("ชื่อ Warden ต้องยาว 2–16 ตัวอักษร")
     for record: Dictionary in characters:
         if not record.is_empty() and str(record.name).to_lower() == clean.to_lower():
             return _fail("ชื่อนี้ถูกใช้แล้วในบัญชีและเซิร์ฟเวอร์นี้")
@@ -281,7 +281,7 @@ func logout() -> void:
     selected_slot = 0
     tamer_selected = &""
     partner_selected = &""
-    tamer_name = "Tamer"
+    tamer_name = "Warden"
     current_level = 1
     current_form = &""
     bits = DEFAULT_BITS
@@ -317,4 +317,4 @@ func _change_scene(path: String) -> void:
 func enter_world() -> bool:
     if not prepare_adventure():
         return false
-    return go_to(ZONE_SCENES.get(String(QuestManager.current_zone), ZONE_SCENES.file_island), true)
+    return go_to(ZONE_SCENES.get(String(QuestManager.current_zone), ZONE_SCENES.shard_isle), true)
