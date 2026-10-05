@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EquipmentItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/equipment_item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/equipment/ring.svg" id="2"]
+[resource]
+script = ExtResource("1")
+id = &"signal_ring"
+item_name = "Signal Ring"
+slot = &"ring"
+icon = ExtResource("2")
+rarity = 2
+description = "อุปกรณ์หายากจาก World Boss เพิ่มพลังโดยรวมขณะสวมใส่"
+attack_bonus = 8
+hp_bonus = 100
+ds_bonus = 30
+critical_chance_bonus = 3.0
+required_level = 6

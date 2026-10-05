@@ -13,12 +13,12 @@
 [ext_resource type="Resource" path="res://data/equipment/signal_band.tres" id="item_9"]
 [ext_resource type="Resource" path="res://data/equipment/field_belt.tres" id="item_10"]
 [ext_resource type="Resource" path="res://data/equipment/hope_charm.tres" id="item_11"]
-[ext_resource type="Resource" path="res://data/equipment/digi_device.tres" id="item_12"]
+[ext_resource type="Resource" path="res://data/equipment/link_core.tres" id="item_12"]
 [ext_resource type="Resource" path="res://data/equipment/power_chip.tres" id="item_13"]
 [ext_resource type="Resource" path="res://data/equipment/vital_chip.tres" id="item_14"]
 [ext_resource type="Resource" path="res://data/equipment/runner_chip.tres" id="item_15"]
 [ext_resource type="Resource" path="res://data/equipment/reinforced_cap.tres" id="item_16"]
-[ext_resource type="Resource" path="res://data/equipment/crest_ring.tres" id="item_17"]
+[ext_resource type="Resource" path="res://data/equipment/signal_ring.tres" id="item_17"]
 [resource]
 script = ExtResource("1")
-items = Array[ExtResource("item_script")]([ExtResource("item_0"), ExtResource("item_1"), ExtResource("item_2"), ExtResource("item_3"), ExtResource("item_4"), ExtResource("item_5"), ExtResource("item_6"), ExtResource("item_7"), ExtResource("item_8"), ExtResource("item_9"), ExtResource("item_10"), ExtResource("item_11"), ExtResource("item_12"), ExtResource("item_13"), ExtResource("item_14"), ExtResource("item_15"), ExtResource("item_16"), ExtResource("item_17")])
+items = Array[ExtResource("item_script")]([ExtResource("item_0"),ExtResource("item_1"),ExtResource("item_2"),ExtResource("item_3"),ExtResource("item_4"),ExtResource("item_5"),ExtResource("item_6"),ExtResource("item_7"),ExtResource("item_8"),ExtResource("item_9"),ExtResource("item_10"),ExtResource("item_11"),ExtResource("item_12"),ExtResource("item_13"),ExtResource("item_14"),ExtResource("item_15"),ExtResource("item_16"),ExtResource("item_17")])
