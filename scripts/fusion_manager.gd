@@ -1,13 +1,13 @@
 class_name FusionManager
 extends Node
-## Fusion ของ Emberclaw + Frostfang เมื่อ Shared Partner Level ถึง 90
+## Fusion ของ Agumon + Gabumon เมื่อ Shared Partner Level ถึง 90
 ## ใช้ Prismforge original fusion asset + FusionCutscene ก่อน commit ร่าง
 
 signal availability_changed(available: bool)
 signal fusion_changed(active: bool)
 
 const REQUIRED_LEVEL: int = 90
-const REQUIRED_IDS: Array[StringName] = [&"emberclaw", &"frostfang"]
+const REQUIRED_IDS: Array[StringName] = [&"agumon", &"gabumon"]
 
 var tamer: Tamer
 var partner: PartnerMonster
@@ -47,7 +47,7 @@ func request_fusion() -> bool:
         return false
     if not can_fusion():
         if is_instance_valid(partner):
-            partner.feedback.emit("Fusion ต้องมี Emberclaw และ Frostfang ในทีม และ Shared Partner Level 90")
+            partner.feedback.emit("Fusion ต้องมี Agumon และ Gabumon ในทีม และ Shared Partner Level 90")
         return false
 
     _fusion_form = _build_fusion_form()
