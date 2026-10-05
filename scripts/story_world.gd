@@ -54,9 +54,9 @@ func _ready() -> void:
         partner.hp = clampi(int(state.get("hp", partner.hp)), 0, partner.max_hp)
         if bool(state.get("egg", false)) or partner.hp == 0:
             partner.enter_fainted(false)
-        var mp: Variant = state.get("partner_mp",partner.partner_max_mp)
-        partner.partner_mp = clampf(float(mp),0,partner.partner_max_mp) if (mp is int or mp is float) and is_finite(float(mp)) else partner.partner_max_mp
-        partner.mp_changed.emit(partner.partner_mp,partner.partner_max_mp)
+        var mp: Variant = state.get("digimon_mp",partner.digimon_max_mp)
+        partner.digimon_mp = clampf(float(mp),0,partner.digimon_max_mp) if (mp is int or mp is float) and is_finite(float(mp)) else partner.digimon_max_mp
+        partner.mp_changed.emit(partner.digimon_mp,partner.digimon_max_mp)
         var survival: Variant = state.get("survival",{})
         tamer.survival.restore_data(survival if survival is Dictionary else {})
         partner.hp_changed.emit(partner.hp, partner.max_hp)
