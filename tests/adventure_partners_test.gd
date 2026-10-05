@@ -18,13 +18,15 @@ func check(ok: bool, label: String) -> void:
         failures += 1
         push_error("FAIL: " + label)
 
-func set_level(level: int) -> void:
-    partner.progress.restore_data({"level": level, "exp": 0})
-    roster.shared_progress = {"level": level, "exp": 0}
+func set_level(level: int, exp: int = 0) -> void:
+    # ปรับเฉพาะ Digimon ที่กำลัง active; PartnerRoster จะ capture กลับสมาชิกตัวนั้น
+    partner.progress.restore_data({"level": level, "exp": exp})
 
 func run() -> void:
     QuestManager.save_path = "user://adventure_partners_test.json"
     QuestManager.reset_progress(false)
+    # ชุดทดสอบนี้ทดสอบสายวิวัฒนาการ ไม่ใช่ลำดับเนื้อเรื่อง
+    QuestManager.max_unlocked_stage = MonsterData.EvolutionStage.MEGA
     GameManager.ensure_catalog()
     GameManager.gameplay_active = true
     GameManager.partner_selected = &"tailmon"
@@ -46,13 +48,26 @@ func run() -> void:
     for enemy: Node in get_tree().get_nodes_in_group("wild_monsters"):
         enemy.set_physics_process(false)
     check(roster.add_partner(&"patamon") and roster.add_partner(&"gomamon"), "New lines fit the three-member party")
+
+    # Level/EXP ต้องแยกกันจริง: ตัวที่ไม่ได้ลงสนามไม่โตตาม
+    set_level(12, 34)
+    check(roster.member_level(&"tailmon") == 12 and roster.member_level(&"patamon") == 1 and roster.member_level(&"gomamon") == 1, "Only active Tailmon gains level")
+    check(roster.select_member(1) and partner.progress.level == 1, "Switching to Patamon restores its own Lv1")
+    set_level(5, 20)
+    check(roster.member_level(&"patamon") == 5 and roster.member_level(&"tailmon") == 12, "Patamon progression does not overwrite Tailmon")
+    check(roster.select_member(0) and partner.progress.level == 12 and partner.progress.current_exp == 34, "Switching back restores Tailmon own Level/EXP")
+
+    var independent_snapshot: Dictionary = roster.get_save_data().duplicate(true)
+    roster.initialize(independent_snapshot)
+    check(partner.progress.level == 12 and roster.member_level(&"patamon") == 5 and roster.member_level(&"gomamon") == 1, "Save restore preserves independent member progression")
+
     var ids: Array[StringName] = [&"tailmon", &"patamon", &"gomamon"]
     var mega_names: Array[String] = ["Holydramon", "Seraphimon", "Vikemon"]
     for member: int in range(ids.size()):
         print("ADVENTURE FAMILY: ", ids[member])
-        set_level(1)
         if member > 0:
             check(roster.select_member(member), "Select " + String(ids[member]))
+        set_level(1)
         var family: StarterPartnerData = GameManager.catalog.starter_by_id(ids[member])
         check(family.forms.size() == (3 if member == 0 else 4), "Correct evolution line length")
         check(partner.current_form == family.forms[0], "Old base form ID still loads")
@@ -106,9 +121,11 @@ func run() -> void:
         roster.initialize(snapshot)
         check(partner.current_form == family.forms[-1], "Save restore preserves Mega")
 
-    # Tampered/older Tailmon save must not restore Mega at the Ultimate threshold.
+    # Tampered Tailmon save: ปรับเฉพาะ Tailmon เป็น Lv60 ต้องไม่กระทบตัวอื่น
     var saved: Dictionary = roster.get_save_data().duplicate(true)
-    saved["shared_progress"] = {"level": 60, "exp": 0}
+    for index: int in range(saved["members"].size()):
+        if str(saved["members"][index].get("id", "")) == "tailmon":
+            saved["members"][index]["progress"] = {"level": 60, "exp": 0}
     roster.initialize(saved)
     if roster.active_index != 0:
         check(roster.select_member(0), "Switch back to Tailmon line")
@@ -126,6 +143,18 @@ func run() -> void:
         var size_before: int = roster.storage.size()
         check(service._complete_hatch(egg), "Hatch into full-party archive")
         check(roster.storage.size() == size_before + 1 and roster.storage[-1].id == String(id), "Hatch returns exact family")
+        var hatch_progress: Dictionary = roster.storage[-1].get("progress", {}) as Dictionary
+        check(int(hatch_progress.get("level", 0)) == 1 and int(hatch_progress.get("exp", -1)) == 0, "New hatch starts with independent Lv1 EXP0")
+    # Migration v3 Shared Partner Level: สมาชิกที่ไม่มี progress จะรับค่า shared เดิมครั้งเดียว
+    var legacy_saved: Dictionary = roster.get_save_data().duplicate(true)
+    legacy_saved["version"] = 3
+    legacy_saved["shared_progress"] = {"level": 22, "exp": 44}
+    for index: int in range(legacy_saved["members"].size()):
+        legacy_saved["members"][index].erase("progress")
+    roster.initialize(legacy_saved)
+    check(roster.member_level(StringName(str(roster.members[0].get("id", "")))) == 22, "Legacy shared save migrates without losing level")
+    check(int(roster.members[0].get("progress", {}).get("exp", 0)) == 44, "Legacy shared EXP migrates into member progress")
+
     var loot: LootTable = load("res://data/items/default_loot.tres")
     var egg_chance: float = 0.0
     var egg_count: int = 0
