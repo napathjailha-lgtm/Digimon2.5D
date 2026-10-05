@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EquipmentItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/equipment_item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/equipment/device.svg" id="2"]
+[resource]
+script = ExtResource("1")
+id = &"link_core"
+item_name = "Aether Link Core"
+slot = &"device"
+icon = ExtResource("2")
+rarity = 1
+description = "อุปกรณ์เชื่อมพลังกับคู่หู เพิ่มพลังพื้นฐานและค่าสนับสนุน"
+ds_bonus = 25
+partner_attack_bonus = 8
+partner_hp_bonus = 50
