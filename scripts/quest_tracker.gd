@@ -23,7 +23,10 @@ func _refresh(_quest_id: StringName) -> void:
         return
     title_label.text = "[เควสต์หลัก] " + quest.title
     detail_label.text = quest.description
-    progress_label.text = "%d / %d  •  แตะเพื่อนำทาง" % [QuestManager.get_progress(quest.id), quest.required_count]
+    var reward_text: String = ""
+    if quest.reward_exp > 0 or quest.reward_bits > 0:
+        reward_text = " • รางวัล EXP %d / %d Bits" % [quest.reward_exp, quest.reward_bits]
+    progress_label.text = "%d / %d • แนะนำ Lv.%d%s • แตะเพื่อนำทาง" % [QuestManager.get_progress(quest.id), quest.required_count, quest.recommended_level, reward_text]
 
 func _on_zone_changed(_zone: StringName) -> void:
     _refresh(&"")
