@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="PregameCatalog" load_steps=14 format=3]
+[gd_resource type="Resource" script_class="PregameCatalog" load_steps=20 format=3]
 [ext_resource type="Script" path="res://scripts/pregame/pregame_catalog.gd" id="s"]
 [ext_resource type="Script" path="res://scripts/pregame/tamer_model_data.gd" id="tt"]
 [ext_resource type="Script" path="res://scripts/pregame/starter_partner_data.gd" id="pt"]
@@ -7,12 +7,18 @@
 [ext_resource type="Resource" path="res://data/pregame/sora.tres" id="t2"]
 [ext_resource type="Resource" path="res://data/pregame/koushiro.tres" id="t3"]
 [ext_resource type="Resource" path="res://data/pregame/mimi.tres" id="t4"]
+[ext_resource type="Resource" path="res://data/pregame/hikari.tres" id="t5"]
+[ext_resource type="Resource" path="res://data/pregame/takeru.tres" id="t6"]
+[ext_resource type="Resource" path="res://data/pregame/joe.tres" id="t7"]
 [ext_resource type="Resource" path="res://data/pregame/agumon.tres" id="p0"]
 [ext_resource type="Resource" path="res://data/pregame/gabumon.tres" id="p1"]
 [ext_resource type="Resource" path="res://data/pregame/piyomon.tres" id="p2"]
 [ext_resource type="Resource" path="res://data/pregame/tentomon.tres" id="p3"]
 [ext_resource type="Resource" path="res://data/pregame/palmon.tres" id="p4"]
+[ext_resource type="Resource" path="res://data/pregame/tailmon.tres" id="p5"]
+[ext_resource type="Resource" path="res://data/pregame/patamon.tres" id="p6"]
+[ext_resource type="Resource" path="res://data/pregame/gomamon.tres" id="p7"]
 [resource]
 script = ExtResource("s")
-tamers = Array[ExtResource("tt")]([ExtResource("t0"), ExtResource("t1"), ExtResource("t2"), ExtResource("t3"), ExtResource("t4")])
-starters = Array[ExtResource("pt")]([ExtResource("p0"), ExtResource("p1"), ExtResource("p2"), ExtResource("p3"), ExtResource("p4")])
+tamers = Array[ExtResource("tt")]([ExtResource("t0"), ExtResource("t1"), ExtResource("t2"), ExtResource("t3"), ExtResource("t4"), ExtResource("t5"), ExtResource("t6"), ExtResource("t7")])
+starters = Array[ExtResource("pt")]([ExtResource("p0"), ExtResource("p1"), ExtResource("p2"), ExtResource("p3"), ExtResource("p4"), ExtResource("p5"), ExtResource("p6"), ExtResource("p7")])
