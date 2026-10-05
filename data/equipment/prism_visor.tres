@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EquipmentItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/equipment_item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/equipment/face.svg" id="2"]
+[resource]
+script = ExtResource("1")
+id = &"prism_visor"
+item_name = "Prism Visor"
+slot = &"face"
+icon = ExtResource("2")
+rarity = 1
+required_level = 6
+description = "แว่นวิเคราะห์ เพิ่ม DEX, INT และโอกาสคริติคอล"
+ds_bonus = 10
+critical_chance_bonus = 1
+dexterity_bonus = 2
+intelligence_bonus = 1
