@@ -23,7 +23,7 @@ enum EffectType { PARTNER_HP, TAMER_FOOD, PARTNER_MP }
 @export_group("Data Chip")
 @export var chip_family: StringName = &""
 
-@export_group("Digitama / Incubator")
+@export_group("Core Egg / Incubator")
 @export var egg_partner_id: StringName = &""
 @export var required_chip_id: String = ""
 @export_range(1, 5) var inject_goal: int = 5
@@ -37,7 +37,7 @@ func type_label() -> String:
         ItemType.QUEST_ITEM:
             return "ไอเทมเควสต์"
         ItemType.EGG:
-            return "Digitama"
+            return "Core Egg"
         ItemType.MATERIAL:
             return "วัตถุดิบ"
         ItemType.DATA_CHIP:
