@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EquipmentItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/equipment_item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/equipment/belt.svg" id="2"]
+[resource]
+script = ExtResource("1")
+id = &"fortress_belt"
+item_name = "Fortress Belt"
+slot = &"belt"
+icon = ExtResource("2")
+rarity = 2
+required_level = 22
+description = "เข็มขัด Epic เน้น VIT/DEF"
+hp_bonus = 130
+defense_bonus = 10
+vitality_bonus = 5
