@@ -1,6 +1,6 @@
 class_name FusionManager
 extends Node
-## Fusion ของ Agumon + Gabumon เมื่อ Shared Partner Level ถึง 90
+## Fusion ของ Agumon + Gabumon เมื่อทั้งสองตัวมีเลเวลของตัวเองถึง 90
 ## ใช้ Prismforge original fusion asset + FusionCutscene ก่อน commit ร่าง
 
 signal availability_changed(available: bool)
@@ -47,7 +47,7 @@ func request_fusion() -> bool:
         return false
     if not can_fusion():
         if is_instance_valid(partner):
-            partner.feedback.emit("Fusion ต้องมี Agumon และ Gabumon ในทีม และ Shared Partner Level 90")
+            partner.feedback.emit("Fusion ต้องมี Agumon และ Gabumon ในทีม และทั้งสองตัวต้อง Lv90")
         return false
 
     _fusion_form = _build_fusion_form()
