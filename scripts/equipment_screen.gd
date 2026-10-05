@@ -371,7 +371,7 @@ func refresh() -> void:
     _skill_list.text += "\nชุดสกิลเปลี่ยนตามร่างคู่หู\nอุปกรณ์เพิ่ม ATK ก่อนคำนวณดาเมจสกิล"
     var b: Dictionary = inventory.total_bonuses()
     _stats.text = "HP  %d / %d     DF  %d\nDS  %.0f / %.0f\nSPD  %.0f   •   Tamer สั่งการ" % [tamer.hp, tamer.max_hp, tamer.defense, tamer.ds, tamer.max_ds, tamer.move_speed]
-    _bonus.text = "ATK +%d HP +%d DS +%d DF +%d\nSTR %d DEX %d INT %d VIT %d AGI %d\nP.HP +%d P.ATK +%d CRIT +%.1f%%" % [b.attack, b.hp, b.ds, b.defense, b.str, b.dex, b.int, b.vit, b.agi, b.partner_hp, b.partner_attack, b.critical]
+    _bonus.text = "ATK +%d HP +%d DS +%d DF +%d\nSTR %d DEX %d INT %d VIT %d AGI %d\nP.HP +%d P.ATK +%d CRIT +%.1f%%" % [b.attack, b.hp, b.ds, b.defense, b["str"], b["dex"], b["int"], b["vit"], b["agi"], b.partner_hp, b.partner_attack, b.critical]
     _applied.text = "%s Lv.%d\nHP  %d / %d\nATK  %d    SPD  %.0f" % [tamer.partner.current_form.monster_name, tamer.partner.progress.level, tamer.partner.hp, tamer.partner.max_hp, tamer.partner.attack_power, tamer.partner.move_speed]
     _refresh_details()
 
