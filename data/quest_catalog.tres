@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="QuestCatalog" load_steps=11 format=3]
 [ext_resource type="Script" path="res://scripts/quest_catalog.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/story_quest.gd" id="2"]
-[ext_resource type="Resource" path="res://data/quests/q01_agumon.tres" id="q0"]
+[ext_resource type="Resource" path="res://data/quests/q01_cindrake.tres" id="q0"]
 [ext_resource type="Resource" path="res://data/quests/q02_friends.tres" id="q1"]
 [ext_resource type="Resource" path="res://data/quests/q03_devimon.tres" id="q2"]
 [ext_resource type="Resource" path="res://data/quests/q04_gennai.tres" id="q3"]

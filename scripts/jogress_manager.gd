@@ -1,13 +1,13 @@
 class_name JogressManager
 extends Node
-## Jogress ของ Agumon + Gabumon เมื่อ Shared Partner Level ถึง 90
+## Fusion ของ Cindrake + Frostkit เมื่อ Shared Partner Level ถึง 90
 ## ใช้ภาพ Omegamon ที่ generate ใหม่จริง + JogressCutscene ก่อน commit ร่าง
 
 signal availability_changed(available: bool)
 signal jogress_changed(active: bool)
 
 const REQUIRED_LEVEL: int = 90
-const REQUIRED_IDS: Array[StringName] = [&"agumon", &"gabumon"]
+const REQUIRED_IDS: Array[StringName] = [&"cindrake", &"frostfang"]
 
 var tamer: Tamer
 var partner: PartnerMonster
@@ -47,7 +47,7 @@ func request_jogress() -> bool:
         return false
     if not can_jogress():
         if is_instance_valid(partner):
-            partner.feedback.emit("Jogress ต้องมี Agumon และ Gabumon ในทีม และ Shared Partner Level 90")
+            partner.feedback.emit("Fusion ต้องมี Cindrake และ Frostkit ในทีม และ Shared Partner Level 90")
         return false
 
     _omegamon_form = _build_omegamon_form()

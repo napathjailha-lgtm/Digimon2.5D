@@ -114,7 +114,11 @@ func load_roster() -> void:
                 var saved: Array = parsed["characters"]
                 for i: int in range(mini(SLOT_COUNT, saved.size())):
                     if saved[i] is Dictionary and _valid_record(saved[i]):
-                        characters[i] = saved[i].duplicate(true)
+                        var record: Dictionary = saved[i].duplicate(true)
+                        var old_starter := StringName(str(record.get("starter", "")))
+                        if old_starter != &"legacy":
+                            record["starter"] = String(catalog.canonical_starter_id(old_starter))
+                        characters[i] = record
     roster_changed.emit()
 
 func _valid_record(data: Dictionary) -> bool:
@@ -145,7 +149,7 @@ func select_character(slot_index: int) -> bool:
     var record: Dictionary = characters[slot_index]
     if not record.is_empty():
         tamer_selected = StringName(record.model)
-        partner_selected = StringName(record.starter)
+        partner_selected = catalog.canonical_starter_id(StringName(record.starter))
         tamer_name = str(record.name)
         current_level = clampi(int(record.get("level", 1)), 1, 99)
     return true
@@ -213,7 +217,7 @@ func prepare_adventure() -> bool:
     gameplay_active = true
     current_level = int(QuestManager.party_profile.get("tamer_progress", {}).get("level", 1))
     var partner: StarterPartnerData = selected_partner_data()
-    current_form = StringName(str(QuestManager.party_profile.get("form_id", partner.forms[0].id if partner != null else &"rookie")))
+    current_form = catalog.canonical_form_id(StringName(str(QuestManager.party_profile.get("form_id", partner.forms[0].id if partner != null else &"rookie"))))
     bits = maxi(0, int(QuestManager.party_profile.get("bits", DEFAULT_BITS)))
     incubator_state = QuestManager.party_profile.get("incubator", {}).duplicate(true) if QuestManager.party_profile.get("incubator", {}) is Dictionary else {}
     bits_changed.emit(bits)
@@ -224,7 +228,7 @@ func sync_party(profile: Dictionary) -> void:
     if not gameplay_active or account_key.is_empty():
         return
     current_level = int(profile.get("tamer_progress", {}).get("level", 1))
-    current_form = StringName(str(profile.get("form_id", current_form)))
+    current_form = catalog.canonical_form_id(StringName(str(profile.get("form_id", current_form))))
     if int(characters[selected_slot].get("level", 1)) != current_level:
         characters[selected_slot]["level"] = current_level
         save_roster()

@@ -43,8 +43,9 @@ func _ready() -> void:
         if state.get("partner_progress", {}) is Dictionary:
             partner.progress.restore_data(state.get("partner_progress", {}))
         var selected: MonsterData = partner.forms[0]
+        var saved_form: StringName = GameManager.catalog.canonical_form_id(StringName(str(state.get("form_id", ""))))
         for data: MonsterData in partner.forms:
-            if String(data.id) == str(state.get("form_id", "")) and QuestManager.can_use_form(data):
+            if data.id == saved_form and QuestManager.can_use_form(data):
                 selected = data
                 break
         # โหลดร่างเซฟภายในก่อน เพื่อคืนสัดส่วน HP ถูกต้อง แล้วค่อยบังคับ Rookie ถ้า Tamer ล้ม

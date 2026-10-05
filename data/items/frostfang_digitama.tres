@@ -3,13 +3,13 @@
 [ext_resource type="Texture2D" path="res://assets/items/digitama.svg" id="2"]
 [resource]
 script = ExtResource("1")
-item_id = "digitama"
-item_name = "Cindrake Core Egg"
+item_id = "digitama_frostfang"
+item_name = "Frostkit Core Egg"
 item_type = 2
 item_texture = ExtResource("2")
-description = "ฟักสำเร็จจะได้ Cindrake 100% ต้อง Inject Fire Data 5/5 ที่ Digital Incubator"
-egg_partner_id = &"cindrake"
-required_chip_id = "data_chip"
+description = "Core Egg ระบุสายพันธุ์แน่นอน: ฟักสำเร็จจะได้ Frostkit 100%"
+egg_partner_id = &"frostfang"
+required_chip_id = "data_chip_data"
 inject_goal = 5
 inject_success_chance = 0.72
 egg_break_chance = 0.12

@@ -63,11 +63,13 @@ func initialize(saved: Dictionary = {}) -> void:
         for entry: Variant in raw:
             if not (entry is Dictionary) or members.size() >= CAPACITY:
                 continue
-            var id := StringName(str(entry.get("id", "")))
+            var id := GameManager.catalog.canonical_starter_id(StringName(str(entry.get("id", ""))))
             var data: StarterPartnerData = family(id)
             if data == null or data.forms.is_empty():
                 continue
             var member: Dictionary = (entry as Dictionary).duplicate(true)
+            member["id"] = String(id)
+            member["form_id"] = String(GameManager.catalog.canonical_form_id(StringName(str(member.get("form_id", "")))))
             _ensure_uid(member)
             members.append(member)
 
@@ -76,11 +78,13 @@ func initialize(saved: Dictionary = {}) -> void:
         for entry: Variant in raw_storage:
             if not (entry is Dictionary):
                 continue
-            var stored_id := StringName(str(entry.get("id", "")))
+            var stored_id := GameManager.catalog.canonical_starter_id(StringName(str(entry.get("id", ""))))
             var stored_data: StarterPartnerData = family(stored_id)
             if stored_data == null or stored_data.forms.is_empty():
                 continue
             var stored: Dictionary = (entry as Dictionary).duplicate(true)
+            stored["id"] = String(stored_id)
+            stored["form_id"] = String(GameManager.catalog.canonical_form_id(StringName(str(stored.get("form_id", "")))))
             _ensure_uid(stored)
             storage.append(stored)
 
