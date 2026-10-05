@@ -2,81 +2,59 @@
 [ext_resource type="Script" path="res://scripts/loot_table.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/loot_drop_entry.gd" id="2"]
 [ext_resource type="Resource" path="res://data/items/meat.tres" id="3"]
-[ext_resource type="Resource" path="res://data/items/data_chip.tres" id="4"]
-[ext_resource type="Resource" path="res://data/items/digitama.tres" id="5"]
-[ext_resource type="Resource" path="res://data/items/gabumon_digitama.tres" id="6"]
-[ext_resource type="Resource" path="res://data/items/piyomon_digitama.tres" id="7"]
-[ext_resource type="Resource" path="res://data/items/tentomon_digitama.tres" id="8"]
-[ext_resource type="Resource" path="res://data/items/palmon_digitama.tres" id="9"]
-[ext_resource type="Resource" path="res://data/items/data_chip_data.tres" id="10"]
-[ext_resource type="Resource" path="res://data/items/digital_fruit.tres" id="11"]
-[ext_resource type="Resource" path="res://data/items/mp_drink.tres" id="12"]
-
+[ext_resource type="Resource" path="res://data/items/radiant_core_chip.tres" id="4"]
+[ext_resource type="Resource" path="res://data/items/emberling_core_egg.tres" id="5"]
+[ext_resource type="Resource" path="res://data/items/frostkin_core_egg.tres" id="6"]
+[ext_resource type="Resource" path="res://data/items/skyrill_core_egg.tres" id="7"]
+[ext_resource type="Resource" path="res://data/items/voltbug_core_egg.tres" id="8"]
+[ext_resource type="Resource" path="res://data/items/sproutkin_core_egg.tres" id="9"]
+[ext_resource type="Resource" path="res://data/items/cipher_core_chip.tres" id="10"]
+[ext_resource type="Resource" path="res://data/items/field_fruit.tres" id="11"]
+[ext_resource type="Resource" path="res://data/items/energy_drink.tres" id="12"]
 [sub_resource type="Resource" id="meat"]
 script = ExtResource("2")
 item = ExtResource("3")
 chance = 0.75
 min_quantity = 1
 max_quantity = 2
-
-[sub_resource type="Resource" id="vaccine_chip"]
+[sub_resource type="Resource" id="radiant_chip"]
 script = ExtResource("2")
 item = ExtResource("4")
 chance = 0.18
-
-[sub_resource type="Resource" id="data_chip"]
+[sub_resource type="Resource" id="cipher_chip"]
 script = ExtResource("2")
 item = ExtResource("10")
 chance = 0.18
-
-[sub_resource type="Resource" id="agumon_egg"]
+[sub_resource type="Resource" id="ember_egg"]
 script = ExtResource("2")
 item = ExtResource("5")
 chance = 0.02
-
-[sub_resource type="Resource" id="gabumon_egg"]
+[sub_resource type="Resource" id="frost_egg"]
 script = ExtResource("2")
 item = ExtResource("6")
 chance = 0.02
-
-[sub_resource type="Resource" id="piyomon_egg"]
+[sub_resource type="Resource" id="sky_egg"]
 script = ExtResource("2")
 item = ExtResource("7")
 chance = 0.02
-
-[sub_resource type="Resource" id="tentomon_egg"]
+[sub_resource type="Resource" id="volt_egg"]
 script = ExtResource("2")
 item = ExtResource("8")
 chance = 0.02
-
-[sub_resource type="Resource" id="palmon_egg"]
+[sub_resource type="Resource" id="sprout_egg"]
 script = ExtResource("2")
 item = ExtResource("9")
 chance = 0.02
-
 [sub_resource type="Resource" id="food"]
 script = ExtResource("2")
 item = ExtResource("11")
 chance = 0.6
 min_quantity = 1
 max_quantity = 2
-
 [sub_resource type="Resource" id="mp"]
 script = ExtResource("2")
 item = ExtResource("12")
 chance = 0.3
-
 [resource]
 script = ExtResource("1")
-entries = Array[ExtResource("2")]([
-    SubResource("meat"),
-    SubResource("vaccine_chip"),
-    SubResource("data_chip"),
-    SubResource("agumon_egg"),
-    SubResource("gabumon_egg"),
-    SubResource("piyomon_egg"),
-    SubResource("tentomon_egg"),
-    SubResource("palmon_egg"),
-    SubResource("food"),
-    SubResource("mp")
-])
+entries = Array[ExtResource("2")]([SubResource("meat"),SubResource("radiant_chip"),SubResource("cipher_chip"),SubResource("ember_egg"),SubResource("frost_egg"),SubResource("sky_egg"),SubResource("volt_egg"),SubResource("sprout_egg"),SubResource("food"),SubResource("mp")])
