@@ -18,7 +18,7 @@ var selected_target: Label
 var chip_count: Label
 var progress_text: Label
 var progress_bar: ProgressBar
-var inject_button: DigimonTouchButton
+var inject_button: CreatureTouchButton
 var notice: Label
 var visual_fx: ModalVisualFX
 var hatch_flash: ColorRect
@@ -130,7 +130,7 @@ func _build() -> void:
     title_stack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     header.add_child(title_stack)
     title_stack.add_child(ServiceUIStyle.label("DIGITAL INCUBATOR", 26, ServiceUIStyle.TEXT))
-    title_stack.add_child(ServiceUIStyle.label("Digitama ระบุสายพันธุ์แน่นอน • Inject Data ให้ครบ 5/5", 13, ServiceUIStyle.MUTED))
+    title_stack.add_child(ServiceUIStyle.label("Core Egg ระบุสายพันธุ์แน่นอน • Inject Data ให้ครบ 5/5", 13, ServiceUIStyle.MUTED))
     header.add_child(_button("ปิด ×", Vector2(94, 46), close_screen, ServiceUIStyle.PURPLE))
 
     var columns := HBoxContainer.new()
@@ -150,7 +150,7 @@ func _build() -> void:
     var left_stack := VBoxContainer.new()
     left_stack.add_theme_constant_override("separation", 8)
     left_margin.add_child(left_stack)
-    left_stack.add_child(ServiceUIStyle.label("DIGITAMA INVENTORY", 18, ServiceUIStyle.CYAN))
+    left_stack.add_child(ServiceUIStyle.label("CORE EGG INVENTORY", 18, ServiceUIStyle.CYAN))
     left_stack.add_child(ServiceUIStyle.label("เลือกไข่ที่จะวางลงเครื่อง", 12, ServiceUIStyle.MUTED))
     var scroll := ScrollContainer.new()
     scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -199,7 +199,7 @@ func _build() -> void:
     selected_info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     selected_info.add_theme_constant_override("separation", 2)
     selected_row.add_child(selected_info)
-    selected_name = ServiceUIStyle.label("ยังไม่ได้เลือก Digitama", 18, ServiceUIStyle.TEXT)
+    selected_name = ServiceUIStyle.label("ยังไม่ได้เลือก Core Egg", 18, ServiceUIStyle.TEXT)
     selected_info.add_child(selected_name)
     selected_target = ServiceUIStyle.label("เลือกจากรายการด้านซ้าย", 14, ServiceUIStyle.MUTED)
     selected_target.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -223,7 +223,7 @@ func _build() -> void:
     risk.add_theme_stylebox_override("panel", ServiceUIStyle.card(Color("705074"), Color("171020")))
     right_stack.add_child(risk)
     var risk_label := ServiceUIStyle.label("ทุกครั้งที่ Inject จะใช้ Data Chip 1 ชิ้น
-ผลลัพธ์: สำเร็จ / ล้มเหลว / Digitama แตก", 13, Color("d6bddf"))
+ผลลัพธ์: สำเร็จ / ล้มเหลว / Core Egg แตก", 13, Color("d6bddf"))
     risk_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     risk.add_child(risk_label)
 
@@ -232,7 +232,7 @@ func _build() -> void:
     inject_button.add_theme_font_size_override("font_size", 19)
     right_stack.add_child(inject_button)
 
-    notice = ServiceUIStyle.label("เลือก Digitama เพื่อเริ่มต้น", 14, ServiceUIStyle.MUTED)
+    notice = ServiceUIStyle.label("เลือก Core Egg เพื่อเริ่มต้น", 14, ServiceUIStyle.MUTED)
     notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     notice.custom_minimum_size.y = 34
     stack.add_child(notice)
@@ -275,9 +275,9 @@ func _refresh() -> void:
     chip_count.text = "Data Chip ในกระเป๋า: %d" % chips
 
     if selected == null:
-        selected_icon.texture = preload("res://assets/items/digitama.svg")
+        selected_icon.texture = preload("res://assets/items/core_egg.svg")
         selected_icon.modulate = Color(0.45, 0.5, 0.6)
-        selected_name.text = "ยังไม่ได้เลือก Digitama"
+        selected_name.text = "ยังไม่ได้เลือก Core Egg"
         selected_target.text = "เลือกไข่จากรายการด้านซ้ายเพื่อดูสายพันธุ์และเริ่ม Inject"
         progress_bar.value = 0
         progress_text.text = "0 / 5"
@@ -332,16 +332,16 @@ func _empty_state() -> PanelContainer:
     var stack := VBoxContainer.new()
     stack.custom_minimum_size.y = 104
     frame.add_child(stack)
-    var a := ServiceUIStyle.label("ไม่มี Digitama ในกระเป๋า", 17, ServiceUIStyle.TEXT)
+    var a := ServiceUIStyle.label("ไม่มี Core Egg ในกระเป๋า", 17, ServiceUIStyle.TEXT)
     a.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     stack.add_child(a)
-    var b := ServiceUIStyle.label("หา Digitama ก่อน แล้วกลับมาที่เครื่องฟัก", 13, ServiceUIStyle.MUTED)
+    var b := ServiceUIStyle.label("หา Core Egg ก่อน แล้วกลับมาที่เครื่องฟัก", 13, ServiceUIStyle.MUTED)
     b.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     stack.add_child(b)
     return frame
 
-func _button(text: String, minimum: Vector2, callback: Callable, accent: Color) -> DigimonTouchButton:
-    var button := DigimonTouchButton.new()
+func _button(text: String, minimum: Vector2, callback: Callable, accent: Color) -> CreatureTouchButton:
+    var button := CreatureTouchButton.new()
     button.text = text
     button.custom_minimum_size = minimum
     ServiceUIStyle.button(button, accent)
@@ -359,7 +359,7 @@ func _on_changed() -> void:
     _deferred_refresh()
 
 func _on_hatch_completed(_partner_id: StringName) -> void:
-    # Signal ถูกยิงหลังเพิ่ม Digimon เข้า Storage สำเร็จ จึงไม่มีเสียง success หลอกเมื่อ transaction ล้มเหลว
+    # Signal ถูกยิงหลังเพิ่ม Creature เข้า Storage สำเร็จ จึงไม่มีเสียง success หลอกเมื่อ transaction ล้มเหลว
     AudioManager.play_sfx(&"hatch_success", -3.0)
     if not is_open or not is_instance_valid(hatch_flash):
         return
@@ -386,5 +386,5 @@ func _clear_egg_list() -> void:
 
 func _release_buttons() -> void:
     for node: Node in root.find_children("*", "", true, false):
-        if node is DigimonTouchButton:
-            (node as DigimonTouchButton).release_input()
+        if node is CreatureTouchButton:
+            (node as CreatureTouchButton).release_input()
