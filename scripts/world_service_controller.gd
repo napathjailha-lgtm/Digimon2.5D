@@ -51,7 +51,7 @@ func _process(_delta: float) -> void:
         return
 
     # Web Mobile Portrait มี overlay บังคับหมุนจออยู่แล้ว จึงไม่แสดงปุ่มทะลุ overlay
-    if HybridPlatform.is_web_touch() and HybridPlatform.is_portrait(get_viewport()):
+    if OS.has_feature("web") and HybridPlatform.use_mobile_layout(get_viewport()) and HybridPlatform.is_portrait(get_viewport()):
         _set_mobile_interact_point(null)
         return
 
@@ -63,7 +63,7 @@ func _process(_delta: float) -> void:
 
 func _build_mobile_interact_button() -> void:
     # ใช้ TouchCommand เพื่อรองรับ multi-touch จริง ไม่ต้องอาศัย mouse emulation
-    if not HybridPlatform.is_touch_device() or not is_instance_valid(hud):
+    if not HybridPlatform.use_mobile_layout(get_viewport()) or not is_instance_valid(hud):
         return
 
     var hud_root := hud.get_node_or_null("Root") as Control
