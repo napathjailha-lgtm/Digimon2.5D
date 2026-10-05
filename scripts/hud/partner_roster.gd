@@ -182,7 +182,7 @@ func active_member_id() -> StringName:
 
 
 func member_level(id: StringName) -> int:
-    # Jogress ยังเช็ก Agumon/Gabumon แยกว่ามีในทีม
+    # Fusion ยังเช็ก Emberling/Frostkin แยกว่ามีในทีม
     # แต่เลเวลเป็น Shared Partner Level จึงเท่ากันทุกสมาชิก
     if not initialized or not has_partner(id):
         return 0
@@ -203,7 +203,7 @@ func add_partner(id: StringName) -> bool:
         "form_id": String(rookie.id),
         "hp": hp_max,
         "max_hp": hp_max,
-        "mp": partner.digimon_max_mp,
+        "mp": partner.partner_max_mp,
         "egg": false,
         "progress": shared_progress.duplicate(true),
         "cooldowns": {},
@@ -215,7 +215,7 @@ func add_partner(id: StringName) -> bool:
 
 
 func available_hatches() -> Array[StringName]:
-    # Compatibility เท่านั้น ระบบใหม่เลือกชนิดจาก Digitama โดยตรง
+    # Compatibility เท่านั้น ระบบใหม่เลือกชนิดจาก Core Egg โดยตรง
     var result: Array[StringName] = []
     if initialized:
         for data: StarterPartnerData in GameManager.catalog.starters:
@@ -231,7 +231,7 @@ func add_hatched_to_storage(id: StringName) -> bool:
     var hp_max: int = rookie.max_hp + int(tamer.equipment.total_bonuses().partner_hp)
     storage.append({
         "uid": _make_uid(id), "id": String(id), "form_id": String(rookie.id),
-        "hp": hp_max, "max_hp": hp_max, "mp": partner.digimon_max_mp, "egg": false,
+        "hp": hp_max, "max_hp": hp_max, "mp": partner.partner_max_mp, "egg": false,
         "progress": shared_progress.duplicate(true), "cooldowns": {}, "basic_cooldown": 0.0
     })
     changed.emit()
@@ -239,7 +239,7 @@ func add_hatched_to_storage(id: StringName) -> bool:
     return true
 
 func move_storage_to_party(storage_index: int) -> bool:
-    # เมธอดนี้เรียกจาก Digimon Archive เท่านั้น
+    # เมธอดนี้เรียกจาก Creature Archive เท่านั้น
     if not initialized or members.size() >= CAPACITY or storage_index < 0 or storage_index >= storage.size():
         feedback.emit("Party เต็ม 3 ตัว หรือข้อมูลคลังไม่ถูกต้อง")
         return false
@@ -390,10 +390,10 @@ func _apply_member(entry: Dictionary) -> bool:
         saved_hp = maxi(1, roundi(partner.max_hp * ratio)) if saved_hp > 0 else 0
 
     partner.hp = clampi(saved_hp, 0, partner.max_hp)
-    partner.digimon_mp = _finite_number(
+    partner.partner_mp = _finite_number(
         entry.get("mp", 0),
         0,
-        partner.digimon_max_mp
+        partner.partner_max_mp
     )
 
     partner.skill_cooldowns.clear()
@@ -416,7 +416,7 @@ func _apply_member(entry: Dictionary) -> bool:
         partner.enter_fainted(false)
 
     partner.hp_changed.emit(partner.hp, partner.max_hp)
-    partner.mp_changed.emit(partner.digimon_mp, partner.digimon_max_mp)
+    partner.mp_changed.emit(partner.partner_mp, partner.partner_max_mp)
     partner.state_changed.emit(partner.state)
 
     return true
@@ -440,7 +440,7 @@ func _capture(id: StringName, uid: String = "") -> Dictionary:
         "form_id": String(partner.current_form.id),
         "hp": partner.hp,
         "max_hp": partner.max_hp,
-        "mp": partner.digimon_mp,
+        "mp": partner.partner_mp,
         "egg": not partner.is_alive(),
         "progress": shared_progress.duplicate(true),
         "cooldowns": cooldowns,
