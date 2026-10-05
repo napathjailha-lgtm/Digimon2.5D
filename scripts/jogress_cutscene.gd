@@ -1,12 +1,12 @@
 class_name JogressCutscene
 extends CanvasLayer
 ## คัตซีน Jogress แบบ runtime ไม่ต้องมี Scene แยก:
-## WarGreymon + MetalGarurumon -> Digital Burst -> Omegamon
+## Aegisdrake + Cryoblaster -> Digital Burst -> Fusion form
 
 signal finished(success: bool)
 
-const AGUMON_MEGA: MonsterData = preload("res://data/pregame/agumon_3.tres")
-const GABUMON_MEGA: MonsterData = preload("res://data/pregame/gabumon_3.tres")
+const DRAGON_MEGA: MonsterData = preload("res://data/pregame/aegisdrake_3.tres")
+const WOLF_MEGA: MonsterData = preload("res://data/pregame/cryoblaster_3.tres")
 
 var _owns_pause: bool = false
 var _previous_paused: bool = false
@@ -39,13 +39,13 @@ func play(partner: PartnerMonster, omegamon: MonsterData) -> bool:
 
     _build_ui()
     _left.texture = WalkTextureTools.visible_texture(
-        AGUMON_MEGA.sprite_frames.get_frame_texture(
-            AGUMON_MEGA.idle_animation, 0
+        DRAGON_MEGA.sprite_frames.get_frame_texture(
+            DRAGON_MEGA.idle_animation, 0
         )
     )
     _right.texture = WalkTextureTools.visible_texture(
-        GABUMON_MEGA.sprite_frames.get_frame_texture(
-            GABUMON_MEGA.idle_animation, 0
+        WOLF_MEGA.sprite_frames.get_frame_texture(
+            WOLF_MEGA.idle_animation, 0
         )
     )
     _omega.texture = WalkTextureTools.visible_texture(omega_texture)
@@ -121,7 +121,7 @@ func _build_ui() -> void:
     _root.add_child(_title)
 
     _caption = Label.new()
-    _caption.text = "WarGreymon  +  MetalGarurumon"
+    _caption.text = "Aegisdrake  +  Cryoblaster"
     _caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     _caption.add_theme_font_size_override("font_size", 22)
     _caption.add_theme_constant_override("outline_size", 5)
