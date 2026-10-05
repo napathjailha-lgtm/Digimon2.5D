@@ -112,7 +112,7 @@ mouse_filter = 2
 theme_override_colors/font_color = Color(0.92, 0.79, 0.48, 1)
 [node name="EvolutionPath" type="Label" parent="Margin/Column/Body/Selection/Inner/Stack"]
 layout_mode = 2
-text = "Rookie → Champion → Ultimate"
+text = "Base → Ascension I → Ascension II → Apex"
 theme_override_font_sizes/font_size = 21
 mouse_filter = 2
 autowrap_mode = 3
@@ -129,7 +129,7 @@ mouse_filter = 2
 [node name="Confirm" type="Button" parent="Margin/Column/Body/Selection/Inner/Stack"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 58)
-text = "ยืนยันคู่หู → เข้าสู่โลกดิจิตอล"
+text = "ยืนยันคู่หู → เข้าสู่ Aether Frontier"
 [node name="Message" type="Label" parent="Margin/Column"]
 layout_mode = 2
 text = ""
