@@ -47,16 +47,38 @@ func configure(owner_service: IncubatorService, player: Tamer) -> void:
 func open_screen() -> bool:
     if is_open or service == null or not is_instance_valid(tamer) or get_tree().paused:
         return false
-    _layout()
+
+    # First-open fix: dynamic rows/cards must exist before ResponsiveUI measures the panel.
+    # Keep the panel transparent while Container nodes complete their first layout pass,
+    # then measure twice across deferred turns and only after that start the modal FX.
     is_open = true
     _owns_pause = true
     _previous_back_quit = get_tree().quit_on_go_back
     get_tree().quit_on_go_back = false
     get_tree().paused = true
+
+    visual_fx.reset()
+    panel.modulate.a = 0.0
     root.show()
     _refresh()
-    visual_fx.animate_open()
+    _prepare_open_layout.call_deferred()
     return true
+
+
+func _prepare_open_layout() -> void:
+    if not is_open or not is_instance_valid(panel):
+        return
+    _layout()
+    _finish_open_layout.call_deferred()
+
+
+func _finish_open_layout() -> void:
+    if not is_open or not is_instance_valid(panel):
+        return
+    # รอบสองอ่าน size หลัง CenterContainer/ScrollContainer sort เสร็จ
+    _layout()
+    panel.modulate.a = 1.0
+    visual_fx.animate_open()
 
 func close_screen() -> void:
     if not is_open:
