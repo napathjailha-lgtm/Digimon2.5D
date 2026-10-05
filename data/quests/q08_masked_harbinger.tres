@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q08_masked_harbinger"
+title = "ปราการแห่งหน้ากาก"
+description = "ปราบ Masked Harbinger เพื่อจบเส้นเรื่องตัวอย่าง"
+zone_id = &"shard_isle"
+objective = 1
+target_id = &"masked_harbinger"
+required_count = 1
+unlock_flags = Array[StringName]([&"adventure_complete"])
+unlock_zones = Array[StringName]([])
+unlock_stage = -1
