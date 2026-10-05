@@ -6,7 +6,7 @@ extends AdventureMenuScreen
 @onready var path_label: Label = $Margin/Column/Body/Selection/Inner/Stack/EvolutionPath
 @onready var description_label: Label = $Margin/Column/Body/Selection/Inner/Stack/Description
 @onready var confirm_button: Button = $Margin/Column/Body/Selection/Inner/Stack/Confirm
-var partner_selected: StringName = &"agumon"
+var partner_selected: StringName = &"emberclaw"
 var card_buttons: Array[Button] = []
 
 func _ready() -> void:
