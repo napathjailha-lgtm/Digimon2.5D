@@ -9,16 +9,16 @@ signal unlocks_changed(max_stage: int)
 signal zone_changed(zone_id: StringName)
 
 var catalog: QuestCatalog = preload("res://data/quest_catalog.tres")
-const ZONE_ORDER: Array[StringName] = [&"file_island", &"server_continent", &"odaiba", &"spiral_mountain"]
+const ZONE_ORDER: Array[StringName] = [&"lumen_isle", &"meridian_expanse", &"harbor_district", &"helix_spire"]
 var save_path: String = "user://story_progress.json"
-var current_zone: StringName = &"file_island"
+var current_zone: StringName = &"lumen_isle"
 var max_unlocked_stage: int = MonsterData.EvolutionStage.CHAMPION
 var party_profile: Dictionary = {} # เซฟ HP/ร่าง/เลเวลของปาร์ตี้ข้ามการเปิดเกม
 var party_snapshot: Dictionary = {} # เก็บ DS/HP/ร่างระหว่างเปลี่ยน Scene ใน session
 var _completed: Array[StringName] = []
 var _progress: Dictionary = {}
 var _flags: Array[StringName] = []
-var _zones: Array[StringName] = [&"file_island"]
+var _zones: Array[StringName] = [&"lumen_isle"]
 var _seen_events: Dictionary = {}
 
 func _ready() -> void:
@@ -95,7 +95,7 @@ func _rebuild_unlocks() -> void:
     # รางวัลคำนวณจากเควสต์ที่จบ ไม่บันทึกซ้ำเป็นอีกแหล่งข้อมูล
     max_unlocked_stage = MonsterData.EvolutionStage.CHAMPION
     _flags.clear()
-    _zones.assign([&"file_island"])
+    _zones.assign([&"lumen_isle"])
     for quest: StoryQuest in catalog.quests:
         if quest.id not in _completed:
             continue
@@ -113,7 +113,7 @@ func _clear_progress() -> void:
     _seen_events.clear()
     party_snapshot.clear()
     party_profile.clear()
-    current_zone = &"file_island"
+    current_zone = &"lumen_isle"
     _rebuild_unlocks()
 
 func reset_progress(write_save: bool = true) -> void:
@@ -165,8 +165,8 @@ func load_progress() -> bool:
     if parsed.get("party", {}) is Dictionary:
         party_profile = parsed.get("party", {}).duplicate(true)
     _rebuild_unlocks()
-    # v25 รวมทุกบทไว้บนเกาะเดียว เก็บเควสต์ที่ผ่านแล้วตามเดิม
-    current_zone = &"file_island"
+    # v25 รวมทุกบทไว้บนLumen Isle เก็บเควสต์ที่ผ่านแล้วตามเดิม
+    current_zone = &"lumen_isle"
     unlocks_changed.emit(max_unlocked_stage)
     quest_updated.emit(&"")
     zone_changed.emit(current_zone)
