@@ -2,13 +2,13 @@
 [ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
 [resource]
 script = ExtResource("1")
-id = &"q02_friends"
-title = "ตามหาทีมสำรวจ"
-description = "เดินไปยังจุดนัดพบเพื่อตามหาทีมสำรวจ"
+id = &"q07_night_regent"
+title = "เงาเหนือซากตะวันออก"
+description = "ปราบ Night Regent เพื่อปลดล็อกวิวัฒนาการขั้นสูงสุด"
 zone_id = &"lumen_isle"
-objective = 2
-target_id = &"friends_reunion"
+objective = 1
+target_id = &"night_regent"
 required_count = 1
 unlock_flags = Array[StringName]([])
 unlock_zones = Array[StringName]([])
-unlock_stage = -1
+unlock_stage = 3

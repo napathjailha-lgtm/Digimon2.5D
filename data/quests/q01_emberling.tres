@@ -2,12 +2,12 @@
 [ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
 [resource]
 script = ExtResource("1")
-id = &"q02_friends"
-title = "ตามหาทีมสำรวจ"
-description = "เดินไปยังจุดนัดพบเพื่อตามหาทีมสำรวจ"
+id = &"q01_emberling"
+title = "คู่หูคนแรก"
+description = "คุยกับ Emberling เพื่อเริ่มสำรวจ Lumen Isle"
 zone_id = &"lumen_isle"
-objective = 2
-target_id = &"friends_reunion"
+objective = 0
+target_id = &"emberling"
 required_count = 1
 unlock_flags = Array[StringName]([])
 unlock_zones = Array[StringName]([])

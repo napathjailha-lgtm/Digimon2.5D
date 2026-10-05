@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q08_masked_warden"
+title = "ปราการปลายเกาะ"
+description = "ปราบ Masked Warden เพื่อจบเส้นเรื่องตัวอย่าง"
+zone_id = &"lumen_isle"
+objective = 1
+target_id = &"masked_warden"
+required_count = 1
+unlock_flags = Array[StringName]([&"frontier_complete"])
+unlock_zones = Array[StringName]([])
+unlock_stage = -1
