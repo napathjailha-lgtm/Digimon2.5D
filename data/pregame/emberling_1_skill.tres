@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/skills_painted/fire.png" id="icon"]
+[resource]
+script = ExtResource("s")
+id = &"emberling_1_skill"
+display_name = "Cinder Rush"
+icon = ExtResource("icon")
+multiplier = 2.1
+cooldown = 5.0
+cast_range = 245.0
+mp_cost = 10.0
+impact_radius = 50.0
+projectile_speed = 520.0
+effect_color = Color(1,0.62,0.29,1)
+effect_size = 19.0
+vfx_style = "fire"

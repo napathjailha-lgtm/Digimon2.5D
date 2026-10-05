@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/skills_painted/fire.png" id="icon"]
+[resource]
+script = ExtResource("s")
+id = &"emberling_3_skill"
+display_name = "Solar Lance"
+icon = ExtResource("icon")
+multiplier = 3.9
+cooldown = 9.0
+cast_range = 315.0
+mp_cost = 20.0
+impact_radius = 80.0
+projectile_speed = 520.0
+effect_color = Color(1,0.62,0.29,1)
+effect_size = 33.0
+vfx_style = "fire"
