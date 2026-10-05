@@ -95,7 +95,7 @@ func _build_fusion_form() -> MonsterData:
     var data := MonsterData.new()
     data.id = &"nova_aegis"
     data.monster_name = "Nova Aegis"
-    data.evolution_stage = MonsterData.EvolutionStage.MEGA
+    data.evolution_stage = MonsterData.EvolutionStage.APEX
     data.max_hp = 1200
     data.attack = 155
     data.move_speed = 300.0
