@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StarterPartnerData" load_steps=8 format=3]
+[ext_resource type="Script" path="res://scripts/pregame/starter_partner_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/original_monsters/cindrake_0.tres" id="portrait"]
+[ext_resource type="Script" path="res://scripts/monster_data.gd" id="mt"]
+[ext_resource type="Resource" path="res://data/original_monsters/cindrake_0.tres" id="f0"]
+[ext_resource type="Resource" path="res://data/original_monsters/cindrake_1.tres" id="f1"]
+[ext_resource type="Resource" path="res://data/original_monsters/cindrake_2.tres" id="f2"]
+[ext_resource type="Resource" path="res://data/original_monsters/cindrake_3.tres" id="f3"]
+[resource]
+script = ExtResource("s")
+id = &"cindrake"
+display_name = "Cindrake"
+attribute_name = "Drake"
+element_name = "Fire"
+description = "มังกรเพลิงสายจู่โจม พัฒนาจากลูกมังกรสู่เกราะจักรกลและอัศวินมังกรโล่เพลิง"
+portrait = ExtResource("portrait")
+forms = Array[ExtResource("mt")]([ExtResource("f0"), ExtResource("f1"), ExtResource("f2"), ExtResource("f3")])
