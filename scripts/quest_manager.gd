@@ -147,14 +147,21 @@ func load_progress() -> bool:
         return false
     _clear_progress()
     # รับเฉพาะ prefix ที่เรียงตามเนื้อเรื่อง ป้องกัน save ข้าม prerequisites
-    var raw_completed: Array = parsed.get("completed", [])
+    var raw_completed: Array = parsed.get("completed", []).duplicate()
+    # Save migration สำหรับเควสต์แรกก่อนเปลี่ยนสายมอนสเตอร์
+    if "q01_agumon" in raw_completed and "q01_cindrake" not in raw_completed:
+        raw_completed.append("q01_cindrake")
     for quest: StoryQuest in catalog.quests:
         if String(quest.id) not in raw_completed:
             break
         _completed.append(quest.id)
     var active: StoryQuest = get_current_quest()
     if active != null:
-        var value: Variant = parsed.get("progress", {}).get(String(active.id), 0)
+        var raw_progress: Dictionary = parsed.get("progress", {})
+        var progress_key: String = String(active.id)
+        if progress_key == "q01_cindrake" and not raw_progress.has(progress_key):
+            progress_key = "q01_agumon"
+        var value: Variant = raw_progress.get(progress_key, 0)
         if value is int or value is float:
             _progress[active.id] = clampi(int(value), 0, maxi(0, active.required_count - 1))
     var events: Variant = parsed.get("events", [])
