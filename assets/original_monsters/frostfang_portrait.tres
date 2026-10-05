@@ -1,5 +1,5 @@
 [gd_resource type="AtlasTexture" load_steps=2 format=3]
-[ext_resource type="Texture2D" path="res://assets/original_monsters/dragon_wolf_atlas.png" id="atlas"]
+[ext_resource type="Texture2D" path="res://assets/original_monsters/dragon_wolf_atlas.svg" id="atlas"]
 [resource]
 atlas = ExtResource("atlas")
 region = Rect2(0, 160, 192, 160)
