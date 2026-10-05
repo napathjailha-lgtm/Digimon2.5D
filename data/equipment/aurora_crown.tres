@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="EquipmentItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/equipment_item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/equipment/head.svg" id="2"]
+[resource]
+script = ExtResource("1")
+id = &"aurora_crown"
+item_name = "Aurora Crown"
+slot = &"head"
+icon = ExtResource("2")
+rarity = 2
+required_level = 18
+description = "มงกุฎสนามระดับสูง เพิ่ม VIT/INT อย่างมาก"
+hp_bonus = 100
+defense_bonus = 8
+ds_bonus = 20
+vitality_bonus = 4
+intelligence_bonus = 2
