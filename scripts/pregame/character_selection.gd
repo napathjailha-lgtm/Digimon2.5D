@@ -7,7 +7,7 @@ extends AdventureMenuScreen
 @onready var name_input: LineEdit = $Margin/Column/Body/Create/Inner/Stack/TamerName
 @onready var action_button: Button = $Margin/Column/Body/Create/Inner/Stack/Action
 @onready var import_button: Button = $Margin/Column/Body/Slots/Inner/Stack/ImportLegacy
-var model_selected: StringName = &"taichi"
+var model_selected: StringName = &"arun"
 var slot_buttons: Array[Button] = []
 var model_buttons: Array[Button] = []
 
@@ -46,7 +46,7 @@ func select_slot(index: int) -> void:
         var draft: Dictionary = GameManager.creation_preview
         if int(draft.get("slot", -1)) == index:
             name_input.text = str(draft.get("name", ""))
-            model_selected = StringName(str(draft.get("model", "taichi")))
+            model_selected = StringName(str(draft.get("model", "arun")))
         else:
             name_input.text = ""
     refresh()
@@ -64,7 +64,7 @@ func refresh() -> void:
     var existing: bool = not GameManager.characters[GameManager.selected_slot].is_empty()
     for i: int in range(slot_buttons.size()):
         var record: Dictionary = GameManager.characters[i]
-        slot_buttons[i].text = "ช่อง %d  •  ว่าง\nสร้าง Tamer ใหม่" % (i + 1) if record.is_empty() else "ช่อง %d  •  %s\nLv.%d  /  %s" % [i + 1, record.name, record.get("level", 1), str(record.starter).capitalize()]
+        slot_buttons[i].text = "ช่อง %d  •  ว่าง\nสร้าง Warden ใหม่" % (i + 1) if record.is_empty() else "ช่อง %d  •  %s\nLv.%d  /  %s" % [i + 1, record.name, record.get("level", 1), str(record.starter).capitalize()]
         slot_buttons[i].set_pressed_no_signal(i == GameManager.selected_slot)
     var data: TamerModelData = GameManager.catalog.tamer_by_id(model_selected)
     portrait.texture = data.portrait
@@ -75,13 +75,13 @@ func refresh() -> void:
     if existing:
         var partner: StarterPartnerData = GameManager.selected_partner_data()
         if GameManager.partner_selected == &"legacy":
-            preview_details.text = "Tamer เดิมจาก v15\nฐาน HP 200 • DS 100 • SPD 190\n\nเลเวล เควสต์ อุปกรณ์และชุดภาพเดิม"
+            preview_details.text = "Warden รุ่น Legacy\nฐาน HP 200 • DS 100 • SPD 190\n\nเลเวล เควสต์ อุปกรณ์และชุดภาพเดิม"
         preview_details.text += "\n\nคู่หู: " + (partner.display_name if partner != null else "คู่หูเดิมจาก v15")
     for i: int in range(model_buttons.size()):
         model_buttons[i].disabled = existing
         model_buttons[i].set_pressed_no_signal(GameManager.catalog.tamers[i].id == model_selected)
     name_input.editable = not existing
-    action_button.text = "เข้าสู่โลกดิจิตอล" if existing else "สร้างตัวละคร → เลือกคู่หู"
+    action_button.text = "เข้าสู่ Aether Frontier" if existing else "สร้างตัวละคร → เลือกคู่หู"
     import_button.visible = not existing and FileAccess.file_exists(GameManager.legacy_save_path)
     $Margin/Column/Header/Subtitle.text = "%s  /  %s  •  5 ช่องตัวละคร" % [GameManager.username, GameManager.server_selected]
 
