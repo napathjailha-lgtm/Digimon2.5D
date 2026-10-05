@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="StarterPartnerData" load_steps=5 format=3]
+[ext_resource type="Script" path="res://scripts/pregame/starter_partner_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/pregame/gomamon.svg" id="p"]
+[ext_resource type="Script" path="res://scripts/monster_data.gd" id="mt"]
+[ext_resource type="Resource" path="res://data/pregame/gomamon_0.tres" id="f0"]
+[resource]
+script = ExtResource("s")
+id = &"gomamon"
+display_name = "Gomamon"
+attribute_name = "วัคซีน"
+element_name = "น้ำแข็ง"
+description = "คู่หูของโจ • HP สูงและเหมาะกับสายสมดุลป้องกัน"
+portrait = ExtResource("p")
+forms = Array[ExtResource("mt")]([ExtResource("f0")])
