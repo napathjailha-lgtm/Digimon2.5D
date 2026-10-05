@@ -22,6 +22,52 @@ func set_level(level: int, exp: int = 0) -> void:
     # ปรับเฉพาะ Digimon ที่กำลัง active; PartnerRoster จะ capture กลับสมาชิกตัวนั้น
     partner.progress.restore_data({"level": level, "exp": exp})
 
+func verify_service_first_open() -> void:
+    # Regression: first tap on Archive / Shop / Incubator must produce a fully laid-out panel,
+    # not only the backdrop/overlay. Each modal owns pause and must restore it on close.
+    var shop := ShopUI.new()
+    world.add_child(shop)
+    shop.configure(ShopService.new())
+    check(shop.open_screen(), "Merchant opens on first attempt")
+    await get_tree().process_frame
+    await get_tree().process_frame
+    await get_tree().create_timer(0.36, true).timeout
+    check(shop.root.visible and shop.panel.visible, "Merchant panel visible after first-open layout")
+    check(shop.panel.size.x > 300.0 and shop.panel.size.y > 250.0 and shop.panel.modulate.a > 0.95, "Merchant first-open panel has stable geometry")
+    shop.close_screen()
+    await get_tree().process_frame
+
+    var archive := DigimonArchiveUI.new()
+    world.add_child(archive)
+    archive.configure(roster)
+    check(archive.open_screen(), "Archive opens on first attempt")
+    await get_tree().process_frame
+    await get_tree().process_frame
+    await get_tree().create_timer(0.36, true).timeout
+    check(archive.root.visible and archive.panel.visible, "Archive panel visible after first-open layout")
+    check(archive.panel.size.x > 300.0 and archive.panel.size.y > 250.0 and archive.panel.modulate.a > 0.95, "Archive first-open panel has stable geometry")
+    archive.close_screen()
+    await get_tree().process_frame
+
+    var hatch_service := IncubatorService.new()
+    hatch_service.configure(roster)
+    var incubator := IncubatorUI.new()
+    world.add_child(incubator)
+    incubator.configure(hatch_service, player)
+    check(incubator.open_screen(), "Incubator opens on first attempt")
+    await get_tree().process_frame
+    await get_tree().process_frame
+    await get_tree().create_timer(0.36, true).timeout
+    check(incubator.root.visible and incubator.panel.visible, "Incubator panel visible after first-open layout")
+    check(incubator.panel.size.x > 300.0 and incubator.panel.size.y > 250.0 and incubator.panel.modulate.a > 0.95, "Incubator first-open panel has stable geometry")
+    incubator.close_screen()
+    await get_tree().process_frame
+
+    shop.queue_free()
+    archive.queue_free()
+    incubator.queue_free()
+
+
 func run() -> void:
     QuestManager.save_path = "user://adventure_partners_test.json"
     QuestManager.reset_progress(false)
@@ -48,6 +94,7 @@ func run() -> void:
     for enemy: Node in get_tree().get_nodes_in_group("wild_monsters"):
         enemy.set_physics_process(false)
     check(roster.add_partner(&"patamon") and roster.add_partner(&"gomamon"), "New lines fit the three-member party")
+    await verify_service_first_open()
 
     # Level/EXP ต้องแยกกันจริง: ตัวที่ไม่ได้ลงสนามไม่โตตาม
     set_level(12, 34)
