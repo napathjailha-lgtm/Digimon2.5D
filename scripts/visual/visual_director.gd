@@ -7,6 +7,14 @@ func _ready() -> void:
     GameVisualSettings.motion_enabled = preferences.animations_enabled
     GameVisualSettings.blur_enabled = preferences.blur_enabled
     GameVisualSettings.low_effects = preferences.low_effects
+
+    # Web Mobile ใช้ profile เบาอัตโนมัติตั้งแต่หน้าแรก ลด CPU/GPU และความร้อนของ browser
+    if HybridPlatform.is_web_mobile(get_viewport()):
+        Engine.max_fps = 45
+        GameVisualSettings.motion_enabled = false
+        GameVisualSettings.blur_enabled = false
+        GameVisualSettings.low_effects = true
+
     get_tree().node_added.connect(_on_node_added)
 
 func _on_node_added(node: Node) -> void:
