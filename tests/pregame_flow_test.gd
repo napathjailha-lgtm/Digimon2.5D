@@ -77,10 +77,10 @@ func run() -> void:
     if GameManager.catalog == null:
         get_tree().quit(1)
         return
-    check(GameManager.catalog.tamers.size() == 5 and GameManager.catalog.starters.size() == 5, "มี 5 โมเดล Tamer และ 5 คู่หู")
+    check(GameManager.catalog.tamers.size() == 8 and GameManager.catalog.starters.size() == 8, "มี 8 โมเดล Tamer และ 8 คู่หู")
     check(GameManager.catalog.tamer_by_id(&"sora").gender == "หญิง" and GameManager.catalog.tamer_by_id(&"mimi").gender == "หญิง", "ข้อมูลเพศของ Sora/Mimi ถูกต้อง")
     for starter: StarterPartnerData in GameManager.catalog.starters:
-        var expected_forms: int = 4 if starter.id in [&"agumon", &"gabumon"] else 3
+        var expected_forms: int = 4 if starter.id in [&"agumon", &"gabumon", &"patamon", &"gomamon"] else 3
         check(starter.forms.size() == expected_forms and starter.forms[0].id.begins_with(String(starter.id)), starter.display_name + " มีสายร่างเฉพาะ %d ร่าง" % expected_forms)
         for form: MonsterData in starter.forms:
             check(form.validation_error().is_empty(), form.monster_name + " มีสกิลและชุดเดิน/ตี/ร่าย 4 ทิศครบ")
@@ -97,7 +97,7 @@ func run() -> void:
     var character: Control = get_tree().current_scene
     check(character.get_script().resource_path.ends_with("character_selection.gd"), "แตะ Login จริงเปลี่ยนไปหน้า Character")
     check(GameManager.username == "Tester" and GameManager.get("password") == null, "Singleton เก็บ username แต่ไม่เก็บ password")
-    check(character.slot_buttons.size() == 5 and character.model_buttons.size() == 5, "หน้า Character มี 5 slots และ 5 model cards")
+    check(character.slot_buttons.size() == 5 and character.model_buttons.size() == 8, "หน้า Character มี 5 slots และ 8 model cards")
     tap(character.model_buttons[2])
     check(character.model_selected == &"sora" and character.portrait.texture == GameManager.catalog.tamer_by_id(&"sora").portrait, "touch Sora เปลี่ยน portrait/ข้อมูลพรีวิว")
     character.name_input.text = "x"

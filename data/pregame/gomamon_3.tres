@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="MonsterData" load_steps=7 format=3]
+[ext_resource type="Script" path="res://scripts/monster_data.gd" id="s"]
+[ext_resource type="SpriteFrames" path="res://data/pregame/gomamon_3_frames.tres" id="f"]
+[ext_resource type="Resource" path="res://data/pregame/gomamon_3_skill.tres" id="k0"]
+[ext_resource type="Resource" path="res://data/pregame/gomamon_3_skill_2.tres" id="k1"]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="kt"]
+[ext_resource type="Texture2D" path="res://assets/adventure_partners/gomamon_3_portrait.tres" id="p"]
+[resource]
+script = ExtResource("s")
+id = &"gomamon_3"
+monster_name = "Vikemon"
+evolution_stage = 3
+max_hp = 720
+attack = 76
+move_speed = 250.0
+attack_range = 83.0
+attack_interval = 0.8
+defense = 9
+portrait_texture = ExtResource("p")
+sprite_frames = ExtResource("f")
+sprite_scale = Vector2(0.587349, 0.587349)
+attack_sprite_scale = Vector2(0.587349, 0.587349)
+cast_sprite_scale = Vector2(0.587349, 0.587349)
+idle_animation = &"idle_down"
+walk_animation = &"walk_down"
+attack_animation = &"attack_down"
+cast_animation = &"cast_down"
+attack_hit_frame = 2
+animation_reference_speed = 250.0
+require_directional_animations = true
+require_action_animations = true
+evolution_cost = 25.0
+ds_drain_per_second = 6.0
+skills = Array[ExtResource("kt")]([ExtResource("k0"), ExtResource("k1")])

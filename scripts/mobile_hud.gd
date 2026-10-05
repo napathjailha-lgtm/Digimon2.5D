@@ -589,7 +589,7 @@ func _refresh_combat_controls() -> void:
     var next_index: int = partner.form_index + 1
     evolve_button.locked = blocked or partner.evolution_busy or not partner.is_alive() or not tamer.can_battle() or next_index < 0 or next_index >= partner.forms.size()
     if not evolve_button.locked:
-        evolve_button.locked = not EvolutionRules.can_use_form(partner.progress.level, next_index) or not QuestManager.has_flag(partner.forms[next_index].required_story_flag)
+        evolve_button.locked = not EvolutionRules.can_use_form(partner.progress.level, next_index, partner.forms[next_index]) or not QuestManager.has_flag(partner.forms[next_index].required_story_flag)
     # ปุ่ม Cycle ใช้เป็น Fusion; แสดงได้ตลอดแต่ล็อกจน Emberclaw/Frostfang Lv90 ทั้งคู่
     cycle_button.set_caption("Prismforge" if is_instance_valid(fusion_manager) and fusion_manager.active else "Fusion [J]")
     cycle_button.locked = blocked or not is_instance_valid(fusion_manager) or not fusion_manager.can_fusion() or fusion_manager.active

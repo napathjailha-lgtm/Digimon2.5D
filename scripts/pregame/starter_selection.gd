@@ -36,11 +36,15 @@ func select_partner(partner_id: StringName) -> void:
         return
     partner_selected = partner_id
     portrait.texture = data.portrait
-    title_label.text = data.display_name + " · Rookie"
+    var stages: Array[String] = ["Rookie", "Champion", "Ultimate", "Mega"]
+    title_label.text = data.display_name + " · " + stages[data.forms[0].evolution_stage]
     var rookie: MonsterData = data.forms[0]
     stats_label.text = "%s / %s\n\nHP %d   ATK %d   SPD %.0f\n\nสกิล: %s" % [data.attribute_name, data.element_name, rookie.max_hp, rookie.attack, rookie.move_speed, rookie.skills[0].display_name]
     path_label.text = data.evolution_path()
-    description_label.text = data.description + "\n\nChampion เปลี่ยนได้เมื่อ DS เพียงพอ\nUltimate ปลดล็อกตามเควสต์เนื้อเรื่องเดิม"
+    var unlocks: PackedStringArray = []
+    for index: int in range(1, data.forms.size()):
+        unlocks.append("%s Lv.%d" % [data.forms[index].monster_name, EvolutionRules.minimum_level_for_form_index(index, data.forms[index])])
+    description_label.text = data.description + "\n\n" + " • ".join(unlocks) + "\nใช้ MP ของ Tamer ในการเปลี่ยนร่าง"
     for i: int in range(card_buttons.size()):
         card_buttons[i].set_pressed_no_signal(GameManager.catalog.starters[i].id == partner_id)
 

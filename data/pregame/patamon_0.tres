@@ -1,30 +1,33 @@
 [gd_resource type="Resource" script_class="MonsterData" load_steps=6 format=3]
 [ext_resource type="Script" path="res://scripts/monster_data.gd" id="s"]
 [ext_resource type="SpriteFrames" path="res://data/pregame/patamon_0_frames.tres" id="f"]
-[ext_resource type="Resource" path="res://data/pregame/patamon_0_skill.tres" id="k"]
+[ext_resource type="Resource" path="res://data/pregame/patamon_0_skill.tres" id="k0"]
 [ext_resource type="Script" path="res://scripts/skill_data.gd" id="kt"]
-[ext_resource type="Texture2D" path="res://assets/pregame/patamon.svg" id="p"]
+[ext_resource type="Texture2D" path="res://assets/adventure_partners/patamon_0_portrait.tres" id="p"]
 [resource]
 script = ExtResource("s")
 id = &"patamon_0"
 monster_name = "Patamon"
 evolution_stage = 0
-max_hp = 122
+max_hp = 125
 attack = 17
-move_speed = 245
+move_speed = 245.0
 attack_range = 62.0
 attack_interval = 0.8
+defense = 0
 portrait_texture = ExtResource("p")
 sprite_frames = ExtResource("f")
-sprite_scale = Vector2(0.46,0.46)
-attack_sprite_scale = Vector2(0.46,0.46)
-cast_sprite_scale = Vector2(0.46,0.46)
+sprite_scale = Vector2(0.433735, 0.433735)
+attack_sprite_scale = Vector2(0.433735, 0.433735)
+cast_sprite_scale = Vector2(0.433735, 0.433735)
 idle_animation = &"idle_down"
 walk_animation = &"walk_down"
 attack_animation = &"attack_down"
 cast_animation = &"cast_down"
 attack_hit_frame = 2
-animation_reference_speed = 245
+animation_reference_speed = 245.0
 require_directional_animations = true
 require_action_animations = true
-skills = Array[ExtResource("kt")]([ExtResource("k")])
+evolution_cost = 0.0
+ds_drain_per_second = 0.0
+skills = Array[ExtResource("kt")]([ExtResource("k0")])

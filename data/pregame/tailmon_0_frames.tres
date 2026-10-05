@@ -1,19 +1,44 @@
-[gd_resource type="SpriteFrames" load_steps=2 format=3]
-[ext_resource type="Texture2D" path="res://assets/pregame/tailmon.svg" id="tex"]
+[gd_resource type="SpriteFrames" load_steps=6 format=3]
+[ext_resource type="Texture2D" path="res://assets/adventure_partners/tailmon.png" id="tex"]
+[sub_resource type="AtlasTexture" id="p0"]
+atlas = ExtResource("tex")
+region = Rect2(23, 27, 300, 315)
+margin = Rect2(31.0, 2, 62, 2)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="p1"]
+atlas = ExtResource("tex")
+region = Rect2(365, 25, 359, 317)
+margin = Rect2(1.5, 0, 3, 0)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="p2"]
+atlas = ExtResource("tex")
+region = Rect2(724, 72, 362, 270)
+margin = Rect2(0.0, 47, 0, 47)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="p3"]
+atlas = ExtResource("tex")
+region = Rect2(1086, 62, 358, 279)
+margin = Rect2(2.0, 38, 4, 38)
+filter_clip = true
+
 [resource]
-animations = [{"frames":[{"duration":1.0,"texture":ExtResource("tex")}],"loop":true,"name":&"idle_down","speed":1.0},
-{"frames":[{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")}],"loop":true,"name":&"walk_down","speed":6.0},
-{"frames":[{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")}],"loop":false,"name":&"attack_down","speed":10.0},
-{"frames":[{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")}],"loop":false,"name":&"cast_down","speed":10.0},
-{"frames":[{"duration":1.0,"texture":ExtResource("tex")}],"loop":true,"name":&"idle_right","speed":1.0},
-{"frames":[{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")}],"loop":true,"name":&"walk_right","speed":6.0},
-{"frames":[{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")}],"loop":false,"name":&"attack_right","speed":10.0},
-{"frames":[{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")}],"loop":false,"name":&"cast_right","speed":10.0},
-{"frames":[{"duration":1.0,"texture":ExtResource("tex")}],"loop":true,"name":&"idle_up","speed":1.0},
-{"frames":[{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")}],"loop":true,"name":&"walk_up","speed":6.0},
-{"frames":[{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")}],"loop":false,"name":&"attack_up","speed":10.0},
-{"frames":[{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")}],"loop":false,"name":&"cast_up","speed":10.0},
-{"frames":[{"duration":1.0,"texture":ExtResource("tex")}],"loop":true,"name":&"idle_left","speed":1.0},
-{"frames":[{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")}],"loop":true,"name":&"walk_left","speed":6.0},
-{"frames":[{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")}],"loop":false,"name":&"attack_left","speed":10.0},
-{"frames":[{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")},{"duration":1.0,"texture":ExtResource("tex")}],"loop":false,"name":&"cast_left","speed":10.0}]
+animations = [{"frames":[{"duration":1.0,"texture":SubResource("p0")}],"loop":true,"name":&"idle_down","speed":1.0},
+{"frames":[{"duration":1.0,"texture":SubResource("p0")}, {"duration":1.0,"texture":SubResource("p1")}, {"duration":1.0,"texture":SubResource("p0")}, {"duration":1.0,"texture":SubResource("p1")}],"loop":true,"name":&"walk_down","speed":8.0},
+{"frames":[{"duration":1.0,"texture":SubResource("p0")}, {"duration":1.0,"texture":SubResource("p2")}, {"duration":1.0,"texture":SubResource("p3")}, {"duration":1.0,"texture":SubResource("p0")}],"loop":false,"name":&"attack_down","speed":10.0},
+{"frames":[{"duration":1.0,"texture":SubResource("p0")}, {"duration":1.0,"texture":SubResource("p2")}, {"duration":1.0,"texture":SubResource("p3")}, {"duration":1.0,"texture":SubResource("p0")}],"loop":false,"name":&"cast_down","speed":10.0},
+{"frames":[{"duration":1.0,"texture":SubResource("p0")}],"loop":true,"name":&"idle_right","speed":1.0},
+{"frames":[{"duration":1.0,"texture":SubResource("p0")}, {"duration":1.0,"texture":SubResource("p1")}, {"duration":1.0,"texture":SubResource("p0")}, {"duration":1.0,"texture":SubResource("p1")}],"loop":true,"name":&"walk_right","speed":8.0},
+{"frames":[{"duration":1.0,"texture":SubResource("p0")}, {"duration":1.0,"texture":SubResource("p2")}, {"duration":1.0,"texture":SubResource("p3")}, {"duration":1.0,"texture":SubResource("p0")}],"loop":false,"name":&"attack_right","speed":10.0},
+{"frames":[{"duration":1.0,"texture":SubResource("p0")}, {"duration":1.0,"texture":SubResource("p2")}, {"duration":1.0,"texture":SubResource("p3")}, {"duration":1.0,"texture":SubResource("p0")}],"loop":false,"name":&"cast_right","speed":10.0},
+{"frames":[{"duration":1.0,"texture":SubResource("p0")}],"loop":true,"name":&"idle_up","speed":1.0},
+{"frames":[{"duration":1.0,"texture":SubResource("p0")}, {"duration":1.0,"texture":SubResource("p1")}, {"duration":1.0,"texture":SubResource("p0")}, {"duration":1.0,"texture":SubResource("p1")}],"loop":true,"name":&"walk_up","speed":8.0},
+{"frames":[{"duration":1.0,"texture":SubResource("p0")}, {"duration":1.0,"texture":SubResource("p2")}, {"duration":1.0,"texture":SubResource("p3")}, {"duration":1.0,"texture":SubResource("p0")}],"loop":false,"name":&"attack_up","speed":10.0},
+{"frames":[{"duration":1.0,"texture":SubResource("p0")}, {"duration":1.0,"texture":SubResource("p2")}, {"duration":1.0,"texture":SubResource("p3")}, {"duration":1.0,"texture":SubResource("p0")}],"loop":false,"name":&"cast_up","speed":10.0},
+{"frames":[{"duration":1.0,"texture":SubResource("p0")}],"loop":true,"name":&"idle_left","speed":1.0},
+{"frames":[{"duration":1.0,"texture":SubResource("p0")}, {"duration":1.0,"texture":SubResource("p1")}, {"duration":1.0,"texture":SubResource("p0")}, {"duration":1.0,"texture":SubResource("p1")}],"loop":true,"name":&"walk_left","speed":8.0},
+{"frames":[{"duration":1.0,"texture":SubResource("p0")}, {"duration":1.0,"texture":SubResource("p2")}, {"duration":1.0,"texture":SubResource("p3")}, {"duration":1.0,"texture":SubResource("p0")}],"loop":false,"name":&"attack_left","speed":10.0},
+{"frames":[{"duration":1.0,"texture":SubResource("p0")}, {"duration":1.0,"texture":SubResource("p2")}, {"duration":1.0,"texture":SubResource("p3")}, {"duration":1.0,"texture":SubResource("p0")}],"loop":false,"name":&"cast_left","speed":10.0}]
+metadata/mirror_left = true

@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="TamerModelData" load_steps=4 format=3]
 [ext_resource type="Script" path="res://scripts/pregame/tamer_model_data.gd" id="s"]
-[ext_resource type="Texture2D" path="res://assets/pregame/joe.svg" id="p"]
+[ext_resource type="Texture2D" path="res://assets/adventure_partners/joe_portrait.tres" id="p"]
 [ext_resource type="SpriteFrames" path="res://data/pregame/joe_frames.tres" id="f"]
 [resource]
 script = ExtResource("s")
@@ -11,7 +11,7 @@ play_style = "สายป้องกัน"
 description = "เด็กผู้ถูกเลือก • คู่หูประจำตัว Gomamon"
 portrait = ExtResource("p")
 sprite_frames = ExtResource("f")
-sprite_scale = Vector2(0.46,0.46)
+sprite_scale = Vector2(0.325779, 0.325779)
 base_hp = 225
 base_ds = 105.0
 move_speed = 182.0

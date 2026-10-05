@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/adventure_partners/patamon_1_portrait.tres" id="icon"]
+[resource]
+script = ExtResource("s")
+id = &"patamon_1_skill"
+display_name = "Heaven's Knuckle"
+icon = ExtResource("icon")
+vfx_style = "astral"
+animation_prefix = &"cast"
+release_frame = 2
+multiplier = 1.45
+cast_range = 310.0
+cooldown = 3.8
+mp_cost = 9.0
+impact_radius = 45.0
+projectile_speed = 540.0
+effect_color = Color(1.0, 0.85, 0.5, 1.0)
+effect_size = 17.0
