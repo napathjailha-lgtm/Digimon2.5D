@@ -152,7 +152,7 @@ func _physics_process(delta: float) -> void:
             # Tamer MP หมดกลับร่างพื้นฐาน ไม่เสีย HP และไม่รีเซ็ตคูลดาวน์
             tamer.consume_mp(tamer.tamer_mp)
             _apply_form(0, true)
-            feedback.emit("MP ของ Tamer หมด: กลับร่างพื้นฐาน")
+            feedback.emit("MP ของ Warden หมด: กลับร่างพื้นฐาน")
 
     # ตาย/ถูกลบ/ห่าง Tamer เกินกำหนด ให้เลิกไล่และกลับไปเดินตาม
     if is_instance_valid(target):
@@ -200,7 +200,7 @@ func command_attack(enemy: WildMonster) -> void:
     if not is_instance_valid(tamer):
         return
     if tamer.global_position.distance_to(enemy.global_position) > leash_distance:
-        feedback.emit("เป้าหมายอยู่ไกล Tamer เกินไป")
+        feedback.emit("เป้าหมายอยู่ไกล Warden เกินไป")
         return
     if target != enemy:
         _cancel_combat_action()
@@ -253,7 +253,7 @@ func command_skill(slot: int, enemy: WildMonster) -> void:
     if not is_instance_valid(tamer):
         return
     if tamer.global_position.distance_to(enemy.global_position) > leash_distance:
-        feedback.emit("เป้าหมายอยู่ไกล Tamer เกินไป")
+        feedback.emit("เป้าหมายอยู่ไกล Warden เกินไป")
         return
 
     # เปลี่ยนเป้าได้โดยไม่ล้าง slot ที่เพิ่งกด
@@ -482,7 +482,7 @@ func prepare_digivolve() -> MonsterData:
         feedback.emit(error)
         return null
     if not tamer.consume_mp(next_data.evolution_cost):
-        feedback.emit("MP ของ Tamer ไม่พอเปลี่ยนร่าง")
+        feedback.emit("MP ของ Warden ไม่พอเปลี่ยนร่าง")
         return null
     _cancel_combat_action() # หยุด wind-up ก่อนคัตซีน
     _reserved_form = next_data
@@ -511,7 +511,7 @@ func finish_digivolve() -> bool:
     _reserved_form = null
     _reserved_previous = null
     evolution_changed.emit(false)
-    feedback.emit("Digivolve: " + current_form.monster_name)
+    feedback.emit("Ascend: " + current_form.monster_name)
     tamer.save_party_progress()
     return true
 
@@ -758,8 +758,8 @@ func _on_story_unlocks_changed(max_stage: int) -> void:
 func _form_unlocked(data: MonsterData) -> bool:
     if data == null:
         return false
-    # Jogress เป็นร่าง runtime พิเศษ ไม่ได้อยู่ใน forms จึงอนุญาตเมื่อ Manager ผ่านเงื่อนไขแล้ว
-    if data.id == &"omegamon":
+    # Resonance เป็นร่าง runtime พิเศษ ไม่ได้อยู่ใน forms จึงอนุญาตเมื่อ Manager ผ่านเงื่อนไขแล้ว
+    if data.id == &"aegis_nova":
         return true
     var index: int = forms.find(data)
     return index >= 0 and EvolutionRules.can_use_form(progress.level, index) and QuestManager.has_flag(data.required_story_flag)
@@ -811,7 +811,7 @@ func _on_action_impact() -> void:
         var active_family: StringName = &""
         if not tamer.party_roster.members.is_empty():
             active_family = StringName(str(tamer.party_roster.members[tamer.party_roster.active_index].get("id", "")))
-        if active_family == &"tentomon":
+        if active_family == &"voltkin":
             AudioManager.play_sfx(&"electric_attack", -5.0)
 
     if _action_skill == null:
@@ -915,7 +915,7 @@ func _on_tamer_battle_permission(allowed: bool) -> void:
     _desired_velocity = Vector2.ZERO
     if is_alive():
         _change_state(State.FOLLOW if global_position.distance_to(tamer.global_position) > follow_stop_distance else State.IDLE)
-    feedback.emit("Tamer HP ต่ำกว่า 20%: กลับ Rookie และหยุดต่อสู้")
+    feedback.emit("Warden HP ต่ำกว่า 20%: กลับ Base Form และหยุดต่อสู้")
 
 func roll_outgoing_damage(amount: int) -> int:
     # หนึ่งแอคชั่นสุ่มครั้งเดียว ก่อนส่งไป projectile/hit resolver
