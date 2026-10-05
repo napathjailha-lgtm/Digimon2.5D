@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="MonsterData" load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/monster_data.gd" id="1"]
-[ext_resource type="SpriteFrames" path="res://data/ultimate_frames.tres" id="2"]
+[ext_resource type="SpriteFrames" path="res://data/pregame/cindergear_frames.tres" id="2"]
 [ext_resource type="Resource" path="res://data/ultimate_lance.tres" id="3"]
 [ext_resource type="Resource" path="res://data/ultimate_wave.tres" id="4"]
 [ext_resource type="Resource" path="res://data/ultimate_claw.tres" id="5"]
@@ -11,7 +11,7 @@
 [resource]
 script = ExtResource("1")
 id = &"ultimate"
-monster_name = "Ultimate"
+monster_name = "Cindergear"
 evolution_stage = 2
 sprite_frames = ExtResource("2")
 sprite_scale = Vector2(0.630952, 0.630952)

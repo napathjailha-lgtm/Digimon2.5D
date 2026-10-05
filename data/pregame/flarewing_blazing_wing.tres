@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/skills_painted/fire.png" id="icon"]
+[resource]
+script = ExtResource("s")
+id = &"flarewing_blazing_wing"
+display_name = "Blazing Wing"
+icon = ExtResource("icon")
+multiplier = 2.5
+cooldown = 6
+cast_range = 220.0
+mp_cost = 10.0
+impact_radius = 35.0
+projectile_speed = 500.0
+effect_color = Color(1.0, 0.58, 0.18, 1)
+effect_size = 20.0
+animation_prefix = &"cast"
+release_frame = 2
+vfx_style = "fire"

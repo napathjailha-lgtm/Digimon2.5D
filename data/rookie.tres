@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="MonsterData" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/monster_data.gd" id="1"]
-[ext_resource type="SpriteFrames" path="res://data/rookie_frames.tres" id="2"]
+[ext_resource type="SpriteFrames" path="res://data/pregame/emberclaw_frames.tres" id="2"]
 [ext_resource type="Resource" path="res://data/rookie_strike.tres" id="3"]
 [ext_resource type="Resource" path="res://data/rookie_bolt.tres" id="4"]
 [ext_resource type="Script" path="res://scripts/skill_data.gd" id="skill_type"]
@@ -9,7 +9,7 @@
 [resource]
 script = ExtResource("1")
 id = &"rookie"
-monster_name = "Rookie"
+monster_name = "Emberclaw"
 evolution_stage = 0
 sprite_frames = ExtResource("2")
 sprite_scale = Vector2(0.427481, 0.427481)
