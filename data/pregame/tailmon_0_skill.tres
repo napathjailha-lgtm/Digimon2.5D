@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="s"]
+[resource]
+script = ExtResource("s")
+id = &"tailmon_0_skill"
+display_name = "Holy Paw"
+vfx_style = "astral"
+animation_prefix = &"cast"
+release_frame = 2
+multiplier = 1.28
+cast_range = 240.0
+cooldown = 3.2
+mp_cost = 6.0
+projectile_speed = 500.0
+effect_color = Color(0.95,0.82,0.38,1)
+effect_size = 13.0
