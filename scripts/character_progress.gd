@@ -4,7 +4,10 @@ extends Node
 signal progress_changed(level: int, current_exp: int, max_exp: int)
 signal leveled_up(new_level: int)
 
+enum ExpCurve { TAMER, DIGIMON }
+
 @export_range(1, 999) var level_cap: int = 99
+@export var exp_curve: ExpCurve = ExpCurve.TAMER
 @export var hp_per_level: int = 50
 @export var attack_per_level: int = 5
 @export var speed_per_level: float = 1.0
@@ -12,6 +15,11 @@ var level: int = 1
 var current_exp: int = 0
 var max_exp: int = 100
 var base_stats: Dictionary = {"max_hp": 120, "attack": 15, "speed": 240.0}
+
+
+func _ready() -> void:
+    max_exp = exp_required(level)
+
 
 func set_base_stats(hp: int, attack: int, speed: float) -> void:
     # ร่างใหม่เปลี่ยนเฉพาะฐาน เลเวลและ EXP เดิมยังอยู่
@@ -27,8 +35,28 @@ func get_effective_stats() -> Dictionary:
     }
 
 func exp_required(at_level: int) -> int:
-    # สูตรต้นแบบ: Lv1 ใช้ 100, Lv2 ใช้ 150, Lv3 ใช้ 200
-    return 100 + (maxi(1, at_level) - 1) * 50
+    var safe_level: int = maxi(1, at_level)
+    match exp_curve:
+        ExpCurve.DIGIMON:
+            return _digimon_exp_required(safe_level)
+        _:
+            return _tamer_exp_required(safe_level)
+
+
+func _tamer_exp_required(at_level: int) -> int:
+    # Tamer คง curve เดิมเพื่อไม่กระทบ progression/เซฟเดิม
+    # Lv1 100, Lv15 800, Lv60 3050
+    return 100 + (at_level - 1) * 50
+
+
+func _digimon_exp_required(at_level: int) -> int:
+    # Rookie 1-14 เรียนรู้เกมด้วย pace เดียวกับ Tamer
+    # หลัง Champion (Lv15) curve จะชันขึ้นเรื่อย ๆ เพื่อให้ Ultimate/Mega มีคุณค่า
+    # Lv15 800, Lv30 2225, Lv60 7775, Lv89 16562
+    if at_level < 15:
+        return _tamer_exp_required(at_level)
+    var post_champion: int = at_level - 15
+    return 800 + 65 * post_champion + 2 * post_champion * post_champion
 
 func add_exp(amount: int) -> void:
     # ไม่รับ EXP ติดลบ และหยุดสะสมเมื่อถึงเพดาน
