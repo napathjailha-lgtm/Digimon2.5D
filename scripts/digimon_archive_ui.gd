@@ -286,8 +286,8 @@ func _empty_state(title: String, subtitle: String) -> PanelContainer:
     stack.add_child(b)
     return frame
 
-func _button(text: String, minimum: Vector2, callback: Callable, accent: Color) -> CompanionTouchButton:
-    var button := CompanionTouchButton.new()
+func _button(text: String, minimum: Vector2, callback: Callable, accent: Color) -> DigimonTouchButton:
+    var button := DigimonTouchButton.new()
     button.text = text
     button.custom_minimum_size = minimum
     ServiceUIStyle.button(button, accent)
@@ -317,5 +317,5 @@ func _clear_list(list: VBoxContainer) -> void:
 
 func _release_buttons() -> void:
     for node: Node in root.find_children("*", "", true, false):
-        if node is CompanionTouchButton:
-            (node as CompanionTouchButton).release_input()
+        if node is DigimonTouchButton:
+            (node as DigimonTouchButton).release_input()
