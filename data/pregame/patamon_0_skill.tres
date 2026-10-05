@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="s"]
+[resource]
+script = ExtResource("s")
+id = &"patamon_0_skill"
+display_name = "Boom Bubble"
+vfx_style = "wing"
+animation_prefix = &"cast"
+release_frame = 2
+multiplier = 1.22
+cast_range = 260.0
+cooldown = 3.2
+mp_cost = 6.0
+projectile_speed = 500.0
+effect_color = Color(0.65,0.9,1.0,1)
+effect_size = 13.0
