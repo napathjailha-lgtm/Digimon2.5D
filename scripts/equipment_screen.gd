@@ -171,7 +171,7 @@ func _build() -> void:
     _close = _button(_content, "×", Vector2(1111, 5), Vector2(64, 56), close_screen)
     _close.accent = Color("deb969")
     for i: int in range(3):
-        var tab: EquipmentButton = _button(_content, ["Tamer", "Digivice", "Skill"][i], Vector2(18 + i * 140, 60), Vector2(134, 48), _select_tab.bind(i))
+        var tab: EquipmentButton = _button(_content, ["Tamer", "Link Core", "Skill"][i], Vector2(18 + i * 140, 60), Vector2(134, 48), _select_tab.bind(i))
         _tabs.append(tab)
     _level = _label(_content, "", Vector2(22, 108), Vector2(725, 30), 18)
     _stage = EquipmentStage.new()
@@ -328,7 +328,7 @@ func _refresh_details() -> void:
     _equip.locked = item == null or inventory.count(selected_item) <= 0 or tamer.progress.level < item.required_level
     _unequip.locked = selected_slot == &"" or inventory.item_at(selected_slot) == null
     if item == null:
-        _details.text = "เลือกไอเทมเพื่อดูรายละเอียด\n\nใส่/ถอดของแล้วค่าสเตตัสเปลี่ยนทันที\nHP / DS ปัจจุบันไม่เติมฟรีเมื่อใส่ของ\n\nDigivice และ Chip เพิ่มพลังคู่หู\nช่อง Chip ใช้ได้ทั้ง A และ B"
+        _details.text = "เลือกไอเทมเพื่อดูรายละเอียด\n\nใส่/ถอดของแล้วค่าสเตตัสเปลี่ยนทันที\nHP / DS ปัจจุบันไม่เติมฟรีเมื่อใส่ของ\n\nLink Core และ Chip เพิ่มพลังคู่หู\nช่อง Chip ใช้ได้ทั้ง A และ B"
         if selected_slot != &"":
             _details.text = EquipmentInventory.LABELS[String(selected_slot)] + " / ช่องว่าง\n\nเลือกไอเทมจากกระเป๋าเพื่อสวมใส่"
         return
