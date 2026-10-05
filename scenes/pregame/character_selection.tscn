@@ -34,7 +34,7 @@ theme_override_constants/separation = 18
 layout_mode = 2
 [node name="Title" type="Label" parent="Margin/Column/Header"]
 layout_mode = 2
-text = "เลือก / สร้าง TAMER"
+text = "เลือก / สร้าง WARDEN"
 theme_override_font_sizes/font_size = 27
 mouse_filter = 2
 size_flags_horizontal = 3
@@ -91,7 +91,7 @@ theme_override_constants/margin_bottom = 16
 layout_mode = 2
 [node name="Name" type="Label" parent="Margin/Column/Body/Preview/Inner/Stack"]
 layout_mode = 2
-text = "Tamer"
+text = "Warden"
 theme_override_font_sizes/font_size = 22
 mouse_filter = 2
 horizontal_alignment = 1
@@ -138,11 +138,11 @@ mouse_filter = 2
 
 [node name="NameTitle" type="Label" parent="Margin/Column/Body/Create/Inner/Stack"]
 layout_mode = 2
-text = "ชื่อ Tamer"
+text = "ชื่อ Warden"
 theme_override_font_sizes/font_size = 16
 mouse_filter = 2
 
-[node name="TamerName" type="LineEdit" parent="Margin/Column/Body/Create/Inner/Stack"]
+[node name="WardenName" type="LineEdit" parent="Margin/Column/Body/Create/Inner/Stack"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 52)
 max_length = 16
