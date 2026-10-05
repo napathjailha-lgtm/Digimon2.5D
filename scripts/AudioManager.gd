@@ -7,7 +7,7 @@ extends Node
 ## - ถ้ายังไม่มีไฟล์เสียง จะ "เงียบ" อย่างปลอดภัยแทนการสร้างเสียง fallback ที่ผิดเพี้ยน
 ##
 ## โครงสร้างไฟล์ที่รองรับโดยอัตโนมัติ:
-## res://assets/audio/bgm/file_island.ogg
+## res://assets/audio/bgm/lumen_isle.ogg
 ## res://assets/audio/evolution/evolution_theme.ogg
 ## res://assets/audio/sfx/ui_click.ogg
 ## res://assets/audio/sfx/evolution_start.ogg
@@ -20,7 +20,7 @@ const DEFAULT_BGM_DB: float = -12.0
 const DEFAULT_EVOLUTION_DB: float = -7.0
 const DEFAULT_SFX_DB: float = -6.0
 
-const DEFAULT_BGM_PATH := "res://assets/audio/bgm/file_island.ogg"
+const DEFAULT_BGM_PATH := "res://assets/audio/bgm/lumen_isle.ogg"
 const DEFAULT_EVOLUTION_PATH := "res://assets/audio/evolution/evolution_theme.ogg"
 
 const SFX_PATHS := {
