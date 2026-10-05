@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/skills_painted/wind.png" id="icon"]
+[resource]
+script = ExtResource("s")
+id = &"skyrill_2_skill"
+display_name = "Tempest Dive"
+icon = ExtResource("icon")
+multiplier = 3.4
+cooldown = 8.0
+cast_range = 310.0
+mp_cost = 15.0
+impact_radius = 75.0
+projectile_speed = 560.0
+effect_color = Color(0.96,0.65,0.78,1)
+effect_size = 28.0
+vfx_style = "wind"
