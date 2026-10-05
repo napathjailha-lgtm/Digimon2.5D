@@ -7,13 +7,13 @@ const LOADING_SCENE: String = "res://scenes/pregame/loading_screen.tscn"
 const LOGIN_SCENE: String = "res://scenes/pregame/login_screen.tscn"
 const CHARACTER_SCENE: String = "res://scenes/pregame/character_selection.tscn"
 const STARTER_SCENE: String = "res://scenes/pregame/starter_selection.tscn"
-const ZONE_SCENES: Dictionary = {"file_island":"res://scenes/world.tscn", "server_continent":"res://scenes/world.tscn", "odaiba":"res://scenes/world.tscn", "spiral_mountain":"res://scenes/world.tscn"}
-const SERVERS: Array[Dictionary] = [{"id":"file_1","name":"File Island · Server 1"}, {"id":"file_2","name":"File Island · Server 2"}]
+const ZONE_SCENES: Dictionary = {"lumen_isle":"res://scenes/world.tscn", "meridian_expanse":"res://scenes/world.tscn", "harbor_district":"res://scenes/world.tscn", "helix_spire":"res://scenes/world.tscn"}
+const SERVERS: Array[Dictionary] = [{"id":"frontier_1","name":"Lumen Isle · Realm 1"}, {"id":"frontier_2","name":"Lumen Isle · Realm 2"}]
 const CATALOG_PATH: String = "res://data/pregame/catalog.tres"
 const SLOT_COUNT: int = 5
 var catalog: PregameCatalog
 var username: String = ""
-var server_selected: String = "file_1"
+var server_selected: String = "frontier_1"
 var account_key: String = ""
 var profile_root: String = "user://profiles"
 var legacy_save_path: String = "user://story_progress.json"
@@ -70,7 +70,7 @@ func login_demo(user: String, password: String, server_id: String) -> bool:
         return _fail("Username ต้องยาว 3–24 ตัวอักษร")
     if password.is_empty() or password.length() > 64:
         return _fail("กรอกรหัสผ่าน 1–64 ตัวอักษรสำหรับระบบจำลอง")
-    if server_id not in ["file_1", "file_2"]:
+    if server_id not in ["frontier_1", "frontier_2"]:
         return _fail("กรุณาเลือกเซิร์ฟเวอร์ที่มีในรายการ")
     username = clean
     server_selected = server_id
@@ -258,7 +258,7 @@ func import_legacy_character() -> bool:
     var data: Variant = JSON.parse_string(source)
     if not data is Dictionary or data.get("version", 0) != 1 or not data.get("party", {}) is Dictionary:
         return _fail("รูปแบบเซฟ v15 ไม่ถูกต้อง")
-    characters[selected_slot] = {"model":"taichi", "name":"Tamer v15", "starter":"legacy", "level":int(data.get("party", {}).get("tamer_progress", {}).get("level", 1))}
+    characters[selected_slot] = {"model":"aren", "name":"Explorer Legacy", "starter":"legacy", "level":int(data.get("party", {}).get("tamer_progress", {}).get("level", 1))}
     if not save_roster():
         characters[selected_slot] = {}
         return false
