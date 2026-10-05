@@ -36,6 +36,7 @@ script = ExtResource("art_shadow")
 
 [node name="Progress" type="Node" parent="."]
 script = ExtResource("progress_script")
+exp_curve = 0
 attack_per_level = 0
 
 [node name="DirectionalAnimator" type="Node" parent="." node_paths=PackedStringArray("sprite")]
