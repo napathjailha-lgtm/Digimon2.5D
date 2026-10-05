@@ -12,7 +12,7 @@ var catalog: QuestCatalog = preload("res://data/quest_catalog.tres")
 const ZONE_ORDER: Array[StringName] = [&"lumen_isle", &"meridian_expanse", &"harbor_district", &"helix_spire"]
 var save_path: String = "user://story_progress.json"
 var current_zone: StringName = &"lumen_isle"
-var max_unlocked_stage: int = MonsterData.EvolutionStage.CHAMPION
+var max_unlocked_stage: int = MonsterData.EvolutionStage.GROWTH
 var party_profile: Dictionary = {} # เซฟ HP/ร่าง/เลเวลของปาร์ตี้ข้ามการเปิดเกม
 var party_snapshot: Dictionary = {} # เก็บ DS/HP/ร่างระหว่างเปลี่ยน Scene ใน session
 var _completed: Array[StringName] = []
@@ -93,7 +93,7 @@ func set_current_zone(zone_id: StringName) -> void:
 
 func _rebuild_unlocks() -> void:
     # รางวัลคำนวณจากเควสต์ที่จบ ไม่บันทึกซ้ำเป็นอีกแหล่งข้อมูล
-    max_unlocked_stage = MonsterData.EvolutionStage.CHAMPION
+    max_unlocked_stage = MonsterData.EvolutionStage.GROWTH
     _flags.clear()
     _zones.assign([&"lumen_isle"])
     for quest: StoryQuest in catalog.quests:
