@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/skills_painted/ice.png" id="icon"]
+[resource]
+script = ExtResource("s")
+id = &"frostkin_1_skill"
+display_name = "Rime Bite"
+icon = ExtResource("icon")
+multiplier = 2.1
+cooldown = 5.0
+cast_range = 250.0
+mp_cost = 10.0
+impact_radius = 45.0
+projectile_speed = 540.0
+effect_color = Color(0.49,0.85,1,1)
+effect_size = 19.0
+vfx_style = "ice"

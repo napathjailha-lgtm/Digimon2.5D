@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/skills_painted/ice.png" id="icon"]
+[resource]
+script = ExtResource("s")
+id = &"frostkin_2_skill"
+display_name = "Glacier Rend"
+icon = ExtResource("icon")
+multiplier = 3
+cooldown = 7.0
+cast_range = 290.0
+mp_cost = 15.0
+impact_radius = 65.0
+projectile_speed = 540.0
+effect_color = Color(0.49,0.85,1,1)
+effect_size = 26.0
+vfx_style = "ice"
