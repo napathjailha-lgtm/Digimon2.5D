@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EquipmentItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/equipment_item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/equipment/boots.svg" id="2"]
+[resource]
+script = ExtResource("1")
+id = &"comet_boots"
+item_name = "Comet Boots"
+slot = &"boots"
+icon = ExtResource("2")
+rarity = 2
+required_level = 20
+description = "รองเท้าความเร็วสูง เพิ่ม AGI อย่างมาก"
+speed_bonus = 18
+agility_bonus = 6
+dexterity_bonus = 1
