@@ -274,7 +274,7 @@ func set_auto_battle(enabled: bool) -> void:
         partner.auto_battle = enabled and can_battle() and not survival.is_resting()
 
 func consume_mp(amount: float) -> bool:
-    # Tamer MP ใช้สำหรับ Digivolve/Jogress และค่าใช้จ่ายในการคงร่างเท่านั้น
+    # Tamer MP ใช้สำหรับ Digivolve/Fusion และค่าใช้จ่ายในการคงร่างเท่านั้น
     if not is_finite(amount) or amount < 0.0 or tamer_mp < amount:
         return false
     tamer_mp = maxf(0.0, tamer_mp - amount)
