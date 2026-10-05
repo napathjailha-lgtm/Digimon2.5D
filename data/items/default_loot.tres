@@ -5,7 +5,7 @@
 [ext_resource type="Resource" path="res://data/items/data_chip.tres" id="4"]
 [ext_resource type="Resource" path="res://data/items/emberclaw_digitama.tres" id="5"]
 [ext_resource type="Resource" path="res://data/items/frostfang_digitama.tres" id="6"]
-[ext_resource type="Resource" path="res://data/items/piyomon_digitama.tres" id="7"]
+[ext_resource type="Resource" path="res://data/items/verdwing_egg.tres" id="7"]
 [ext_resource type="Resource" path="res://data/items/tentomon_digitama.tres" id="8"]
 [ext_resource type="Resource" path="res://data/items/palmon_digitama.tres" id="9"]
 [ext_resource type="Resource" path="res://data/items/data_chip_data.tres" id="10"]
@@ -39,7 +39,7 @@ script = ExtResource("2")
 item = ExtResource("6")
 chance = 0.02
 
-[sub_resource type="Resource" id="piyomon_egg"]
+[sub_resource type="Resource" id="verdwing_egg"]
 script = ExtResource("2")
 item = ExtResource("7")
 chance = 0.02
@@ -74,7 +74,7 @@ entries = Array[ExtResource("2")]([
     SubResource("data_chip"),
     SubResource("emberclaw_egg"),
     SubResource("frostfang_egg"),
-    SubResource("piyomon_egg"),
+    SubResource("verdwing_egg"),
     SubResource("tentomon_egg"),
     SubResource("palmon_egg"),
     SubResource("food"),
