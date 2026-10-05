@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="MonsterData" load_steps=6 format=3]
+[ext_resource type="Script" path="res://scripts/monster_data.gd" id="s"]
+[ext_resource type="SpriteFrames" path="res://data/pregame/tailmon_0_frames.tres" id="f"]
+[ext_resource type="Resource" path="res://data/pregame/tailmon_0_skill.tres" id="k"]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="kt"]
+[ext_resource type="Texture2D" path="res://assets/pregame/tailmon.svg" id="p"]
+[resource]
+script = ExtResource("s")
+id = &"tailmon_0"
+monster_name = "Tailmon"
+evolution_stage = 0
+max_hp = 138
+attack = 21
+move_speed = 252
+attack_range = 62.0
+attack_interval = 0.8
+portrait_texture = ExtResource("p")
+sprite_frames = ExtResource("f")
+sprite_scale = Vector2(0.43,0.43)
+attack_sprite_scale = Vector2(0.43,0.43)
+cast_sprite_scale = Vector2(0.43,0.43)
+idle_animation = &"idle_down"
+walk_animation = &"walk_down"
+attack_animation = &"attack_down"
+cast_animation = &"cast_down"
+attack_hit_frame = 2
+animation_reference_speed = 252
+require_directional_animations = true
+require_action_animations = true
+skills = Array[ExtResource("kt")]([ExtResource("k")])
