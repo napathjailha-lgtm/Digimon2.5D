@@ -27,7 +27,6 @@ item = ExtResource("cap")
 chance = 0.18
 
 [sub_resource type="Resource" id="new_drop_0"]
-equipment_drops = Array[ExtResource("drop_script")]([SubResource("new_drop_0"), SubResource("new_drop_1"), SubResource("new_drop_2"), SubResource("new_drop_3")])
 script = ExtResource("drop_script")
 item = ExtResource("new_item_0")
 chance = 0.18
@@ -48,6 +47,7 @@ item = ExtResource("new_item_3")
 chance = 0.08
 
 [node name="Boss" instance=ExtResource("1")]
+equipment_drops = Array[ExtResource("drop_script")]([SubResource("new_drop_0"), SubResource("new_drop_1"), SubResource("new_drop_2"), SubResource("new_drop_3")])
 monster_id = &"devimon"
 max_hp = 320
 attack_damage = 12
