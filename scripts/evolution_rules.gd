@@ -6,12 +6,12 @@ const MAX_LEVEL: int = 90
 static func max_form_index_for_level(level: int) -> int:
     var safe_level := clampi(level, 1, MAX_LEVEL)
     if safe_level >= 90:
-        return 3 # Mega
+        return 3 # Apex
     if safe_level >= 60:
-        return 2 # Ultimate
+        return 2 # Ascended
     if safe_level >= 15:
-        return 1 # Champion
-    return 0 # Rookie
+        return 1 # Growth
+    return 0 # Base
 
 static func minimum_level_for_form_index(index: int) -> int:
     match index:
