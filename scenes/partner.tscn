@@ -34,6 +34,8 @@ radius = 23.0
 
 [node name="Progress" type="Node" parent="."]
 script = ExtResource("progress_script")
+level_cap = 90
+exp_curve = 1
 [node name="EggSprite" type="Sprite2D" parent="."]
 visible = false
 texture = ExtResource("egg_texture")
