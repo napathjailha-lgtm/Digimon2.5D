@@ -32,6 +32,9 @@ enum EvolutionStage { ROOKIE, CHAMPION, ULTIMATE, MEGA }
 @export_group("ภาพและแอนิเมชัน")
 ## รูปหน้าสำหรับสล็อตปาร์ตี้; ไม่กำหนดจะตัดครึ่งบนจากท่า Idle ตามเดิม
 @export var portrait_texture: Texture2D
+## ภาพต้นฉบับแบบ static ใช้สำหรับมอนที่กำลังเปลี่ยนจาก asset เก่า
+## ถ้ากำหนดค่านี้แต่ไม่กำหนด sprite_frames ระบบจะสร้าง animation placeholder ให้ครบอัตโนมัติ
+@export var static_art: Texture2D
 # SpriteFrames เก็บเฟรมที่ตัดจาก SpriteSheet หรือรูป PNG แยกเฟรมได้
 @export var sprite_frames: SpriteFrames
 @export var sprite_scale: Vector2 = Vector2.ONE
@@ -54,7 +57,17 @@ enum EvolutionStage { ROOKIE, CHAMPION, ULTIMATE, MEGA }
 @export_range(0.0, 1000.0) var evolution_cost: float = 0.0
 @export_range(0.0, 100.0) var ds_drain_per_second: float = 0.0
 
+func _ensure_static_art() -> void:
+    if static_art == null:
+        return
+    if portrait_texture == null:
+        portrait_texture = static_art
+    if sprite_frames == null:
+        sprite_frames = OriginalMonsterArt.make_static_frames(static_art)
+
+
 func validation_error() -> String:
+    _ensure_static_art()
     # ตรวจด้วยก่อนใช้จริง เพราะค่าอาจมาจากโค้ดหรือไฟล์ที่แก้มือ
     if id == &"" or monster_name.strip_edges().is_empty():
         return "ต้องกำหนด id และชื่อมอนสเตอร์"
