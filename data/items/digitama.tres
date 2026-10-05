@@ -4,11 +4,11 @@
 [resource]
 script = ExtResource("1")
 item_id = "digitama"
-item_name = "Agumon Digitama"
+item_name = "Cindrake Core Egg"
 item_type = 2
 item_texture = ExtResource("2")
-description = "ฟักสำเร็จจะได้ Agumon 100% ต้อง Inject Vaccine Data 5/5 ที่ Digital Incubator"
-egg_partner_id = &"agumon"
+description = "ฟักสำเร็จจะได้ Cindrake 100% ต้อง Inject Fire Data 5/5 ที่ Digital Incubator"
+egg_partner_id = &"cindrake"
 required_chip_id = "data_chip"
 inject_goal = 5
 inject_success_chance = 0.72
