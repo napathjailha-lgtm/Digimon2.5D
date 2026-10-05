@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/items/tamer_medkit.svg" id="2"]
+[resource]
+script = ExtResource("1")
+item_id = "tamer_medkit"
+item_name = "Tamer Medkit"
+item_type = 0
+item_texture = ExtResource("2")
+description = "ยาฟื้น HP ของ Tamer 80 หน่วย ใช้ได้เมื่อ HP ของ Tamer ยังไม่เต็ม"
+effect_type = 3
+effect_value = 80
+tamer_hp_restore = 0
+tamer_stamina_restore = 0.0
+shop_sold = true
+buy_price = 35
+sell_price = 9
