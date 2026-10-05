@@ -5,7 +5,7 @@ extends Node
 
 var tamer: Tamer
 var hud: MobileHUD
-var archive_ui: DigimonArchiveUI
+var archive_ui: CompanionArchiveUI
 var shop_ui: ShopUI
 var incubator_ui: IncubatorUI
 var shop_service := ShopService.new()
@@ -28,7 +28,7 @@ func _ready() -> void:
 
     _build_mobile_interact_button()
 
-    archive_ui = DigimonArchiveUI.new()
+    archive_ui = CompanionArchiveUI.new()
     add_child(archive_ui)
     archive_ui.configure(tamer.party_roster)
 
