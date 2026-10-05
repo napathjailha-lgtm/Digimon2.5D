@@ -1,0 +1,49 @@
+[gd_scene load_steps=10 format=3]
+[ext_resource type="PackedScene" path="res://scenes/wild_monster.tscn" id="1"]
+[ext_resource type="Script" path="res://scripts/quest_target.gd" id="2"]
+[ext_resource type="Texture2D" path="res://assets/original/bosses/void_warden.svg" id="boss_art"]
+[ext_resource type="Script" path="res://scripts/equipment_drop_entry.gd" id="drop_script"]
+[ext_resource type="Resource" path="res://data/equipment/crest_ring.tres" id="ring"]
+[ext_resource type="Resource" path="res://data/equipment/power_chip.tres" id="chip"]
+[ext_resource type="Resource" path="res://data/equipment/reinforced_cap.tres" id="cap"]
+
+[sub_resource type="Resource" id="ring_drop"]
+script = ExtResource("drop_script")
+item = ExtResource("ring")
+chance = 0.12
+[sub_resource type="Resource" id="chip_drop"]
+script = ExtResource("drop_script")
+item = ExtResource("chip")
+chance = 0.20
+[sub_resource type="Resource" id="cap_drop"]
+script = ExtResource("drop_script")
+item = ExtResource("cap")
+chance = 0.18
+
+[node name="Boss" instance=ExtResource("1")]
+monster_id = &"void_warden"
+max_hp = 320
+attack_damage = 12
+is_world_boss = true
+boss_equipment_drops = Array[ExtResource("drop_script")]([SubResource("ring_drop"), SubResource("chip_drop"), SubResource("cap_drop")])
+
+[node name="QuestTarget" type="Marker2D" parent="."]
+script = ExtResource("2")
+target_id = &"void_warden"
+
+[node name="BossName" type="Label" parent="."]
+offset_left = -140.0
+offset_top = -118.0
+offset_right = 140.0
+offset_bottom = -88.0
+text = "Void Warden [WORLD BOSS]"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="Sprite2D" parent="."]
+texture = ExtResource("boss_art")
+scale = Vector2(0.72, 0.72)
+offset = Vector2(0, -118.0)
+
+[node name="DamageOrigin" parent="."]
+position = Vector2(0, -90)
