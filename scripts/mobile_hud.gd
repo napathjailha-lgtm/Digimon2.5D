@@ -43,7 +43,7 @@ var _target_refresh_left: float = 0.0
 var _message_left: float = 0.0
 var chat_editing: bool = false
 var party_roster: PartnerRoster
-var jogress_manager: JogressManager
+var fusion_manager: FusionManager
 var _rotate_overlay: ColorRect
 var safe_inset_override := Vector4(-1, -1, -1, -1) # ใช้ทดสอบรอยบาก; ค่า -1 ให้อ่าน OS จริง
 
@@ -57,12 +57,12 @@ func _ready() -> void:
     tamer.add_child(party_roster)
     tamer.party_roster = party_roster
     party_roster.configure(tamer)
-    jogress_manager = JogressManager.new()
-    jogress_manager.name = "JogressManager"
-    tamer.add_child(jogress_manager)
-    jogress_manager.configure(tamer, partner, party_roster)
-    jogress_manager.availability_changed.connect(func(_available: bool): _refresh_combat_controls())
-    jogress_manager.jogress_changed.connect(func(_active: bool): _refresh_combat_controls())
+    fusion_manager = FusionManager.new()
+    fusion_manager.name = "FusionManager"
+    tamer.add_child(fusion_manager)
+    fusion_manager.configure(tamer, partner, party_roster)
+    fusion_manager.availability_changed.connect(func(_available: bool): _refresh_combat_controls())
+    fusion_manager.fusion_changed.connect(func(_active: bool): _refresh_combat_controls())
     party_panel.configure(party_roster)
     party_panel.switch_requested.connect(_switch_party)
     party_panel.empty_pressed.connect(func(): _show_message("ฟักไข่ในกระเป๋าเพื่อเพิ่มคู่หูในทีม"))
@@ -83,8 +83,8 @@ func _ready() -> void:
     skill_panel.skill_requested.connect(tamer.command_skill)
     # form_skill_requested เก็บ signal ไว้เพื่อ compatibility แต่ UI ใหม่ไม่ emit สกิลต่างร่าง
     skill_panel.form_skill_requested.connect(tamer.command_form_skill)
-    cycle_button.set_caption("Jogress [J]")
-    cycle_button.pressed.connect(jogress_manager.request_jogress)
+    cycle_button.set_caption("Fusion [J]")
+    cycle_button.pressed.connect(fusion_manager.request_fusion)
     attack_button.pressed.connect(tamer.command_attack)
     evolve_button.pressed.connect(tamer.command_digivolve)
     auto_button.pressed.connect(_toggle_auto)
@@ -443,7 +443,7 @@ func _request_digivolve(partner_node: PartnerMonster) -> void:
     active_cutscene = cutscene
 
 func _unhandled_input(event: InputEvent) -> void:
-    # Web/PC shortcuts: Space = โจมตี, 1-4 = สกิลปัจจุบัน, J = Jogress
+    # Web/PC shortcuts: Space = โจมตี, 1-4 = สกิลปัจจุบัน, J = Fusion
     # ใช้ unhandled_input เพื่อไม่แย่งปุ่มจาก LineEdit/เมนูที่กำลังรับคีย์บอร์ด
     if chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open):
         return
@@ -462,8 +462,8 @@ func _unhandled_input(event: InputEvent) -> void:
     elif event.is_action_pressed(&"skill_4"):
         tamer.command_skill(3)
         get_viewport().set_input_as_handled()
-    elif event.is_action_pressed(&"jogress") and is_instance_valid(jogress_manager):
-        jogress_manager.request_jogress()
+    elif event.is_action_pressed(&"fusion") and is_instance_valid(fusion_manager):
+        fusion_manager.request_fusion()
         get_viewport().set_input_as_handled()
 
 func _input(event: InputEvent) -> void:
@@ -590,9 +590,9 @@ func _refresh_combat_controls() -> void:
     evolve_button.locked = blocked or partner.evolution_busy or not partner.is_alive() or not tamer.can_battle() or next_index < 0 or next_index >= partner.forms.size()
     if not evolve_button.locked:
         evolve_button.locked = not EvolutionRules.can_use_form(partner.progress.level, next_index) or not QuestManager.has_flag(partner.forms[next_index].required_story_flag)
-    # ปุ่ม Cycle เดิมถูกใช้เป็น Jogress; แสดงได้ตลอดแต่ล็อกจน Agumon/Gabumon Lv90 ทั้งคู่
-    cycle_button.set_caption("Omegamon" if is_instance_valid(jogress_manager) and jogress_manager.active else "Jogress [J]")
-    cycle_button.locked = blocked or not is_instance_valid(jogress_manager) or not jogress_manager.can_jogress() or jogress_manager.active
+    # ปุ่ม Cycle ใช้เป็น Fusion; แสดงได้ตลอดแต่ล็อกจน Emberclaw/Frostfang Lv90 ทั้งคู่
+    cycle_button.set_caption("Prismforge" if is_instance_valid(fusion_manager) and fusion_manager.active else "Fusion [J]")
+    cycle_button.locked = blocked or not is_instance_valid(fusion_manager) or not fusion_manager.can_fusion() or fusion_manager.active
 
 
 func _on_battle_permission(allowed: bool) -> void:
