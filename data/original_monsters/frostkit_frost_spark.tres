@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/skills_painted/ice.png" id="icon"]
+[resource]
+script = ExtResource("s")
+id = &"frostkit_frost_spark"
+display_name = "Frost Spark"
+icon = ExtResource("icon")
+multiplier = 1.2
+cooldown = 3
+cast_range = 200.0
+mp_cost = 5.0
+impact_radius = 0.0
+projectile_speed = 480.0
+effect_color = Color(0.53,0.9,1.0,1)
+effect_size = 12.0
+animation_prefix = &"cast"
+release_frame = 2
+vfx_style = "ice"
