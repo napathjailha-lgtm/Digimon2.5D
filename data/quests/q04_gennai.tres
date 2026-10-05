@@ -3,12 +3,15 @@
 [resource]
 script = ExtResource("1")
 id = &"q04_gennai"
-title = "เส้นทางแห่งตราสัญลักษณ์"
-description = "คุยกับ Gennai เพื่อรับเบาะแสบนแคมป์กลางเกาะ"
+title = "สิทธิ์วิวัฒนาการ Champion"
+description = "นำข้อมูลจาก Forest Guardian ไปให้ Gennai ที่แคมป์กลางเกาะ เพื่อปลดล็อก Champion"
 zone_id = &"file_island"
 objective = 0
 target_id = &"gennai"
 required_count = 1
-unlock_flags = Array[StringName]([])
+recommended_level = 15
+reward_exp = 2200
+reward_bits = 500
+unlock_flags = Array[StringName]([&"ep1_champion"])
 unlock_zones = Array[StringName]([])
-unlock_stage = -1
+unlock_stage = 1
