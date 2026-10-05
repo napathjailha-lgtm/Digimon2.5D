@@ -48,7 +48,7 @@ func _exit_tree() -> void:
 func _build_mobile_web_overlay() -> void:
     # เกมออกแบบสำหรับ Landscape; บนมือถือเว็บ Portrait จะบีบหน้าสร้างตัวละคร 3 คอลัมน์จนใช้งานไม่ได้
     # จึงแสดงคำแนะนำแทนการปล่อย UI ซ้อนกัน และซ่อนอัตโนมัติทันทีเมื่อหมุนจอ
-    if not HybridPlatform.is_web_touch() or is_instance_valid(_rotate_overlay):
+    if not OS.has_feature("web") or not HybridPlatform.use_mobile_layout(get_viewport()) or is_instance_valid(_rotate_overlay):
         return
 
     _rotate_overlay = ColorRect.new()
