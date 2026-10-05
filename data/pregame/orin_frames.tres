@@ -1,0 +1,20 @@
+[gd_resource type="SpriteFrames" load_steps=2 format=3]
+[ext_resource type="Texture2D" path="res://assets/original/tamers/orin.svg" id="1"]
+[resource]
+metadata/mirror_left = false
+animations = [{"frames":[{"duration":1.0,"texture":ExtResource("1")}],"loop":true,"name":&"idle_down","speed":1.0},
+{"frames":[{"duration":1.0,"texture":ExtResource("1")}],"loop":true,"name":&"walk_down","speed":6.0},
+{"frames":[{"duration":1.0,"texture":ExtResource("1")}],"loop":false,"name":&"attack_down","speed":9.0},
+{"frames":[{"duration":1.0,"texture":ExtResource("1")}],"loop":false,"name":&"cast_down","speed":9.0},
+{"frames":[{"duration":1.0,"texture":ExtResource("1")}],"loop":true,"name":&"idle_right","speed":1.0},
+{"frames":[{"duration":1.0,"texture":ExtResource("1")}],"loop":true,"name":&"walk_right","speed":6.0},
+{"frames":[{"duration":1.0,"texture":ExtResource("1")}],"loop":false,"name":&"attack_right","speed":9.0},
+{"frames":[{"duration":1.0,"texture":ExtResource("1")}],"loop":false,"name":&"cast_right","speed":9.0},
+{"frames":[{"duration":1.0,"texture":ExtResource("1")}],"loop":true,"name":&"idle_up","speed":1.0},
+{"frames":[{"duration":1.0,"texture":ExtResource("1")}],"loop":true,"name":&"walk_up","speed":6.0},
+{"frames":[{"duration":1.0,"texture":ExtResource("1")}],"loop":false,"name":&"attack_up","speed":9.0},
+{"frames":[{"duration":1.0,"texture":ExtResource("1")}],"loop":false,"name":&"cast_up","speed":9.0},
+{"frames":[{"duration":1.0,"texture":ExtResource("1")}],"loop":true,"name":&"idle_left","speed":1.0},
+{"frames":[{"duration":1.0,"texture":ExtResource("1")}],"loop":true,"name":&"walk_left","speed":6.0},
+{"frames":[{"duration":1.0,"texture":ExtResource("1")}],"loop":false,"name":&"attack_left","speed":9.0},
+{"frames":[{"duration":1.0,"texture":ExtResource("1")}],"loop":false,"name":&"cast_left","speed":9.0}]

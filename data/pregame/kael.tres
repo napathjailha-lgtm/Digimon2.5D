@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="TamerModelData" load_steps=4 format=3]
+[ext_resource type="Script" path="res://scripts/pregame/tamer_model_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/original/tamers/kael.svg" id="p"]
+[ext_resource type="SpriteFrames" path="res://data/pregame/kael_frames.tres" id="f"]
+[resource]
+script = ExtResource("s")
+id = &"kael"
+display_name = "เคล"
+gender = "ชาย"
+play_style = "สายบาลานซ์"
+description = "นักสำรวจแนวหน้า • ค่าสเตตัสสมดุลและคล่องตัว"
+portrait = ExtResource("p")
+sprite_frames = ExtResource("f")
+sprite_scale = Vector2(0.34,0.34)
+base_hp = 200
+base_ds = 100.0
+move_speed = 195.0
