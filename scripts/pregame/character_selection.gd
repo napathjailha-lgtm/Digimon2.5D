@@ -64,7 +64,12 @@ func refresh() -> void:
     var existing: bool = not GameManager.characters[GameManager.selected_slot].is_empty()
     for i: int in range(slot_buttons.size()):
         var record: Dictionary = GameManager.characters[i]
-        slot_buttons[i].text = "ช่อง %d  •  ว่าง\nสร้าง Tamer ใหม่" % (i + 1) if record.is_empty() else "ช่อง %d  •  %s\nLv.%d  /  %s" % [i + 1, record.name, record.get("level", 1), str(record.starter).capitalize()]
+        if record.is_empty():
+            slot_buttons[i].text = "ช่อง %d  •  ว่าง\nสร้าง Tamer ใหม่" % (i + 1)
+        else:
+            var family: StarterPartnerData = GameManager.catalog.starter_by_id(StringName(str(record.get("starter", ""))))
+            var partner_name: String = family.display_name if family != null else "Partner"
+            slot_buttons[i].text = "ช่อง %d  •  %s\nLv.%d  /  %s" % [i + 1, record.name, record.get("level", 1), partner_name]
         slot_buttons[i].set_pressed_no_signal(i == GameManager.selected_slot)
     var data: TamerModelData = GameManager.catalog.tamer_by_id(model_selected)
     portrait.texture = data.portrait
