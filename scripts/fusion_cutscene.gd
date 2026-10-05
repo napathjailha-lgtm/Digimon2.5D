@@ -1,12 +1,12 @@
 class_name FusionCutscene
 extends CanvasLayer
 ## คัตซีน Fusion แบบ runtime ไม่ต้องมี Scene แยก:
-## Aegisdrake + Cryoblaster -> Prism Burst -> Prismforge
+## WarGreymon + MetalGarurumon -> Prism Burst -> Prismforge
 
 signal finished(success: bool)
 
-const DRAGON_MEGA: MonsterData = preload("res://data/pregame/aegisdrake_3.tres")
-const WOLF_MEGA: MonsterData = preload("res://data/pregame/cryoblaster_3.tres")
+const DRAGON_MEGA: MonsterData = preload("res://data/pregame/agumon_3.tres")
+const WOLF_MEGA: MonsterData = preload("res://data/pregame/gabumon_3.tres")
 
 var _owns_pause: bool = false
 var _previous_paused: bool = false
@@ -121,7 +121,7 @@ func _build_ui() -> void:
     _root.add_child(_title)
 
     _caption = Label.new()
-    _caption.text = "Aegisdrake  +  Cryoblaster"
+    _caption.text = "WarGreymon  +  MetalGarurumon"
     _caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     _caption.add_theme_font_size_override("font_size", 22)
     _caption.add_theme_constant_override("outline_size", 5)
