@@ -12,3 +12,7 @@ effect_type = 1
 effect_value = 30
 tamer_hp_restore = 25
 tamer_stamina_restore = 10.0
+
+shop_sold = true
+buy_price = 40
+sell_price = 10
