@@ -30,6 +30,7 @@ jobs:
 
       - name: Verify project
         run: godot --headless --path . --editor --quit
+
       - name: Resource load smoke test
         run: godot --headless --path . --script res://tests/resource_load_smoke.gd
 
@@ -37,6 +38,13 @@ jobs:
         run: |
           mkdir -p build/web
           godot --headless --path . --export-release "Web" build/web/index.html
+
+      - name: Install Prism web loader
+        run: |
+          cp assets/ui/splash/prism_tamer_wide.jpg build/web/prism_tamer_wide.jpg
+          cp assets/ui/splash/prism_tamer_portrait.jpg build/web/prism_tamer_portrait.jpg
+          python3 tools/patch_web_loader.py build/web/index.html
+          grep -q 'id="prism-preloader"' build/web/index.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
