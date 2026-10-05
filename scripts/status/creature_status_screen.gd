@@ -215,10 +215,10 @@ func refresh() -> void:
     exp_label.text = "EXP  %d / %d    •    %s" % [partner.progress.current_exp, partner.progress.max_exp, "พร้อมต่อสู้" if partner.can_battle() else "พักฟื้น / ต่อสู้ไม่ได้"]
     hp_bar.max_value = partner.max_hp
     hp_bar.value = partner.hp
-    mp_bar.max_value = partner.creature_max_mp
-    mp_bar.value = partner.creature_mp
+    mp_bar.max_value = partner.partner_max_mp
+    mp_bar.value = partner.partner_mp
     values.HP.text = "%d / %d" % [partner.hp, partner.max_hp]
-    values.MP.text = "%.0f / %.0f" % [partner.creature_mp, partner.creature_max_mp]
+    values.MP.text = "%.0f / %.0f" % [partner.partner_mp, partner.partner_max_mp]
     values.AT.text = str(partner.attack_power)
     values.AS.text = "%.2f s" % form.attack_interval
     values.CT.text = "%.1f%%" % form.critical_chance
