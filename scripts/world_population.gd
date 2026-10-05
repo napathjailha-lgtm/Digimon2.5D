@@ -18,7 +18,7 @@ func _ready() -> void:
         spawner.activation_radius = 1500.0
         _centers.append(spawner.position)
         if spawner.name == &"BossSpawner":
-            _mark_boss(spawner, &"devimon")
+            _mark_boss(spawner, &"void_harrower")
         else:
             created_regular += 1
     var random := RandomNumberGenerator.new()
@@ -47,11 +47,11 @@ func _ready() -> void:
             continue
         _add_spawn("Habitat%03d" % created_regular, point, WILDS[created_regular % WILDS.size()], 90.0, 10.0)
         created_regular += 1
-    _add_boss("etemon", Vector2(6200, 1600))
-    _add_boss("myotismon", Vector2(8700, 3250))
-    _add_boss("piedmon", Vector2(9250, 5450))
-    _add_story_point("res://scenes/npc_gennai.tscn", Vector2(5600, 2650))
-    _add_story_point("res://scenes/reach_odaiba_clue.tscn", Vector2(8000, 4000))
+    _add_boss("brass_howler", Vector2(6200, 1600))
+    _add_boss("night_regent", Vector2(8700, 3250))
+    _add_boss("masked_warden", Vector2(9250, 5450))
+    _add_story_point("res://scenes/npc_archivist_orun.tscn", Vector2(5600, 2650))
+    _add_story_point("res://scenes/reach_east_ruins_clue.tscn", Vector2(8000, 4000))
 
 func _walkable_near(point: Vector2) -> Vector2:
     # พื้นที่ชนและพื้นที่เกิดอ้างอิง environment เดียวกัน กันเกิดในน้ำ/บ้าน
