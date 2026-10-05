@@ -2,6 +2,7 @@ class_name EquipmentScreen
 extends CanvasLayer
 ## หน้าจออุปกรณ์แนวนอน: ถือครอง pause เฉพาะช่วงเปิดและคืนเมื่อปิด/ออก Scene
 signal closed
+const BAG_PAGE_SIZE: int = 18
 var tamer: Tamer
 var hud: CanvasLayer # Interface ของ HUD โดยไม่อ้างชนิด MobileHUD กลับเป็นวงจร
 var is_open: bool = false
@@ -25,6 +26,10 @@ var _bonus: Label
 var _details: Label
 var _notice: Label
 var _bag_count: Label
+var _bag_page_label: Label
+var _bag_prev: EquipmentButton
+var _bag_next: EquipmentButton
+var _bag_page: int = 0
 var _skill_list: Label
 var _equip: EquipmentButton
 var _unequip: EquipmentButton
@@ -117,7 +122,7 @@ func _process(delta: float) -> void:
         _notice.text = "เลือกช่องอุปกรณ์หรือไอเทม → ใส่ / ถอด"
 
 func _all_buttons() -> Array[EquipmentButton]:
-    var result: Array[EquipmentButton] = [_close, _rotate, _equip, _unequip]
+    var result: Array[EquipmentButton] = [_close, _rotate, _equip, _unequip, _bag_prev, _bag_next]
     result.append_array(_tabs)
     for value: EquipmentButton in _slots.values():
         result.append(value)
@@ -208,6 +213,10 @@ func _build() -> void:
     _applied = _label(_content, "", Vector2(530, 562), Vector2(219, 77), 14)
     _panel(_content, Vector2(777, 60), Vector2(388, 578))
     _bag_count = _label(_content, "", Vector2(793, 74), Vector2(363, 28), 16)
+    _bag_prev = _button(_content, "‹", Vector2(795, 280), Vector2(54, 34), _change_bag_page.bind(-1))
+    _bag_page_label = _label(_content, "", Vector2(855, 282), Vector2(230, 30), 13)
+    _bag_page_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    _bag_next = _button(_content, "›", Vector2(1091, 280), Vector2(54, 34), _change_bag_page.bind(1))
     _details = _label(_content, "", Vector2(795, 322), Vector2(348, 210), 15)
     _details.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     _equip = _button(_content, "สวมใส่", Vector2(793, 545), Vector2(174, 48), _equip_selected)
@@ -224,13 +233,56 @@ func _create_slot(slot_id: StringName, at: Vector2, right: bool) -> void:
     _slots[String(slot_id)] = button
 
 func _build_bag() -> void:
-    # ช่องคงตำแหน่งเดิมแม้จำนวนเป็น 0 ลดการกระโดดของ layout ขณะแตะ
+    # Catalog มีหลายสิบชิ้น จึงแสดงครั้งละ 18 ชิ้น (6x3) ไม่ให้ grid ทับรายละเอียดด้านล่าง
     for i: int in range(tamer.equipment.catalog.items.size()):
         var item: EquipmentItemData = tamer.equipment.catalog.items[i]
-        var button: EquipmentButton = _button(_content, "", Vector2(795 + (i % 6) * 59, 112 + (i / 6) * 62), Vector2(54, 56), select_bag_item.bind(item.id))
+        var local_index: int = i % BAG_PAGE_SIZE
+        var button: EquipmentButton = _button(_content, "", Vector2(795 + (local_index % 6) * 59, 112 + (local_index / 6) * 62), Vector2(54, 56), select_bag_item.bind(item.id))
         button.icon = item.icon
         button.accent = item.rarity_color()
         _bag_buttons[String(item.id)] = button
+    _refresh_bag_page()
+
+
+func _change_bag_page(direction: int) -> void:
+    if not is_instance_valid(tamer):
+        return
+    var page_count: int = maxi(1, ceili(float(tamer.equipment.catalog.items.size()) / float(BAG_PAGE_SIZE)))
+    _bag_page = clampi(_bag_page + direction, 0, page_count - 1)
+    selected_item = &""
+    selected_slot = &""
+    _preferred_slot = &""
+    _refresh_bag_page()
+    if is_open:
+        refresh()
+
+
+func _refresh_bag_page() -> void:
+    if not is_instance_valid(tamer):
+        return
+    var item_count: int = tamer.equipment.catalog.items.size()
+    var page_count: int = maxi(1, ceili(float(item_count) / float(BAG_PAGE_SIZE)))
+    _bag_page = clampi(_bag_page, 0, page_count - 1)
+    var start: int = _bag_page * BAG_PAGE_SIZE
+    var finish: int = mini(item_count, start + BAG_PAGE_SIZE)
+
+    for i: int in range(item_count):
+        var item: EquipmentItemData = tamer.equipment.catalog.items[i]
+        var button: EquipmentButton = _bag_buttons.get(String(item.id)) as EquipmentButton
+        if button == null:
+            continue
+        var on_page: bool = i >= start and i < finish
+        button.visible = on_page
+        if on_page:
+            var local_index: int = i - start
+            button.position = Vector2(795 + (local_index % 6) * 59, 112 + (local_index / 6) * 62)
+
+    if is_instance_valid(_bag_page_label):
+        _bag_page_label.text = "หน้า %d / %d" % [_bag_page + 1, page_count]
+    if is_instance_valid(_bag_prev):
+        _bag_prev.locked = _bag_page <= 0
+    if is_instance_valid(_bag_next):
+        _bag_next.locked = _bag_page >= page_count - 1
 
 func _layout() -> void:
     # Equipment ใช้ absolute layout 1184x660 จึงย่อทั้งก้อนเพื่อรักษาตำแหน่ง slot และ hitbox
@@ -290,9 +342,9 @@ func refresh() -> void:
         var device_slot: bool = key in ["device", "chip_a", "chip_b"]
         button.visible = (active_tab == 0 and not device_slot) or (active_tab == 1 and device_slot)
         var item: EquipmentItemData = inventory.item_at(StringName(key))
-        var icon_name: String = "chip" if key.begins_with("chip_") else key
-        button.icon = item.icon if item != null else load("res://assets/equipment/" + icon_name + ".svg")
-        button.modulate = Color.WHITE if item != null else Color(0.6, 0.72, 0.8)
+        # ช่องว่างไม่แสดงรูปอุปกรณ์ตัวอย่าง เพื่อไม่ให้ผู้เล่นเข้าใจว่าเริ่มเกมมาพร้อมของ
+        button.icon = item.icon if item != null else null
+        button.modulate = Color.WHITE if item != null else Color(0.42, 0.55, 0.65)
         button.selected = selected_slot == StringName(key)
         button.accent = item.rarity_color() if item != null else Color("34779f")
         button.queue_redraw()
@@ -304,7 +356,8 @@ func refresh() -> void:
         button.locked = button.quantity == 0
         button.selected = selected_item == item.id and selected_slot == &""
         button.queue_redraw()
-    _bag_count.text = "กระเป๋าไอเทม  •  %d ชิ้น" % count_owned
+    _bag_count.text = "กระเป๋าอุปกรณ์  •  %d ชิ้น / Catalog %d" % [count_owned, inventory.catalog.items.size()]
+    _refresh_bag_page()
     _level.text = "Lv.%d   ADVENTURE TAMER                           <No Guild>" % tamer.progress.level
     _stage.visible = active_tab != 2
     _portrait.visible = active_tab != 2
@@ -318,7 +371,7 @@ func refresh() -> void:
     _skill_list.text += "\nชุดสกิลเปลี่ยนตามร่างคู่หู\nอุปกรณ์เพิ่ม ATK ก่อนคำนวณดาเมจสกิล"
     var b: Dictionary = inventory.total_bonuses()
     _stats.text = "HP  %d / %d     DF  %d\nDS  %.0f / %.0f\nSPD  %.0f   •   Tamer สั่งการ" % [tamer.hp, tamer.max_hp, tamer.defense, tamer.ds, tamer.max_ds, tamer.move_speed]
-    _bonus.text = "ATK +%d   HP +%d   DS +%d   DF +%d\nCRIT +%.1f%%   SPD +%.0f\nคู่หู HP +%d  ATK +%d" % [b.attack, b.hp, b.ds, b.defense, b.critical, b.speed, b.partner_hp, b.partner_attack]
+    _bonus.text = "ATK +%d HP +%d DS +%d DF +%d\nSTR %d DEX %d INT %d VIT %d AGI %d\nP.HP +%d P.ATK +%d CRIT +%.1f%%" % [b.attack, b.hp, b.ds, b.defense, b.str, b.dex, b.int, b.vit, b.agi, b.partner_hp, b.partner_attack, b.critical]
     _applied.text = "%s Lv.%d\nHP  %d / %d\nATK  %d    SPD  %.0f" % [tamer.partner.current_form.monster_name, tamer.partner.progress.level, tamer.partner.hp, tamer.partner.max_hp, tamer.partner.attack_power, tamer.partner.move_speed]
     _refresh_details()
 
@@ -334,7 +387,7 @@ func _refresh_details() -> void:
         return
     var bonus: Dictionary = item.bonuses()
     var lines: String = ""
-    var labels: Dictionary = {"attack":"Tamer ATK", "hp":"Tamer HP", "ds":"Tamer DS", "defense":"Tamer DF", "critical":"Tamer CRIT%", "speed":"Tamer SPD", "partner_hp":"Partner HP", "partner_attack":"Partner ATK", "partner_speed":"Partner SPD"}
+    var labels: Dictionary = {"attack":"Tamer ATK", "hp":"Tamer HP", "ds":"Tamer DS", "defense":"Tamer DF", "critical":"Tamer CRIT%", "speed":"Tamer SPD", "partner_hp":"Partner HP", "partner_attack":"Partner ATK", "partner_speed":"Partner SPD", "str":"STR", "dex":"DEX", "int":"INT", "vit":"VIT", "agi":"AGI"}
     for key: String in bonus:
         if float(bonus[key]) != 0:
             lines += "%s  +%.0f   " % [labels[key], bonus[key]]
@@ -344,9 +397,9 @@ func _refresh_details() -> void:
     var previous: EquipmentItemData = inventory.item_at(destination)
     var difference: String = ""
     if selected_slot == &"":
-        var old: Dictionary = previous.bonuses() if previous != null else {"attack":0,"hp":0,"ds":0,"defense":0,"critical":0.0,"speed":0,"partner_hp":0,"partner_attack":0,"partner_speed":0}
+        var old: Dictionary = previous.bonuses() if previous != null else {"attack":0,"hp":0,"ds":0,"defense":0,"critical":0.0,"speed":0,"partner_hp":0,"partner_attack":0,"partner_speed":0,"str":0,"dex":0,"int":0,"vit":0,"agi":0}
         for key: String in bonus:
             var delta: float = float(bonus[key]) - float(old[key])
             if delta != 0:
                 difference += "%s %+.0f   " % [labels[key], delta]
-    _details.text = "%s\n%s  /  ต้องการ Lv.%d%s\n\n%s\n\n%s\n%s" % [item.item_name, EquipmentInventory.LABELS.get(String(destination), "Chip"), item.required_level, "  •  สวมอยู่" if selected_slot != &"" else "", lines, ("เปลี่ยนจาก " + previous.item_name + "\n") if previous != null and selected_slot == &"" else "", difference if not difference.is_empty() else item.description]
+    _details.text = "%s  [%s]\n%s  /  ต้องการ Lv.%d%s\n\n%s\n\n%s\n%s" % [item.item_name, item.rarity_name(), EquipmentInventory.LABELS.get(String(destination), "Chip"), item.required_level, "  •  สวมอยู่" if selected_slot != &"" else "", lines, ("เปลี่ยนจาก " + previous.item_name + "\n") if previous != null and selected_slot == &"" else "", difference if not difference.is_empty() else item.description]
