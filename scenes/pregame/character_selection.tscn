@@ -128,11 +128,11 @@ mouse_filter = 2
 
 [node name="Models" type="GridContainer" parent="Margin/Column/Body/Create/Inner/Stack"]
 layout_mode = 2
-columns = 5
+columns = 4
 theme_override_constants/h_separation = 6
 [node name="ModelNote" type="Label" parent="Margin/Column/Body/Create/Inner/Stack"]
 layout_mode = 2
-text = "5 โมเดล • ชาย / หญิง • สไตล์เริ่มต้นต่างกัน"
+text = "8 โมเดล • ชาย / หญิง • สไตล์เริ่มต้นต่างกัน"
 theme_override_font_sizes/font_size = 14
 mouse_filter = 2
 
