@@ -40,7 +40,10 @@ func _process(_delta: float) -> void:
     var prompt := get_node_or_null("Prompt") as Label
     if prompt != null:
         prompt.visible = _near
-        prompt.text = "E  /  แตะเพื่อใช้งาน"
+        if HybridPlatform.is_touch_device():
+            prompt.text = "แตะตู้ หรือปุ่ม ใช้งาน"
+        else:
+            prompt.text = "E  /  คลิกเพื่อใช้งาน"
 
     var marker := get_node_or_null("Marker") as Sprite2D
     if marker != null:
@@ -49,8 +52,13 @@ func _process(_delta: float) -> void:
 func distance_to_tamer() -> float:
     return global_position.distance_to(tamer.global_position) if is_instance_valid(tamer) else INF
 
-func can_keyboard_interact() -> bool:
+func can_interact() -> bool:
+    # API กลางร่วมกันทั้ง E, Mouse และปุ่มใช้งานบนมือถือ
     return _near and is_visible_in_tree() and not get_tree().paused
+
+func can_keyboard_interact() -> bool:
+    # เก็บชื่อเดิมไว้เพื่อ compatibility กับสคริปต์เก่า
+    return can_interact()
 
 func request_interaction() -> void:
     if not _near or get_tree().paused:
