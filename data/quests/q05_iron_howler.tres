@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q05_iron_howler"
+title = "เครือข่ายเหล็ก"
+description = "ปราบ Iron Howler เพื่อปลดล็อก Ascension ขั้นที่ 2"
+zone_id = &"shard_isle"
+objective = 1
+target_id = &"iron_howler"
+required_count = 1
+unlock_flags = Array[StringName]([])
+unlock_zones = Array[StringName]([])
+unlock_stage = 2
