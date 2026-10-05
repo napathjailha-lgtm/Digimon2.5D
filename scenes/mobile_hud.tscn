@@ -140,7 +140,7 @@ offset_right = 304.0
 offset_bottom = 328.0
 mouse_filter = 2
 script = ExtResource("touch")
-caption = "Evolve"
+caption = "Ascend"
 icon = ExtResource("evolve_icon")
 illustrated = true
 [node name="Auto" type="Control" parent="Root/Safe/Layout/Combat"]
