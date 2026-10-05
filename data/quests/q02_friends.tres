@@ -3,12 +3,15 @@
 [resource]
 script = ExtResource("1")
 id = &"q02_friends"
-title = "ตามหาเพื่อนที่พลัดหลง"
-description = "เดินไปยังจุดนัดพบเพื่อตามหาเพื่อน"
+title = "ประตูสู่ Green Data Forest"
+description = "ออกจากหมู่บ้านแล้วเดินตาม Quest Tracker ไปยังทางเข้า Green Data Forest"
 zone_id = &"file_island"
 objective = 2
 target_id = &"friends_reunion"
 required_count = 1
+recommended_level = 4
+reward_exp = 500
+reward_bits = 80
 unlock_flags = Array[StringName]([])
 unlock_zones = Array[StringName]([])
 unlock_stage = -1
