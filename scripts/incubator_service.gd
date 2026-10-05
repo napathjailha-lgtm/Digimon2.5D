@@ -1,7 +1,7 @@
 class_name IncubatorService
 extends RefCounted
 ## เครื่องฟักไข่แบบกำหนดสายพันธุ์แน่นอนเมื่อ 5/5
-## ความสุ่มมีเฉพาะ Inject สำเร็จ/ล้มเหลว/ไข่แตก ไม่สุ่ม Digimon ปลายทาง
+## ความสุ่มมีเฉพาะ Inject สำเร็จ/ล้มเหลว/ไข่แตก ไม่สุ่ม Companion ปลายทาง
 
 signal changed
 signal feedback(message: String)
@@ -26,7 +26,7 @@ func select_egg(item_id: String) -> bool:
         feedback.emit("ไข่นี้ไม่มีข้อมูลสายพันธุ์ที่แน่นอน")
         return false
     if InventoryManager.count(item_id) <= 0:
-        feedback.emit("ไม่มี Digitama ใบนี้ในกระเป๋า")
+        feedback.emit("ไม่มี Core Egg ใบนี้ในกระเป๋า")
         return false
     GameManager.incubator_state = {"egg_id": item_id, "inject_level": 0}
     changed.emit()
@@ -40,11 +40,11 @@ func clear_selection() -> void:
 func inject_data() -> bool:
     var egg: ItemData = InventoryManager.catalog.find_item(selected_egg_id())
     if egg == null or egg.item_type != ItemData.ItemType.EGG:
-        feedback.emit("เลือก Digitama ก่อน")
+        feedback.emit("เลือก Core Egg ก่อน")
         return false
     if InventoryManager.count(egg.item_id) <= 0:
         clear_selection()
-        feedback.emit("Digitama ไม่อยู่ในกระเป๋าแล้ว")
+        feedback.emit("Core Egg ไม่อยู่ในกระเป๋าแล้ว")
         return false
     if egg.required_chip_id.is_empty() or InventoryManager.count(egg.required_chip_id) <= 0:
         feedback.emit("ต้องใช้ Data Chip ที่ตรงกับไข่")
@@ -62,7 +62,7 @@ func inject_data() -> bool:
         InventoryManager.remove_item(egg.item_id, 1)
         GameManager.incubator_state.clear()
         changed.emit()
-        feedback.emit("Inject ล้มเหลวรุนแรง • Digitama แตก")
+        feedback.emit("Inject ล้มเหลวรุนแรง • Core Egg แตก")
         return false
     if roll >= success_limit:
         changed.emit()
@@ -80,15 +80,15 @@ func inject_data() -> bool:
 func _complete_hatch(egg: ItemData) -> bool:
     # ปลายทางมาจาก egg_partner_id โดยตรง ไม่มี pick_random()
     if not is_instance_valid(roster) or roster.family(egg.egg_partner_id) == null:
-        feedback.emit("ไม่พบข้อมูล Digimon ของไข่นี้")
+        feedback.emit("ไม่พบข้อมูล Companion ของไข่นี้")
         return false
     if not roster.add_hatched_to_storage(egg.egg_partner_id):
-        feedback.emit("เพิ่ม Digimon เข้าคลังไม่สำเร็จ")
+        feedback.emit("เพิ่ม Companion เข้าคลังไม่สำเร็จ")
         return false
     InventoryManager.remove_item(egg.item_id, 1)
     GameManager.incubator_state.clear()
     changed.emit()
     # UI รับ signal นี้เพื่อเล่น white flash + SFX ในเฟรมเดียวกับผลฟักสำเร็จ
     hatch_completed.emit(egg.egg_partner_id)
-    feedback.emit("ฟักสำเร็จ: %s • ส่งเข้า Digimon Archive" % roster.family(egg.egg_partner_id).display_name)
+    feedback.emit("ฟักสำเร็จ: %s • ส่งเข้า Companion Archive" % roster.family(egg.egg_partner_id).display_name)
     return true
