@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<defs>
+<linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#06152c"/><stop offset=".52" stop-color="#123b6e"/><stop offset="1" stop-color="#1c79a5"/></linearGradient>
+<radialGradient id="portal"><stop stop-color="#efffff"/><stop offset=".18" stop-color="#75eaff"/><stop offset=".48" stop-color="#866dff"/><stop offset="1" stop-color="#16245d" stop-opacity="0"/></radialGradient>
+<linearGradient id="fire" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe56d"/><stop offset=".42" stop-color="#ff7d2e"/><stop offset="1" stop-color="#b51d36"/></linearGradient>
+<linearGradient id="ice" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ecffff"/><stop offset=".42" stop-color="#56e7ff"/><stop offset="1" stop-color="#315fe4"/></linearGradient>
+<linearGradient id="logo" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#6feaff"/><stop offset=".45" stop-color="#ffffff"/><stop offset=".72" stop-color="#da8dff"/><stop offset="1" stop-color="#68e8ff"/></linearGradient>
+<filter id="g"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="1280" height="720" fill="url(#sky)"/>
+<path d="M0 490C170 430 280 470 410 405C560 330 650 390 780 320C950 230 1090 300 1280 205V720H0Z" fill="#0a2038"/>
+<path d="M0 565C220 480 390 530 570 455C770 372 975 470 1280 360V720H0Z" fill="#12334c"/>
+<circle cx="1000" cy="286" r="220" fill="url(#portal)" opacity=".95"/>
+<circle cx="1000" cy="286" r="116" fill="none" stroke="#8cf6ff" stroke-width="8"/>
+<circle cx="1000" cy="286" r="152" fill="none" stroke="#a67dff" stroke-width="4" stroke-dasharray="18 12" opacity=".8"/>
+<path d="M1000 82V505" stroke="#d5ffff" stroke-width="8" opacity=".7" filter="url(#g)"/>
+<g transform="translate(180 420)">
+<ellipse cy="158" rx="150" ry="40" fill="#01070d" opacity=".45"/>
+<path d="M-98 105C-132 40-104-20-40-33C18-44 72-8 78 44C91 91 63 130 18 143L-28 154C-61 151-82 132-98 105Z" fill="url(#fire)"/>
+<path d="M-72 0L-89-53L-46-24L-15-74L-1-26L43-59L36-7" fill="#ffb23a"/>
+<circle cx="-27" cy="50" r="12" fill="#fff5a1"/><circle cx="-23" cy="50" r="5" fill="#32130a"/>
+<path d="M45 94Q88 116 123 80Q100 130 52 131Z" fill="#ff8b2a"/>
+<path d="M-40 151L-58 190L-18 180L4 151M42 141L35 188L74 175L69 140" fill="#4c2430"/>
+<path d="M-108 82Q-164 69-177 25Q-123 41-91 54Z" fill="#ff6b2c"/>
+</g>
+<g transform="translate(1100 415)">
+<ellipse cy="163" rx="160" ry="42" fill="#01070d" opacity=".45"/>
+<path d="M-118 112C-143 47-98-24-34-36C35-48 101 4 105 73C108 128 64 162 10 166L-53 158C-82 153-105 138-118 112Z" fill="url(#ice)"/>
+<path d="M-88 5L-114-54L-58-31L-20-79L1-27L52-67L42-10L96-35L72 19" fill="#8af4ff"/>
+<path d="M52 47Q101 37 122 68Q91 85 50 77Z" fill="#e2ffff"/>
+<circle cx="40" cy="48" r="10" fill="#e5ffff"/><circle cx="44" cy="48" r="4" fill="#052c56"/>
+<path d="M-58 152L-72 199L-30 188L-8 154M33 157L42 199L76 184L67 151" fill="#163c72"/>
+<path d="M-116 108Q-176 92-182 47Q-126 59-90 76Z" fill="#3a8cf2"/>
+</g>
+<g transform="translate(640 350)">
+<ellipse cy="245" rx="120" ry="30" fill="#01070d" opacity=".46"/>
+<circle cy="-4" r="38" fill="#d7a077"/>
+<path d="M-38-20Q0-77 42-17Q18-41-8-35Q-24-25-38-20Z" fill="#38231e"/>
+<path d="M-47 40H48L75 153L42 219H-43L-73 151Z" fill="#182131"/>
+<path d="M-47 44L0 92L49 43L64 106L0 142L-63 106Z" fill="#edf1f7"/>
+<path d="M-55 62L-126 124L-96 151L-36 111Z" fill="#ca2f41"/>
+<path d="M52 61L126 125L94 151L38 110Z" fill="#222c42"/>
+<path d="M-37 219L-50 316H-6L7 220M21 220L34 316H78L40 217" fill="#141b29"/>
+<polygon points="0,104 18,127 0,150 -18,127" fill="#55e0ff" filter="url(#g)"/>
+</g>
+<g text-anchor="middle" filter="url(#g)">
+<text x="640" y="126" font-family="serif" font-size="72" font-weight="800" letter-spacing="5" fill="url(#logo)" stroke="#15375b" stroke-width="3">PRISM TAMER</text>
+<text x="640" y="177" font-family="sans-serif" font-size="27" font-weight="700" letter-spacing="16" fill="#d8f8ff">FRONTIER</text>
+</g>
+<text x="640" y="212" text-anchor="middle" font-family="sans-serif" font-size="15" letter-spacing="4" fill="#c8dfef">ORIGINAL MONSTER TAMING RPG</text>
+<g fill="#8af3ff" opacity=".72"><circle cx="76" cy="97" r="3"/><circle cx="230" cy="159" r="2"/><circle cx="355" cy="88" r="3"/><circle cx="878" cy="74" r="2"/><circle cx="1195" cy="184" r="3"/></g>
+</svg>
