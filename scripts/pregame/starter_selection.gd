@@ -21,6 +21,12 @@ func _ready() -> void:
     confirm_button.pressed.connect(confirm)
     $Margin/Column/Header/Back.pressed.connect(back)
     $Margin/Column/Header/Subtitle.text = "คู่หูตัวแรกของ " + GameManager.tamer_name
+    var preferred: Dictionary = {
+        &"hikari": &"tailmon",
+        &"takeru": &"patamon",
+        &"joe": &"gomamon"
+    }
+    partner_selected = preferred.get(GameManager.tamer_selected, partner_selected)
     select_partner(partner_selected)
 
 func select_partner(partner_id: StringName) -> void:
