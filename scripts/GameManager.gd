@@ -213,7 +213,7 @@ func prepare_adventure() -> bool:
     gameplay_active = true
     current_level = int(QuestManager.party_profile.get("tamer_progress", {}).get("level", 1))
     var partner: StarterPartnerData = selected_partner_data()
-    current_form = StringName(str(QuestManager.party_profile.get("form_id", partner.forms[0].id if partner != null else &"rookie")))
+    current_form = StringName(str(QuestManager.party_profile.get("form_id", partner.forms[0].id if partner != null else &"base")))
     bits = maxi(0, int(QuestManager.party_profile.get("bits", DEFAULT_BITS)))
     incubator_state = QuestManager.party_profile.get("incubator", {}).duplicate(true) if QuestManager.party_profile.get("incubator", {}) is Dictionary else {}
     bits_changed.emit(bits)
@@ -317,4 +317,4 @@ func _change_scene(path: String) -> void:
 func enter_world() -> bool:
     if not prepare_adventure():
         return false
-    return go_to(ZONE_SCENES.get(String(QuestManager.current_zone), ZONE_SCENES.file_island), true)
+    return go_to(ZONE_SCENES.get(String(QuestManager.current_zone), ZONE_SCENES.lumen_isle), true)
