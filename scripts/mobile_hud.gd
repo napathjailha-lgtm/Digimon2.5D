@@ -172,7 +172,7 @@ func _layout() -> void:
 
     var safe_width: float = maxf(1.0, viewport_size.x - inset.x - inset.z)
     var safe_height: float = maxf(1.0, viewport_size.y - inset.y - inset.w)
-    var touch_mode: bool = HybridPlatform.is_touch_device()
+    var touch_mode: bool = HybridPlatform.use_mobile_layout(get_viewport())
     var compact_touch: bool = touch_mode and (safe_width < 1050.0 or safe_height < 620.0)
 
     # วงสกิลเดิมมีฐาน 374x330; จอมือถือเว็บขนาดเล็กย่อทั้งกลุ่มโดยไม่เปลี่ยน hitbox ภายใน
@@ -236,7 +236,7 @@ func _layout() -> void:
 
 func _build_mobile_web_overlay() -> void:
     # World เป็นเกม Landscape; Portrait ยังคงรับ resize แต่บังคำสั่งสนามเพื่อไม่ให้ผู้เล่นกดผิดตำแหน่ง
-    if not HybridPlatform.is_web_touch() or is_instance_valid(_rotate_overlay):
+    if not OS.has_feature("web") or not HybridPlatform.use_mobile_layout(get_viewport()) or is_instance_valid(_rotate_overlay):
         return
 
     _rotate_overlay = ColorRect.new()
