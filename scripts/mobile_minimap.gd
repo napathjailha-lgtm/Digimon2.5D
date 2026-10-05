@@ -15,8 +15,10 @@ func _ready() -> void:
     title = ClassicUIStyle.label("", Vector2(8, 2), Vector2(200, 22), 12)
     add_child(title)
     QuestManager.zone_changed.connect(_on_zone_changed)
+    visibility_changed.connect(_sync_processing)
     var legend: Label = ClassicUIStyle.label("● คุณ   ● คู่หู   ● ศัตรู", Vector2(8, 153), Vector2(200, 18), 10)
     add_child(legend)
+    _sync_processing()
 
 func configure(owner_tamer: Tamer, owner_partner: PartnerMonster, texture: Texture2D) -> void:
     tamer = owner_tamer
@@ -29,11 +31,19 @@ func _on_zone_changed(zone: StringName) -> void:
     var zone_names: Dictionary = {&"file_island": "File Island", &"server_continent": "Server Continent", &"odaiba": "Odaiba", &"spiral_mountain": "Spiral Mountain"}
     title.text = zone_names.get(zone, String(zone))
 
+func _sync_processing() -> void:
+    # ซ่อน minimap แล้วหยุด _process จริง ไม่เสีย CPU ไป queue_redraw ฉากที่มองไม่เห็น
+    var active: bool = is_visible_in_tree()
+    set_process(active)
+    if active:
+        _redraw_left = 0.0
+        queue_redraw()
+
 func _process(delta: float) -> void:
-    # อัปเดต 10 ครั้งต่อวินาทีเพื่อลดภาระ UI บนมือถือ
+    # Web Mobile ลดจาก 10Hz เหลือ 4Hz; marker ยังอ่านทันสำหรับ minimap แต่ลด iteration มอนสเตอร์ลง 60%
     _redraw_left -= delta
     if _redraw_left <= 0.0:
-        _redraw_left = 0.1
+        _redraw_left = 0.25 if HybridPlatform.is_web_mobile(get_viewport()) else 0.1
         queue_redraw()
 
 func _map_rect() -> Rect2:
