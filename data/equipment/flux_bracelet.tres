@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EquipmentItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/equipment_item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/equipment/bracelet.svg" id="2"]
+[resource]
+script = ExtResource("1")
+id = &"flux_bracelet"
+item_name = "Flux Bracelet"
+slot = &"bracelet"
+icon = ExtResource("2")
+rarity = 1
+required_level = 9
+description = "กำไลพลังงาน เพิ่ม AGI/INT"
+ds_bonus = 12
+speed_bonus = 4
+agility_bonus = 2
+intelligence_bonus = 1
