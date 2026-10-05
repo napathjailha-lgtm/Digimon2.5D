@@ -4,7 +4,7 @@ extends RefCounted
 signal changed
 signal feedback(message: String)
 const SLOTS: Array[StringName] = [&"head", &"face", &"chest", &"legs", &"gloves", &"boots", &"back", &"neck", &"ring", &"bracelet", &"belt", &"charm", &"device", &"chip_a", &"chip_b"]
-const LABELS: Dictionary = {"head":"ศีรษะ", "face":"แว่นตา", "chest":"เสื้อ", "legs":"กางเกง", "gloves":"ถุงมือ", "boots":"รองเท้า", "back":"หลัง", "neck":"สร้อย", "ring":"แหวน", "bracelet":"ข้อมือ", "belt":"เข็มขัด", "charm":"เครื่องราง", "device":"Digivice", "chip_a":"Chip A", "chip_b":"Chip B"}
+const LABELS: Dictionary = {"head":"ศีรษะ", "face":"แว่นตา", "chest":"เสื้อ", "legs":"กางเกง", "gloves":"ถุงมือ", "boots":"รองเท้า", "back":"หลัง", "neck":"สร้อย", "ring":"แหวน", "bracelet":"ข้อมือ", "belt":"เข็มขัด", "charm":"เครื่องราง", "device":"Link Core", "chip_a":"Chip A", "chip_b":"Chip B"}
 const CATALOG_PATH: String = "res://data/equipment/catalog.tres"
 var catalog: EquipmentCatalog
 var bag: Dictionary = {}
@@ -43,7 +43,7 @@ func put_on(item_id: StringName, preferred_slot: StringName = &"") -> bool:
         feedback.emit("ไม่มีไอเทมนี้ในกระเป๋า")
         return false
     if owner.progress.level < item.required_level:
-        feedback.emit("ต้องมี Tamer Lv%d ก่อนสวมใส่" % item.required_level)
+        feedback.emit("ต้องมี Warden Lv%d ก่อนสวมใส่" % item.required_level)
         return false
     var destination: StringName = preferred_slot
     if destination == &"":

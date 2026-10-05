@@ -26,7 +26,7 @@ func configure(owner_tamer: Tamer, owner_partner: PartnerMonster, texture: Textu
     queue_redraw()
 
 func _on_zone_changed(zone: StringName) -> void:
-    var zone_names: Dictionary = {&"file_island": "File Island", &"server_continent": "Server Continent", &"odaiba": "Odaiba", &"spiral_mountain": "Spiral Mountain"}
+    var zone_names: Dictionary = {&"shard_isle": "Shard Isle", &"nexus_reach": "Nexus Reach", &"neon_harbor": "Neon Harbor", &"fracture_spire": "Fracture Spire"}
     title.text = zone_names.get(zone, String(zone))
 
 func _process(delta: float) -> void:

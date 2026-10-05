@@ -20,7 +20,7 @@ extends CanvasLayer
 @onready var menu: CollapsibleHudMenu = $Root/Safe/Layout/Menu
 @onready var message: Label = $Root/Message
 const CUTSCENE_SCENE: PackedScene = preload("res://scenes/digivolve_cutscene.tscn")
-var active_cutscene: DigivolveCutscene
+var active_cutscene: AscendCutscene
 var preferences := HudPreferences.new()
 var equipment_button: EquipmentButton
 var inventory_button: EquipmentButton
@@ -43,7 +43,7 @@ var _target_refresh_left: float = 0.0
 var _message_left: float = 0.0
 var chat_editing: bool = false
 var party_roster: PartnerRoster
-var jogress_manager: JogressManager
+var resonance_manager: ResonanceManager
 var _rotate_overlay: ColorRect
 var safe_inset_override := Vector4(-1, -1, -1, -1) # ใช้ทดสอบรอยบาก; ค่า -1 ให้อ่าน OS จริง
 
@@ -57,15 +57,15 @@ func _ready() -> void:
     tamer.add_child(party_roster)
     tamer.party_roster = party_roster
     party_roster.configure(tamer)
-    jogress_manager = JogressManager.new()
-    jogress_manager.name = "JogressManager"
-    tamer.add_child(jogress_manager)
-    jogress_manager.configure(tamer, partner, party_roster)
-    jogress_manager.availability_changed.connect(func(_available: bool): _refresh_combat_controls())
-    jogress_manager.jogress_changed.connect(func(_active: bool): _refresh_combat_controls())
+    resonance_manager = ResonanceManager.new()
+    resonance_manager.name = "ResonanceManager"
+    tamer.add_child(resonance_manager)
+    resonance_manager.configure(tamer, partner, party_roster)
+    resonance_manager.availability_changed.connect(func(_available: bool): _refresh_combat_controls())
+    resonance_manager.resonance_changed.connect(func(_active: bool): _refresh_combat_controls())
     party_panel.configure(party_roster)
     party_panel.switch_requested.connect(_switch_party)
-    party_panel.empty_pressed.connect(func(): _show_message("ฟักไข่ในกระเป๋าเพื่อเพิ่มคู่หูในทีม"))
+    party_panel.empty_pressed.connect(func(): _show_message("ฟัก Core Egg เพื่อเพิ่มคู่หูในทีม"))
     party_roster.feedback.connect(_show_message)
     party_roster.switched.connect(_on_party_switched)
     tamer.digivolve_requested.connect(_request_digivolve)
@@ -83,8 +83,8 @@ func _ready() -> void:
     skill_panel.skill_requested.connect(tamer.command_skill)
     # form_skill_requested เก็บ signal ไว้เพื่อ compatibility แต่ UI ใหม่ไม่ emit สกิลต่างร่าง
     skill_panel.form_skill_requested.connect(tamer.command_form_skill)
-    cycle_button.set_caption("Jogress [J]")
-    cycle_button.pressed.connect(jogress_manager.request_jogress)
+    cycle_button.set_caption("Resonance [J]")
+    cycle_button.pressed.connect(resonance_manager.request_resonance)
     attack_button.pressed.connect(tamer.command_attack)
     evolve_button.pressed.connect(tamer.command_digivolve)
     auto_button.pressed.connect(_toggle_auto)
@@ -310,8 +310,8 @@ func _refresh_bars(_a: Variant = null, _b: Variant = null, _c: Variant = null) -
         digimon_screen.refresh()
 
 func _status_text() -> String:
-    # รายละเอียดแยกเจ้าของชัดเจน: Tamer MP ใช้เปลี่ยน/คงร่าง, Partner MP ใช้สกิล
-    return "TAMER Lv%d  EXP %d/%d\nHP %d/%d  MP %.0f/%.0f\nอิ่ม %.0f/100 • แรง %.0f/100 • %s\n\nPARTNER Lv%d  EXP %d/%d\nHP %d/%d  MP %.0f/%.0f\nATK %d • SPD %.0f • %s" % [tamer.progress.level,tamer.progress.current_exp,tamer.progress.max_exp,tamer.hp,tamer.max_hp,tamer.tamer_mp,tamer.max_tamer_mp,tamer.tamer_hunger,tamer.tamer_stamina,"พร้อมสู้" if tamer.can_battle() else "ต่อสู้ไม่ได้",partner.progress.level,partner.progress.current_exp,partner.progress.max_exp,partner.hp,partner.max_hp,partner.digimon_mp,partner.digimon_max_mp,partner.attack_power,partner.move_speed,PartnerMonster.State.keys()[partner.state]]
+    # รายละเอียดแยกเจ้าของชัดเจน: Warden MP ใช้เปลี่ยน/คงร่าง, Partner MP ใช้สกิล
+    return "WARDEN Lv%d  EXP %d/%d\nHP %d/%d  MP %.0f/%.0f\nอิ่ม %.0f/100 • แรง %.0f/100 • %s\n\nPARTNER Lv%d  EXP %d/%d\nHP %d/%d  MP %.0f/%.0f\nATK %d • SPD %.0f • %s" % [tamer.progress.level,tamer.progress.current_exp,tamer.progress.max_exp,tamer.hp,tamer.max_hp,tamer.tamer_mp,tamer.max_tamer_mp,tamer.tamer_hunger,tamer.tamer_stamina,"พร้อมสู้" if tamer.can_battle() else "ต่อสู้ไม่ได้",partner.progress.level,partner.progress.current_exp,partner.progress.max_exp,partner.hp,partner.max_hp,partner.digimon_mp,partner.digimon_max_mp,partner.attack_power,partner.move_speed,PartnerMonster.State.keys()[partner.state]]
 
 func _refresh_quest(_id: StringName) -> void:
     var quest: StoryQuest = QuestManager.get_current_quest()
@@ -431,7 +431,7 @@ func _request_digivolve(partner_node: PartnerMonster) -> void:
     if is_instance_valid(active_cutscene) or get_tree().paused:
         return
     release_for_equipment()
-    var cutscene: DigivolveCutscene = CUTSCENE_SCENE.instantiate() as DigivolveCutscene
+    var cutscene: AscendCutscene = CUTSCENE_SCENE.instantiate() as AscendCutscene
     get_tree().root.add_child(cutscene)
     cutscene.finished.connect(_on_cutscene_finished)
     if not cutscene.play_for(partner_node):
@@ -440,7 +440,7 @@ func _request_digivolve(partner_node: PartnerMonster) -> void:
     active_cutscene = cutscene
 
 func _unhandled_input(event: InputEvent) -> void:
-    # Web/PC shortcuts: Space = โจมตี, 1-4 = สกิลปัจจุบัน, J = Jogress
+    # Web/PC shortcuts: Space = โจมตี, 1-4 = สกิลปัจจุบัน, J = Resonance
     # ใช้ unhandled_input เพื่อไม่แย่งปุ่มจาก LineEdit/เมนูที่กำลังรับคีย์บอร์ด
     if chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open):
         return
@@ -459,8 +459,8 @@ func _unhandled_input(event: InputEvent) -> void:
     elif event.is_action_pressed(&"skill_4"):
         tamer.command_skill(3)
         get_viewport().set_input_as_handled()
-    elif event.is_action_pressed(&"jogress") and is_instance_valid(jogress_manager):
-        jogress_manager.request_jogress()
+    elif event.is_action_pressed(&"resonance") and is_instance_valid(resonance_manager):
+        resonance_manager.request_resonance()
         get_viewport().set_input_as_handled()
 
 func _input(event: InputEvent) -> void:
@@ -552,7 +552,7 @@ func _on_party_switched(_index: int) -> void:
 
 
 func _on_tamer_level(new_level: int) -> void:
-    GameChat.add_system("Tamer เลเวลเพิ่มเป็น %d" % new_level)
+    GameChat.add_system("Warden เลเวลเพิ่มเป็น %d" % new_level)
 
 
 func _on_partner_level(new_level: int) -> void:
@@ -577,7 +577,7 @@ func _return_to_characters() -> void:
 
 
 func _refresh_combat_controls() -> void:
-    # Cannot Battle ปิด Attack/Auto/Digivolve/สกิล แต่ Recover/อาหารยังใช้งานได้
+    # Cannot Battle ปิด Attack/Auto/Ascend/สกิล แต่ Recover/อาหารยังใช้งานได้
     var blocked: bool = chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open)
     attack_button.locked = blocked or not partner.can_battle() or partner.evolution_busy
     recover_button.locked = blocked or partner.evolution_busy
@@ -587,9 +587,9 @@ func _refresh_combat_controls() -> void:
     evolve_button.locked = blocked or partner.evolution_busy or not partner.is_alive() or not tamer.can_battle() or next_index < 0 or next_index >= partner.forms.size()
     if not evolve_button.locked:
         evolve_button.locked = not EvolutionRules.can_use_form(partner.progress.level, next_index) or not QuestManager.has_flag(partner.forms[next_index].required_story_flag)
-    # ปุ่ม Cycle เดิมถูกใช้เป็น Jogress; แสดงได้ตลอดแต่ล็อกจน Agumon/Gabumon Lv90 ทั้งคู่
-    cycle_button.set_caption("Omegamon" if is_instance_valid(jogress_manager) and jogress_manager.active else "Jogress [J]")
-    cycle_button.locked = blocked or not is_instance_valid(jogress_manager) or not jogress_manager.can_jogress() or jogress_manager.active
+    # ปุ่ม Cycle เดิมถูกใช้เป็น Resonance; แสดงได้ตลอดแต่ล็อกจน Cinderling/Frostcub Lv90 ทั้งคู่
+    cycle_button.set_caption("Aegis Nova" if is_instance_valid(resonance_manager) and resonance_manager.active else "Resonance [J]")
+    cycle_button.locked = blocked or not is_instance_valid(resonance_manager) or not resonance_manager.can_resonate() or resonance_manager.active
 
 
 func _on_battle_permission(allowed: bool) -> void:

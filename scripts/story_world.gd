@@ -1,5 +1,5 @@
 extends Node2D
-@export var zone_id: StringName = &"file_island"
+@export var zone_id: StringName = &"shard_isle"
 @export var background_texture: Texture2D
 @export var world_extent: Vector2 = Vector2(1280, 720)
 @export var open_world_enabled: bool = false
@@ -20,13 +20,13 @@ func _ready() -> void:
         add_child(background)
     # ป้องกันเปิด Scene โซนที่ยังล็อกโดยตรง
     if not QuestManager.is_zone_unlocked(zone_id):
-        _return_to_file_island.call_deferred()
+        _return_to_shard_isle.call_deferred()
         return
     QuestManager.set_current_zone(zone_id)
     # เริ่ม BGM หลังผ่านการตรวจโซนแล้ว
     AudioManager.play_bgm()
     var state: Dictionary = QuestManager.party_snapshot if not QuestManager.party_snapshot.is_empty() else QuestManager.party_profile
-    var tamer: Tamer = $Actors/Tamer
+    var tamer: Warden = $Actors/Warden
     var partner: PartnerMonster = $Actors/Partner
     # คืนข้อมูล Economy/Incubator ก่อนเปิด UI บนแผนที่
     GameManager.bits = maxi(0, int(state.get("bits", GameManager.DEFAULT_BITS)))
@@ -47,7 +47,7 @@ func _ready() -> void:
             if String(data.id) == str(state.get("form_id", "")) and QuestManager.can_use_form(data):
                 selected = data
                 break
-        # โหลดร่างเซฟภายในก่อน เพื่อคืนสัดส่วน HP ถูกต้อง แล้วค่อยบังคับ Rookie ถ้า Tamer ล้ม
+        # โหลดร่างเซฟภายในก่อน เพื่อคืนสัดส่วน HP ถูกต้อง แล้วค่อยบังคับ Rookie ถ้า Warden ล้ม
         partner._internal_load = true
         partner.load_monster_data(selected, false)
         partner._internal_load = false
@@ -73,7 +73,7 @@ func _ready() -> void:
     QuestManager.party_snapshot.clear()
     tamer.save_party_progress()
 
-func _return_to_file_island() -> void:
+func _return_to_shard_isle() -> void:
     get_tree().change_scene_to_file("res://scenes/world.tscn")
 
 func _draw() -> void:

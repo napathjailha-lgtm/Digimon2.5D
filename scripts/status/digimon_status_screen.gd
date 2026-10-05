@@ -91,7 +91,7 @@ func _build() -> void:
     scroll.add_child(stack)
     var header := HBoxContainer.new()
     stack.add_child(header)
-    var heading: Label = _label(header, "DIGIMON  /  STATUS", 23, Color("b5eb79"))
+    var heading: Label = _label(header, "COMPANION  /  STATUS", 23, Color("b5eb79"))
     heading.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     var close := DigimonTouchButton.new()
     close_button = close

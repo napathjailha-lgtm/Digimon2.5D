@@ -166,12 +166,12 @@ func _build() -> void:
     _content.size = Vector2(1184, 660)
     _root.add_child(_content)
     _panel(_content, Vector2.ZERO, _content.size, Color("45b7dd"))
-    _label(_content, "◈  TAMER INFORMATION", Vector2(22, 11), Vector2(550, 38), 25)
+    _label(_content, "◈  WARDEN INFORMATION", Vector2(22, 11), Vector2(550, 38), 25)
     _label(_content, "อุปกรณ์ / กระเป๋า", Vector2(790, 15), Vector2(290, 30), 17)
     _close = _button(_content, "×", Vector2(1111, 5), Vector2(64, 56), close_screen)
     _close.accent = Color("deb969")
     for i: int in range(3):
-        var tab: EquipmentButton = _button(_content, ["Tamer", "Digivice", "Skill"][i], Vector2(18 + i * 140, 60), Vector2(134, 48), _select_tab.bind(i))
+        var tab: EquipmentButton = _button(_content, ["Warden", "Link Core", "Skill"][i], Vector2(18 + i * 140, 60), Vector2(134, 48), _select_tab.bind(i))
         _tabs.append(tab)
     _level = _label(_content, "", Vector2(22, 108), Vector2(725, 30), 18)
     _stage = EquipmentStage.new()
@@ -200,7 +200,7 @@ func _build() -> void:
     _skill_list = _label(_content, "", Vector2(32, 158), Vector2(714, 320), 19)
     _skill_list.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     _panel(_content, Vector2(18, 528), Vector2(737, 110))
-    _label(_content, "TAMER STATUS", Vector2(31, 534), Vector2(225, 26), 15).modulate = Color("6bd7f2")
+    _label(_content, "WARDEN STATUS", Vector2(31, 534), Vector2(225, 26), 15).modulate = Color("6bd7f2")
     _label(_content, "EQUIPMENT BONUS", Vector2(280, 534), Vector2(234, 26), 15).modulate = Color("debb77")
     _label(_content, "APPLIED / PARTNER", Vector2(530, 534), Vector2(220, 26), 15).modulate = Color("6bd7f2")
     _stats = _label(_content, "", Vector2(31, 562), Vector2(235, 77), 14)
@@ -305,7 +305,7 @@ func refresh() -> void:
         button.selected = selected_item == item.id and selected_slot == &""
         button.queue_redraw()
     _bag_count.text = "กระเป๋าไอเทม  •  %d ชิ้น" % count_owned
-    _level.text = "Lv.%d   ADVENTURE TAMER                           <No Guild>" % tamer.progress.level
+    _level.text = "Lv.%d   AETHER WARDEN                           <No Guild>" % tamer.progress.level
     _stage.visible = active_tab != 2
     _portrait.visible = active_tab != 2
     _rotate.visible = active_tab != 2
@@ -317,7 +317,7 @@ func refresh() -> void:
         _skill_list.text += "%s   •   %.0f%% ATK   /   CD %.1fs\n" % [skill.display_name, skill.multiplier * 100, skill.cooldown]
     _skill_list.text += "\nชุดสกิลเปลี่ยนตามร่างคู่หู\nอุปกรณ์เพิ่ม ATK ก่อนคำนวณดาเมจสกิล"
     var b: Dictionary = inventory.total_bonuses()
-    _stats.text = "HP  %d / %d     DF  %d\nDS  %.0f / %.0f\nSPD  %.0f   •   Tamer สั่งการ" % [tamer.hp, tamer.max_hp, tamer.defense, tamer.ds, tamer.max_ds, tamer.move_speed]
+    _stats.text = "HP  %d / %d     DF  %d\nDS  %.0f / %.0f\nSPD  %.0f   •   Warden สั่งการ" % [tamer.hp, tamer.max_hp, tamer.defense, tamer.ds, tamer.max_ds, tamer.move_speed]
     _bonus.text = "ATK +%d   HP +%d   DS +%d   DF +%d\nCRIT +%.1f%%   SPD +%.0f\nคู่หู HP +%d  ATK +%d" % [b.attack, b.hp, b.ds, b.defense, b.critical, b.speed, b.partner_hp, b.partner_attack]
     _applied.text = "%s Lv.%d\nHP  %d / %d\nATK  %d    SPD  %.0f" % [tamer.partner.current_form.monster_name, tamer.partner.progress.level, tamer.partner.hp, tamer.partner.max_hp, tamer.partner.attack_power, tamer.partner.move_speed]
     _refresh_details()
@@ -328,13 +328,13 @@ func _refresh_details() -> void:
     _equip.locked = item == null or inventory.count(selected_item) <= 0 or tamer.progress.level < item.required_level
     _unequip.locked = selected_slot == &"" or inventory.item_at(selected_slot) == null
     if item == null:
-        _details.text = "เลือกไอเทมเพื่อดูรายละเอียด\n\nใส่/ถอดของแล้วค่าสเตตัสเปลี่ยนทันที\nHP / DS ปัจจุบันไม่เติมฟรีเมื่อใส่ของ\n\nDigivice และ Chip เพิ่มพลังคู่หู\nช่อง Chip ใช้ได้ทั้ง A และ B"
+        _details.text = "เลือกไอเทมเพื่อดูรายละเอียด\n\nใส่/ถอดของแล้วค่าสเตตัสเปลี่ยนทันที\nHP / DS ปัจจุบันไม่เติมฟรีเมื่อใส่ของ\n\nLink Core และ Chip เพิ่มพลังคู่หู\nช่อง Chip ใช้ได้ทั้ง A และ B"
         if selected_slot != &"":
             _details.text = EquipmentInventory.LABELS[String(selected_slot)] + " / ช่องว่าง\n\nเลือกไอเทมจากกระเป๋าเพื่อสวมใส่"
         return
     var bonus: Dictionary = item.bonuses()
     var lines: String = ""
-    var labels: Dictionary = {"attack":"Tamer ATK", "hp":"Tamer HP", "ds":"Tamer DS", "defense":"Tamer DF", "critical":"Tamer CRIT%", "speed":"Tamer SPD", "partner_hp":"Partner HP", "partner_attack":"Partner ATK", "partner_speed":"Partner SPD"}
+    var labels: Dictionary = {"attack":"Warden ATK", "hp":"Warden HP", "ds":"Warden MP", "defense":"Warden DF", "critical":"Warden CRIT%", "speed":"Warden SPD", "partner_hp":"Partner HP", "partner_attack":"Partner ATK", "partner_speed":"Partner SPD"}
     for key: String in bonus:
         if float(bonus[key]) != 0:
             lines += "%s  +%.0f   " % [labels[key], bonus[key]]

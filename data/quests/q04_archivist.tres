@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q04_archivist"
+title = "บันทึกของผู้สำรวจ"
+description = "คุยกับ Archivist Eon เพื่อรับเบาะแสจากซากข้อมูล"
+zone_id = &"shard_isle"
+objective = 0
+target_id = &"archivist_eon"
+required_count = 1
+unlock_flags = Array[StringName]([])
+unlock_zones = Array[StringName]([])
+unlock_stage = -1

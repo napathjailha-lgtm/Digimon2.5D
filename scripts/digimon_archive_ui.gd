@@ -1,6 +1,6 @@
-class_name DigimonArchiveUI
+class_name CompanionArchiveUI
 extends CanvasLayer
-## Digimon Archive แบบ responsive: Party 3 ช่อง + Storage ไม่จำกัด
+## Companion Archive แบบ responsive: Party 3 ช่อง + Storage ไม่จำกัด
 ## ใช้ ScrollContainer และปุ่มขนาดสัมผัสแทนตำแหน่งตายตัว เพื่อให้ Web/Mobile แสดงผลเหมือนกัน
 
 signal closed
@@ -121,8 +121,8 @@ func _build() -> void:
     title_stack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     title_stack.add_theme_constant_override("separation", 0)
     header.add_child(title_stack)
-    title_stack.add_child(ServiceUIStyle.label("DIGIMON ARCHIVE", 26, ServiceUIStyle.TEXT))
-    title_stack.add_child(ServiceUIStyle.label("จัดทีมและฝาก Digimon ได้เฉพาะที่ NPC นี้", 13, ServiceUIStyle.MUTED))
+    title_stack.add_child(ServiceUIStyle.label("COMPANION ARCHIVE", 26, ServiceUIStyle.TEXT))
+    title_stack.add_child(ServiceUIStyle.label("จัดทีมและฝาก Companion ได้เฉพาะที่ NPC นี้", 13, ServiceUIStyle.MUTED))
 
     var close := _button("ปิด ×", Vector2(94, 48), close_screen, ServiceUIStyle.GOLD)
     header.add_child(close)
@@ -163,7 +163,7 @@ func _build() -> void:
     columns.add_child(storage_panel)
     storage_list = storage_panel.get_meta("list") as VBoxContainer
 
-    notice = ServiceUIStyle.label("แตะปุ่มด้านขวาของแต่ละการ์ดเพื่อย้าย Digimon", 14, ServiceUIStyle.MUTED)
+    notice = ServiceUIStyle.label("แตะปุ่มด้านขวาของแต่ละการ์ดเพื่อย้าย Companion", 14, ServiceUIStyle.MUTED)
     notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     notice.custom_minimum_size.y = 28
     stack.add_child(notice)
@@ -215,7 +215,7 @@ func _refresh() -> void:
         party_list.add_child(_member_card(roster.members[index], index, true))
 
     if roster.storage.is_empty():
-        storage_list.add_child(_empty_state("คลังยังว่าง", "Digimon ที่ฟักใหม่จะถูกส่งเข้าคลังนี้"))
+        storage_list.add_child(_empty_state("คลังยังว่าง", "Companion ที่ฟักใหม่จะถูกส่งเข้าคลังนี้"))
     else:
         for index: int in range(roster.storage.size()):
             storage_list.add_child(_member_card(roster.storage[index], index, false))

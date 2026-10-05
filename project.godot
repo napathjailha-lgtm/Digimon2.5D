@@ -14,11 +14,11 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 [application]
 
-config/name="Digital Adventure Form Skills"
+config/name="Aether Frontier"
 config/version="0.26.0"
 run/main_scene="res://scenes/pregame/loading_screen.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
-config/icon="res://assets/items/digitama.svg"
+config/icon="res://assets/original/items/core_egg.svg"
 
 [autoload]
 
@@ -46,7 +46,7 @@ pointing/emulate_mouse_from_touch=true
 [layer_names]
 
 2d_physics/layer_1="World"
-2d_physics/layer_2="Tamer"
+2d_physics/layer_2="Warden"
 2d_physics/layer_3="WildMonster"
 2d_physics/layer_4="Partner"
 

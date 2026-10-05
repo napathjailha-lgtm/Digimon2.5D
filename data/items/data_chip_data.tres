@@ -4,11 +4,11 @@
 [resource]
 script = ExtResource("1")
 item_id = "data_chip_data"
-item_name = "Data Type Data Chip"
+item_name = "Memory Pattern Chip"
 item_type = 4
 item_texture = ExtResource("2")
-description = "Data Chip สำหรับ Inject Digitama สาย Data เช่น Gabumon และ Palmon"
-chip_family = &"data"
+description = "ชิปข้อมูลสำหรับเสริม Core Egg กลุ่ม Tundra / Verdant"
+chip_family = &"memory"
 shop_sold = true
 buy_price = 45
 sell_price = 12

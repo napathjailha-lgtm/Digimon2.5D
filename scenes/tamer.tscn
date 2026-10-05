@@ -1,30 +1,29 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=9 format=3]
 [ext_resource type="Script" path="res://scripts/tamer.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/walk/tamer/down_0.tres" id="2"]
-[ext_resource type="Texture2D" path="res://assets/walk/tamer/right_0.tres" id="face_right"]
-[ext_resource type="Texture2D" path="res://assets/walk/tamer/up_0.tres" id="face_back"]
-[ext_resource type="Texture2D" path="res://assets/walk/tamer/left_0.tres" id="face_left"]
 [ext_resource type="Script" path="res://scripts/art_shadow.gd" id="art_shadow"]
 [ext_resource type="Script" path="res://scripts/character_progress.gd" id="progress_script"]
 [ext_resource type="Script" path="res://scripts/directional_animator.gd" id="directional"]
-[ext_resource type="SpriteFrames" path="res://data/tamer_frames.tres" id="tamer_frames"]
+[ext_resource type="SpriteFrames" path="res://data/wardens/arun_frames.tres" id="warden_frames"]
 [ext_resource type="Script" path="res://scripts/actor_nameplate.gd" id="nameplate_script"]
 [ext_resource type="Script" path="res://scripts/tamer_survival.gd" id="survival"]
 [sub_resource type="CircleShape2D" id="body"]
 radius = 16.0
+
 [node name="Tamer" type="CharacterBody2D"]
 script = ExtResource("1")
 collision_layer = 2
 collision_mask = 1
 motion_mode = 1
-directional_textures = Array[Texture2D]([ExtResource("2"), ExtResource("face_right"), ExtResource("face_back"), ExtResource("face_left")])
+
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-sprite_frames = ExtResource("tamer_frames")
+sprite_frames = ExtResource("warden_frames")
 animation = &"idle_down"
-scale = Vector2(0.24, 0.24)
-offset = Vector2(0, -256)
+scale = Vector2(0.34, 0.34)
+offset = Vector2(0, -64)
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("body")
+
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
 path_desired_distance = 10.0
 target_desired_distance = 40.0
