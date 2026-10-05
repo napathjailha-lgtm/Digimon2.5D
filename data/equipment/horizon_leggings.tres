@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EquipmentItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/equipment_item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/equipment/legs.svg" id="2"]
+[resource]
+script = ExtResource("1")
+id = &"horizon_leggings"
+item_name = "Horizon Leggings"
+slot = &"legs"
+icon = ExtResource("2")
+rarity = 2
+required_level = 20
+description = "กางเกงระดับ Epic เพิ่ม AGI และความคล่องตัว"
+hp_bonus = 80
+speed_bonus = 10
+agility_bonus = 5
+vitality_bonus = 2
