@@ -1,6 +1,6 @@
 class_name DigimonArchiveUI
 extends CanvasLayer
-## Digimon Archive แบบ responsive: Party 3 ช่อง + Storage ไม่จำกัด
+## Digimon Archive แบบ responsive: Party 3 ช่อง + Storage ไม่จำกัด • แต่ละ Digimon มี Level/EXP ของตัวเอง
 ## ใช้ ScrollContainer และปุ่มขนาดสัมผัสแทนตำแหน่งตายตัว เพื่อให้ Web/Mobile แสดงผลเหมือนกัน
 
 signal closed
@@ -252,10 +252,12 @@ func _member_card(entry: Dictionary, index: int, in_party: bool) -> PanelContain
     var display: String = data.display_name if data != null else str(entry.get("id", "Unknown"))
     var name := ServiceUIStyle.label(display, 17, ServiceUIStyle.TEXT)
     info.add_child(name)
-    var level: int = int(roster.shared_progress.get("level", 1))
+    var progress_data: Dictionary = entry.get("progress", {"level":1, "exp":0}) as Dictionary
+    var level: int = clampi(int(progress_data.get("level", 1)), 1, EvolutionRules.MAX_LEVEL)
+    var exp: int = maxi(0, int(progress_data.get("exp", 0)))
     var hp: int = int(entry.get("hp", 0))
     var max_hp: int = maxi(1, int(entry.get("max_hp", hp)))
-    info.add_child(ServiceUIStyle.label("Lv.%d  •  HP %d/%d" % [level, hp, max_hp], 13, ServiceUIStyle.MUTED))
+    info.add_child(ServiceUIStyle.label("Lv.%d  •  EXP %d  •  HP %d/%d" % [level, exp, hp, max_hp], 13, ServiceUIStyle.MUTED))
     if active:
         info.add_child(ServiceUIStyle.label("● ACTIVE PARTNER", 12, ServiceUIStyle.GOLD))
     elif in_party:
