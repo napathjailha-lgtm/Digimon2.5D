@@ -153,7 +153,9 @@ func has_partner(id: StringName) -> bool:
 func active_member_id() -> StringName:
     if not initialized or members.is_empty():
         return &""
-    _capture_active()
+    # Fusion/UI อาจถามระหว่าง _apply_member; ห้าม capture actor ตัวใหม่ลงสมาชิกตัวเก่า
+    if not _switching:
+        _capture_active()
     return StringName(str(members[active_index].get("id", "")))
 
 
@@ -423,7 +425,9 @@ func _capture(id: StringName, uid: String = "") -> Dictionary:
 
 
 func _capture_active() -> void:
-    if members.is_empty() or active_index < 0 or active_index >= members.size():
+    # ระหว่างสลับ actor ถูกโหลดข้อมูลของ target ก่อน active_index commit
+    # การ capture ตอนนี้จะทำให้ Level/EXP ของ target ไปทับสมาชิกเดิม
+    if _switching or members.is_empty() or active_index < 0 or active_index >= members.size():
         return
 
     # actor ปัจจุบันเป็น source of truth เฉพาะสมาชิก active เท่านั้น
