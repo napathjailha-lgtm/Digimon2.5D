@@ -113,9 +113,21 @@ func load_roster() -> void:
             if parsed is Dictionary and parsed.get("version", 0) == 1 and parsed.get("characters") is Array:
                 var saved: Array = parsed["characters"]
                 for i: int in range(mini(SLOT_COUNT, saved.size())):
-                    if saved[i] is Dictionary and _valid_record(saved[i]):
-                        characters[i] = saved[i].duplicate(true)
+                    if saved[i] is Dictionary:
+                        var migrated: Dictionary = _migrate_legacy_partner_ids(saved[i] as Dictionary)
+                        if _valid_record(migrated):
+                            characters[i] = migrated
     roster_changed.emit()
+
+func _migrate_legacy_partner_ids(data: Dictionary) -> Dictionary:
+    # เซฟเดิมยังเล่นต่อได้ แต่เขียนชื่อสายใหม่ลง runtime ทันที
+    var result: Dictionary = data.duplicate(true)
+    match str(result.get("starter", "")):
+        "agumon":
+            result["starter"] = "emberclaw"
+        "gabumon":
+            result["starter"] = "frostfang"
+    return result
 
 func _valid_record(data: Dictionary) -> bool:
     if data.is_empty() or catalog.tamer_by_id(StringName(str(data.get("model", "")))) == null:
@@ -213,7 +225,12 @@ func prepare_adventure() -> bool:
     gameplay_active = true
     current_level = int(QuestManager.party_profile.get("tamer_progress", {}).get("level", 1))
     var partner: StarterPartnerData = selected_partner_data()
-    current_form = StringName(str(QuestManager.party_profile.get("form_id", partner.forms[0].id if partner != null else &"rookie")))
+    var saved_form: String = str(QuestManager.party_profile.get("form_id", partner.forms[0].id if partner != null else &"emberclaw_0"))
+    var legacy_forms: Dictionary = {
+        "agumon_0":"emberclaw_0", "agumon_1":"flarewing_1", "agumon_2":"cindergear_2", "agumon_3":"aegisdrake_3",
+        "gabumon_0":"frostfang_0", "gabumon_1":"regalwolf_1", "gabumon_2":"steelhowl_2", "gabumon_3":"cryoblaster_3"
+    }
+    current_form = StringName(str(legacy_forms.get(saved_form, saved_form)))
     bits = maxi(0, int(QuestManager.party_profile.get("bits", DEFAULT_BITS)))
     incubator_state = QuestManager.party_profile.get("incubator", {}).duplicate(true) if QuestManager.party_profile.get("incubator", {}) is Dictionary else {}
     bits_changed.emit(bits)
