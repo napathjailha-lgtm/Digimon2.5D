@@ -8,5 +8,3 @@ move_speed = 105.0
 attack_damage = 10
 attack_range = 60.0
 wander_radius = 90.0
-[node name="Nameplate" parent="."]
-display_name = "Forest Byte"
