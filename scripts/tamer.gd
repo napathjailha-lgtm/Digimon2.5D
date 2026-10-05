@@ -389,12 +389,12 @@ func apply_progress_stats() -> void:
     var bonus: Dictionary = equipment.total_bonuses()
     # Core attributes จากอุปกรณ์:
     # STR = ATK, DEX = CRIT, INT = DS, VIT = HP/DEF, AGI = Movement
-    max_hp = int(stats.max_hp) + int(bonus.hp) + int(bonus.vit) * 10
-    attack_power = int(stats.attack) + int(bonus.attack) + int(bonus.str) * 2
-    defense = int(bonus.defense) + floori(float(bonus.vit) * 0.5)
-    critical_chance = clampf(float(bonus.critical) + float(bonus.dex) * 0.4, 0.0, 100.0)
-    move_speed = float(stats.speed) + float(bonus.speed) + float(bonus.agi) * 1.2
-    max_ds = _base_max_ds + int(bonus.ds) + int(bonus.int) * 4
+    max_hp = int(stats.max_hp) + int(bonus.hp) + int(bonus["vit"]) * 10
+    attack_power = int(stats.attack) + int(bonus.attack) + int(bonus["str"]) * 2
+    defense = int(bonus.defense) + floori(float(bonus["vit"]) * 0.5)
+    critical_chance = clampf(float(bonus.critical) + float(bonus["dex"]) * 0.4, 0.0, 100.0)
+    move_speed = float(stats.speed) + float(bonus.speed) + float(bonus["agi"]) * 1.2
+    max_ds = _base_max_ds + int(bonus.ds) + int(bonus["int"]) * 4
 
 func _on_equipment_changed() -> void:
     # ใส่/ถอดไม่แจก HP หรือ DS ฟรี และไม่ชุบผู้เล่น/คู่หูที่ HP 0
