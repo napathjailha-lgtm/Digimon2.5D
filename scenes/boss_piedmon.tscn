@@ -1,7 +1,39 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=15 format=3]
 [ext_resource type="PackedScene" path="res://scenes/wild_monster.tscn" id="1"]
 [ext_resource type="Script" path="res://scripts/quest_target.gd" id="2"]
 [ext_resource type="Texture2D" path="res://assets/art/boss_piedmon_art.tres" id="boss_art"]
+[ext_resource type="Script" path="res://scripts/equipment_drop_entry.gd" id="drop_script"]
+[ext_resource type="Resource" path="res://data/equipment/titan_armor.tres" id="new_item_0"]
+[ext_resource type="Resource" path="res://data/equipment/sovereign_ring.tres" id="new_item_1"]
+[ext_resource type="Resource" path="res://data/equipment/starcore_charm.tres" id="new_item_2"]
+[ext_resource type="Resource" path="res://data/equipment/vector_chip.tres" id="new_item_3"]
+[ext_resource type="Resource" path="res://data/equipment/aegis_pack.tres" id="new_item_4"]
+[sub_resource type="Resource" id="new_drop_0"]
+equipment_drops = Array[ExtResource("drop_script")]([SubResource("new_drop_0"), SubResource("new_drop_1"), SubResource("new_drop_2"), SubResource("new_drop_3"), SubResource("new_drop_4")])
+script = ExtResource("drop_script")
+item = ExtResource("new_item_0")
+chance = 0.12
+
+[sub_resource type="Resource" id="new_drop_1"]
+script = ExtResource("drop_script")
+item = ExtResource("new_item_1")
+chance = 0.10
+
+[sub_resource type="Resource" id="new_drop_2"]
+script = ExtResource("drop_script")
+item = ExtResource("new_item_2")
+chance = 0.08
+
+[sub_resource type="Resource" id="new_drop_3"]
+script = ExtResource("drop_script")
+item = ExtResource("new_item_3")
+chance = 0.12
+
+[sub_resource type="Resource" id="new_drop_4"]
+script = ExtResource("drop_script")
+item = ExtResource("new_item_4")
+chance = 0.07
+
 [node name="Boss" instance=ExtResource("1")]
 monster_id = &"piedmon"
 max_hp = 650
