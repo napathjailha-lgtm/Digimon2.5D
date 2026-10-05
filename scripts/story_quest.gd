@@ -10,6 +10,11 @@ enum Objective { TALK, KILL, REACH }
 @export var objective: Objective = Objective.TALK
 @export var target_id: StringName
 @export_range(1, 999) var required_count: int = 1
+@export_range(1, 99) var recommended_level: int = 1
+@export_group("รางวัล")
+@export_range(0, 100000) var reward_exp: int = 0
+@export_range(0, 1000000) var reward_bits: int = 0
+@export_group("ปลดล็อก")
 @export var unlock_flags: Array[StringName] = []
 @export var unlock_zones: Array[StringName] = []
 # -1 = ไม่มีรางวัลเพิ่มระดับร่าง; 0 Rookie / 1 Champion / 2 Ultimate / 3 Mega
