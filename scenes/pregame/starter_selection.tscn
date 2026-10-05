@@ -102,7 +102,7 @@ mouse_filter = 2
 
 [node name="Cards" type="GridContainer" parent="Margin/Column/Body/Selection/Inner/Stack"]
 layout_mode = 2
-columns = 5
+columns = 4
 theme_override_constants/h_separation = 10
 [node name="PathTitle" type="Label" parent="Margin/Column/Body/Selection/Inner/Stack"]
 layout_mode = 2
