@@ -248,7 +248,7 @@ func add_bits(amount: int) -> bool:
     return true
 
 func import_legacy_character() -> bool:
-    # คัดลอกเซฟ v15 ไปช่องใหม่ เก็บไฟล์ต้นฉบับและภาพ/ร่างคู่หูเดิมครบ
+    # ย้ายเซฟเก่าเข้าระบบตัวละครต้นฉบับ โดยไม่โหลดชื่อหรือ asset รุ่นเดิม
     if account_key.is_empty() or not characters[selected_slot].is_empty() or not FileAccess.file_exists(legacy_save_path):
         return _fail("เลือกช่องว่างและต้องมีเซฟ v15 ในเครื่อง")
     var file: FileAccess = FileAccess.open(legacy_save_path, FileAccess.READ)
@@ -258,7 +258,7 @@ func import_legacy_character() -> bool:
     var data: Variant = JSON.parse_string(source)
     if not data is Dictionary or data.get("version", 0) != 1 or not data.get("party", {}) is Dictionary:
         return _fail("รูปแบบเซฟ v15 ไม่ถูกต้อง")
-    characters[selected_slot] = {"model":"taichi", "name":"Tamer v15", "starter":"legacy", "level":int(data.get("party", {}).get("tamer_progress", {}).get("level", 1))}
+    characters[selected_slot] = {"model":"arun", "name":"Warden Legacy", "starter":"cinderling", "level":int(data.get("party", {}).get("tamer_progress", {}).get("level", 1))}
     if not save_roster():
         characters[selected_slot] = {}
         return false
