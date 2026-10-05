@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/story_reach.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/quest_target.gd" id="2"]
+[node name="EastRuinsClue" type="Area2D"]
+script = ExtResource("1")
+target_id = &"east_ruins_clue"
+radius = 90.0
+[node name="QuestTarget" type="Marker2D" parent="."]
+script = ExtResource("2")
+target_id = &"east_ruins_clue"
