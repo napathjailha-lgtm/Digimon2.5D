@@ -126,7 +126,7 @@ func _set_mobile_interact_point(point: WorldServicePoint) -> void:
 func _mobile_caption(point: WorldServicePoint) -> String:
     match StringName(point.service_id):
         &"archive":
-            return "ใช้งาน\nคลัง Digimon"
+            return "ใช้งาน\nคลังคู่หู"
         &"shop":
             return "ใช้งาน\nร้านค้า"
         &"incubator":
