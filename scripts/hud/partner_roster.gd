@@ -46,22 +46,7 @@ func configure(player: Tamer) -> void:
     partner.progress.progress_changed.connect(_on_partner_progress_changed)
 
 
-func _migrate_family_id(id: StringName) -> StringName:
-    if id == &"agumon":
-        return &"emberclaw"
-    if id == &"gabumon":
-        return &"frostfang"
-    return id
-
-func _migrate_form_id(raw: String) -> String:
-    var map: Dictionary = {
-        "agumon_0":"emberclaw_0", "agumon_1":"flarewing_1", "agumon_2":"cindergear_2", "agumon_3":"aegisdrake_3",
-        "gabumon_0":"frostfang_0", "gabumon_1":"regalwolf_1", "gabumon_2":"steelhowl_2", "gabumon_3":"cryoblaster_3"
-    }
-    return str(map.get(raw, raw))
-
 func family(id: StringName) -> StarterPartnerData:
-    id = _migrate_family_id(id)
     if id == &"legacy":
         return _legacy_family
     return GameManager.catalog.starter_by_id(id)
@@ -78,13 +63,11 @@ func initialize(saved: Dictionary = {}) -> void:
         for entry: Variant in raw:
             if not (entry is Dictionary) or members.size() >= CAPACITY:
                 continue
-            var id := _migrate_family_id(StringName(str(entry.get("id", ""))))
+            var id := StringName(str(entry.get("id", "")))
             var data: StarterPartnerData = family(id)
             if data == null or data.forms.is_empty():
                 continue
             var member: Dictionary = (entry as Dictionary).duplicate(true)
-            member["id"] = String(id)
-            member["form_id"] = _migrate_form_id(str(member.get("form_id", "")))
             _ensure_uid(member)
             members.append(member)
 
@@ -93,13 +76,11 @@ func initialize(saved: Dictionary = {}) -> void:
         for entry: Variant in raw_storage:
             if not (entry is Dictionary):
                 continue
-            var stored_id := _migrate_family_id(StringName(str(entry.get("id", ""))))
+            var stored_id := StringName(str(entry.get("id", "")))
             var stored_data: StarterPartnerData = family(stored_id)
             if stored_data == null or stored_data.forms.is_empty():
                 continue
             var stored: Dictionary = (entry as Dictionary).duplicate(true)
-            stored["id"] = String(stored_id)
-            stored["form_id"] = _migrate_form_id(str(stored.get("form_id", "")))
             _ensure_uid(stored)
             storage.append(stored)
 

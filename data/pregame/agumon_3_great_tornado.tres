@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/skills_painted/wind.png" id="icon"]
+[resource]
+script = ExtResource("s")
+id = &"wargreymon_great_tornado"
+display_name = "Great Tornado"
+icon = ExtResource("icon")
+multiplier = 4.0
+cooldown = 6.0
+cast_range = 200.0
+mp_cost = 16.0
+impact_radius = 85.0
+projectile_speed = 0.0
+effect_color = Color(1, 0.8, 0.25, 1)
+effect_size = 34.0
+animation_prefix = &"attack"
+release_frame = 2
+vfx_style = "wind"

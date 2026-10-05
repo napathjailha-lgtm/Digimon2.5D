@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://scripts/loot_drop_entry.gd" id="2"]
 [ext_resource type="Resource" path="res://data/items/meat.tres" id="3"]
 [ext_resource type="Resource" path="res://data/items/data_chip.tres" id="4"]
-[ext_resource type="Resource" path="res://data/items/emberclaw_digitama.tres" id="5"]
-[ext_resource type="Resource" path="res://data/items/frostfang_digitama.tres" id="6"]
+[ext_resource type="Resource" path="res://data/items/digitama.tres" id="5"]
+[ext_resource type="Resource" path="res://data/items/gabumon_digitama.tres" id="6"]
 [ext_resource type="Resource" path="res://data/items/piyomon_digitama.tres" id="7"]
 [ext_resource type="Resource" path="res://data/items/tentomon_digitama.tres" id="8"]
 [ext_resource type="Resource" path="res://data/items/palmon_digitama.tres" id="9"]
@@ -29,12 +29,12 @@ script = ExtResource("2")
 item = ExtResource("10")
 chance = 0.18
 
-[sub_resource type="Resource" id="emberclaw_egg"]
+[sub_resource type="Resource" id="agumon_egg"]
 script = ExtResource("2")
 item = ExtResource("5")
 chance = 0.02
 
-[sub_resource type="Resource" id="frostfang_egg"]
+[sub_resource type="Resource" id="gabumon_egg"]
 script = ExtResource("2")
 item = ExtResource("6")
 chance = 0.02
@@ -72,8 +72,8 @@ entries = Array[ExtResource("2")]([
     SubResource("meat"),
     SubResource("vaccine_chip"),
     SubResource("data_chip"),
-    SubResource("emberclaw_egg"),
-    SubResource("frostfang_egg"),
+    SubResource("agumon_egg"),
+    SubResource("gabumon_egg"),
     SubResource("piyomon_egg"),
     SubResource("tentomon_egg"),
     SubResource("palmon_egg"),
