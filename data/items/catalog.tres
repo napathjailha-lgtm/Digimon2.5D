@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="ItemCatalog" load_steps=13 format=3]
+[gd_resource type="Resource" script_class="ItemCatalog" load_steps=16 format=3]
 [ext_resource type="Script" path="res://scripts/item_catalog.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/item_data.gd" id="2"]
 [ext_resource type="Resource" path="res://data/items/meat.tres" id="3"]
@@ -11,6 +11,9 @@
 [ext_resource type="Resource" path="res://data/items/data_chip_data.tres" id="10"]
 [ext_resource type="Resource" path="res://data/items/digital_fruit.tres" id="11"]
 [ext_resource type="Resource" path="res://data/items/mp_drink.tres" id="12"]
+[ext_resource type="Resource" path="res://data/items/tailmon_digitama.tres" id="tailmon_egg"]
+[ext_resource type="Resource" path="res://data/items/patamon_digitama.tres" id="patamon_egg"]
+[ext_resource type="Resource" path="res://data/items/gomamon_digitama.tres" id="gomamon_egg"]
 [resource]
 script = ExtResource("1")
 items = Array[ExtResource("2")]([
@@ -23,5 +26,8 @@ items = Array[ExtResource("2")]([
     ExtResource("9"),
     ExtResource("10"),
     ExtResource("11"),
-    ExtResource("12")
+    ExtResource("12"),
+    ExtResource("tailmon_egg"),
+    ExtResource("patamon_egg"),
+    ExtResource("gomamon_egg")
 ])

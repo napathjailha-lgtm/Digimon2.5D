@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="LootTable" load_steps=23 format=3]
+[gd_resource type="Resource" script_class="LootTable" load_steps=29 format=3]
 [ext_resource type="Script" path="res://scripts/loot_table.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/loot_drop_entry.gd" id="2"]
 [ext_resource type="Resource" path="res://data/items/meat.tres" id="3"]
@@ -11,6 +11,10 @@
 [ext_resource type="Resource" path="res://data/items/data_chip_data.tres" id="10"]
 [ext_resource type="Resource" path="res://data/items/digital_fruit.tres" id="11"]
 [ext_resource type="Resource" path="res://data/items/mp_drink.tres" id="12"]
+
+[ext_resource type="Resource" path="res://data/items/tailmon_digitama.tres" id="tailmon_egg"]
+[ext_resource type="Resource" path="res://data/items/patamon_digitama.tres" id="patamon_egg"]
+[ext_resource type="Resource" path="res://data/items/gomamon_digitama.tres" id="gomamon_egg"]
 
 [sub_resource type="Resource" id="meat"]
 script = ExtResource("2")
@@ -32,27 +36,27 @@ chance = 0.18
 [sub_resource type="Resource" id="agumon_egg"]
 script = ExtResource("2")
 item = ExtResource("5")
-chance = 0.02
+chance = 0.0125
 
 [sub_resource type="Resource" id="gabumon_egg"]
 script = ExtResource("2")
 item = ExtResource("6")
-chance = 0.02
+chance = 0.0125
 
 [sub_resource type="Resource" id="piyomon_egg"]
 script = ExtResource("2")
 item = ExtResource("7")
-chance = 0.02
+chance = 0.0125
 
 [sub_resource type="Resource" id="tentomon_egg"]
 script = ExtResource("2")
 item = ExtResource("8")
-chance = 0.02
+chance = 0.0125
 
 [sub_resource type="Resource" id="palmon_egg"]
 script = ExtResource("2")
 item = ExtResource("9")
-chance = 0.02
+chance = 0.0125
 
 [sub_resource type="Resource" id="food"]
 script = ExtResource("2")
@@ -66,6 +70,21 @@ script = ExtResource("2")
 item = ExtResource("12")
 chance = 0.3
 
+[sub_resource type="Resource" id="tailmon_egg"]
+script = ExtResource("2")
+item = ExtResource("tailmon_egg")
+chance = 0.0125
+
+[sub_resource type="Resource" id="patamon_egg"]
+script = ExtResource("2")
+item = ExtResource("patamon_egg")
+chance = 0.0125
+
+[sub_resource type="Resource" id="gomamon_egg"]
+script = ExtResource("2")
+item = ExtResource("gomamon_egg")
+chance = 0.0125
+
 [resource]
 script = ExtResource("1")
 entries = Array[ExtResource("2")]([
@@ -77,6 +96,9 @@ entries = Array[ExtResource("2")]([
     SubResource("piyomon_egg"),
     SubResource("tentomon_egg"),
     SubResource("palmon_egg"),
+    SubResource("tailmon_egg"),
+    SubResource("patamon_egg"),
+    SubResource("gomamon_egg"),
     SubResource("food"),
     SubResource("mp")
 ])

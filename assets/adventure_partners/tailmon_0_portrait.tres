@@ -1,0 +1,6 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3]
+[ext_resource type="Texture2D" path="res://assets/adventure_partners/tailmon.png" id="tex"]
+[resource]
+atlas = ExtResource("tex")
+region = Rect2(23, 27, 300, 315)
+filter_clip = true

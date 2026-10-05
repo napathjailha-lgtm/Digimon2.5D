@@ -354,7 +354,7 @@ func _apply_member(entry: Dictionary) -> bool:
         var possible: MonsterData = data.forms[index]
         if possible == null:
             continue
-        if not EvolutionRules.can_use_form(shared_level, index):
+        if not EvolutionRules.can_use_form(shared_level, index, possible):
             continue
         if not QuestManager.has_flag(possible.required_story_flag):
             continue

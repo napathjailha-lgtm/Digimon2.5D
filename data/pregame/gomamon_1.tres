@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="MonsterData" load_steps=6 format=3]
+[ext_resource type="Script" path="res://scripts/monster_data.gd" id="s"]
+[ext_resource type="SpriteFrames" path="res://data/pregame/gomamon_1_frames.tres" id="f"]
+[ext_resource type="Resource" path="res://data/pregame/gomamon_1_skill.tres" id="k0"]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="kt"]
+[ext_resource type="Texture2D" path="res://assets/adventure_partners/gomamon_1_portrait.tres" id="p"]
+[resource]
+script = ExtResource("s")
+id = &"gomamon_1"
+monster_name = "Ikkakumon"
+evolution_stage = 1
+max_hp = 290
+attack = 38
+move_speed = 235.0
+attack_range = 69.0
+attack_interval = 0.8
+defense = 3
+portrait_texture = ExtResource("p")
+sprite_frames = ExtResource("f")
+sprite_scale = Vector2(0.498316, 0.498316)
+attack_sprite_scale = Vector2(0.498316, 0.498316)
+cast_sprite_scale = Vector2(0.498316, 0.498316)
+idle_animation = &"idle_down"
+walk_animation = &"walk_down"
+attack_animation = &"attack_down"
+cast_animation = &"cast_down"
+attack_hit_frame = 2
+animation_reference_speed = 235.0
+require_directional_animations = true
+require_action_animations = true
+evolution_cost = 25.0
+ds_drain_per_second = 5.0
+skills = Array[ExtResource("kt")]([ExtResource("k0")])

@@ -20,6 +20,9 @@ static func glow(canvas: CanvasItem, at: Vector2, radius: float, tint: Color) ->
     canvas.draw_texture_rect(_glow, Rect2(at - Vector2.ONE * radius, Vector2.ONE * radius * 2), false, tint)
 
 static func spark(canvas: CanvasItem, at: Vector2, axis: Vector2, length: float, tint: Color) -> void:
+    # Expired holy/ice impacts can reach zero size before queue_free is processed.
+    if length <= 0.001 or tint.a <= 0.001 or axis.length_squared() <= 0.000001:
+        return
     var side := axis.orthogonal() * length * 0.20
     canvas.draw_colored_polygon(PackedVector2Array([at + axis * length, at + side, at - axis * length, at - side]), tint)
 
@@ -35,6 +38,8 @@ static func bolt(canvas: CanvasItem, start: Vector2, end: Vector2, seed_value: f
     canvas.draw_polyline(points, tint, width, true)
 
 static func leaf(canvas: CanvasItem, at: Vector2, angle: float, length: float, tint: Color) -> void:
+    if length <= 0.001 or tint.a <= 0.001:
+        return
     var axis := Vector2.from_angle(angle) * length
     var side := axis.orthogonal() * 0.40
     canvas.draw_colored_polygon(PackedVector2Array([at + axis, at + side, at - axis * 0.6, at - side]), tint)

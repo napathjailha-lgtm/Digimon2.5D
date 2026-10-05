@@ -471,8 +471,8 @@ func prepare_digivolve() -> MonsterData:
     if next_data == null:
         feedback.emit("อยู่ร่างสูงสุดแล้ว")
         return null
-    if not EvolutionRules.can_use_form(progress.level, next_index):
-        feedback.emit("ต้องเลเวล %d เพื่อปลดล็อกร่าง %s" % [EvolutionRules.minimum_level_for_form_index(next_index), next_data.monster_name])
+    if not EvolutionRules.can_use_form(progress.level, next_index, next_data):
+        feedback.emit("ต้องเลเวล %d เพื่อปลดล็อกร่าง %s" % [EvolutionRules.minimum_level_for_form_index(next_index, next_data), next_data.monster_name])
         return null
     if not QuestManager.has_flag(next_data.required_story_flag):
         feedback.emit("ร่างนี้ยังต้องปลดล็อกเงื่อนไขเนื้อเรื่อง")
@@ -727,9 +727,9 @@ func refresh_equipment_stats() -> void:
 
 func _on_level_up(new_level: int) -> void:
     # โบนัสสเตตัสเป็นค่าคำนวณใหม่ ร่างไข่จะยัง HP 0 ไม่ชุบด้วย Level Up
-    var unlocked_index: int = EvolutionRules.max_form_index_for_level(new_level)
-    if unlocked_index > form_index and unlocked_index < forms.size():
-        feedback.emit("ปลดล็อกร่าง: %s" % forms[unlocked_index].monster_name)
+    for index: int in range(form_index + 1, forms.size()):
+        if new_level == EvolutionRules.minimum_level_for_form_index(index, forms[index]):
+            feedback.emit("ปลดล็อกร่าง: %s" % forms[index].monster_name)
     var previous_max: int = max_hp
     var stats: Dictionary = _effective_stats()
     max_hp = int(stats.max_hp)
@@ -762,7 +762,7 @@ func _form_unlocked(data: MonsterData) -> bool:
     if data.id == &"omegamon":
         return true
     var index: int = forms.find(data)
-    return index >= 0 and EvolutionRules.can_use_form(progress.level, index) and QuestManager.has_flag(data.required_story_flag)
+    return index >= 0 and EvolutionRules.can_use_form(progress.level, index, data) and QuestManager.has_flag(data.required_story_flag)
 
 func _start_basic_attack() -> bool:
     if not can_battle():

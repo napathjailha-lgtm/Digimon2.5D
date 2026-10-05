@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/adventure_partners/gomamon_3_portrait.tres" id="icon"]
+[resource]
+script = ExtResource("s")
+id = &"gomamon_3_skill"
+display_name = "Arctic Blizzard"
+icon = ExtResource("icon")
+vfx_style = "ice"
+animation_prefix = &"cast"
+release_frame = 2
+multiplier = 1.85
+cast_range = 350.0
+cooldown = 5.0
+mp_cost = 15.0
+impact_radius = 90.0
+projectile_speed = 540.0
+effect_color = Color(0.4, 0.8, 1.0, 1.0)
+effect_size = 25.0
