@@ -4,8 +4,10 @@ extends RefCounted
 ## Web บนมือถือจะเป็นทั้ง web=true และ touchscreen=true แม้ OS.has_feature("mobile") จะเป็น false
 
 static func is_mobile_device() -> bool:
-    # แยก "มือถือจริง" ออกจาก PC ที่มีจอสัมผัส เพื่อไม่เปิด Mobile layout บน laptop/tablet-PC โดยไม่ตั้งใจ
-    return OS.has_feature("mobile") or OS.has_feature("web_android") or OS.has_feature("web_ios")
+    # Android/iOS native ตรวจจากชื่อ OS โดยตรงด้วย เพราะ export บางชุดไม่ใส่ feature tag "mobile"
+    # Web-mobile ยังใช้ feature web_android/web_ios ตามเดิม
+    var os_name: String = OS.get_name()
+    return os_name == "Android" or os_name == "iOS" or OS.has_feature("mobile") or OS.has_feature("web_android") or OS.has_feature("web_ios")
 
 static func is_touch_device() -> bool:
     # ใช้กับการรับ input เท่านั้น: PC touchscreen ยังถือว่า touch ได้ แต่ไม่จำเป็นต้องใช้ Mobile layout
