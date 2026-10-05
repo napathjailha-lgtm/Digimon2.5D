@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="MonsterData" load_steps=8 format=3]
+[ext_resource type="Script" path="res://scripts/monster_data.gd" id="s"]
+[ext_resource type="SpriteFrames" path="res://data/pregame/cryoblaster_frames.tres" id="f"]
+[ext_resource type="Texture2D" path="res://assets/original_monsters/cryoblaster_portrait.tres" id="portrait"]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="kt"]
+[ext_resource type="Resource" path="res://data/pregame/cryoblaster_cryo_cannon.tres" id="k0"]
+[ext_resource type="Resource" path="res://data/pregame/cryoblaster_polar_missile.tres" id="k1"]
+[ext_resource type="Resource" path="res://data/pregame/cryoblaster_absolute_burst.tres" id="k2"]
+[resource]
+script = ExtResource("s")
+id = &"cryoblaster_3"
+monster_name = "Cryoblaster"
+portrait_texture = ExtResource("portrait")
+evolution_stage = 3
+max_hp = 620
+attack = 72
+move_speed = 285.0
+attack_range = 82.0
+attack_interval = 0.75
+sprite_frames = ExtResource("f")
+sprite_scale = Vector2(0.82, 0.82)
+attack_sprite_scale = Vector2(0.82, 0.82)
+cast_sprite_scale = Vector2(0.82, 0.82)
+animation_reference_speed = 285.0
+idle_animation = &"idle_down"
+walk_animation = &"walk_down"
+attack_animation = &"attack_down"
+cast_animation = &"cast_down"
+require_directional_animations = true
+require_action_animations = true
+attack_hit_frame = 2
+evolution_cost = 25.0
+ds_drain_per_second = 6.0
+skills = Array[ExtResource("kt")]([ExtResource("k0"), ExtResource("k1"), ExtResource("k2")])
