@@ -14,9 +14,9 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 [application]
 
-config/name="Digital Adventure Form Skills"
-config/version="0.26.0"
-run/main_scene="res://scenes/pregame/loading_screen.tscn"
+config/name="Prism Tamer: Frontier"
+config/version="0.27.0"
+run/main_scene="res://scenes/splash_screen.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://assets/items/digitama.svg"
 boot_splash/show_image=false
