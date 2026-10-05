@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="PackedScene" path="res://scenes/wild_monster.tscn" id="1"]
+[node name="ForestByte" instance=ExtResource("1")]
+monster_id = &"forest_byte"
+exp_reward = 120
+max_hp = 185
+move_speed = 105.0
+attack_damage = 10
+attack_range = 60.0
+wander_radius = 90.0
+[node name="Nameplate" parent="."]
+display_name = "Forest Byte"
