@@ -107,6 +107,8 @@ func run() -> void:
     check(JSON.parse_string(JSON.stringify(other.get_save_data())) == saved and other.total_bonuses() == totals, "Equipment save JSON round trip")
     other.restore_data({"version":EquipmentInventory.SAVE_VERSION, "bag":{}, "equipped":{}})
     check(other.bag.is_empty() and other.equipped.is_empty(), "bag ว่างที่เซฟไว้ไม่รับ starter ซ้ำ")
+    other.restore_data({"version":1, "bag":{"field_cap":1}, "equipped":{"head":"field_cap"}})
+    check(other.bag.is_empty() and other.equipped.is_empty(), "เซฟ equipment v1 ถูกล้าง starter gear ตอน migrate เป็น v2")
     other.restore_data({"version":EquipmentInventory.SAVE_VERSION,"bag":{"unknown":5,"field_cap":-20},"equipped":{"head":"field_jacket","boots":"unknown","ring":"crest_ring"}})
     check(other.count(&"field_cap") == 0 and other.item_at(&"head") == null and other.item_at(&"boots") == null, "กรอง unknown/ผิดช่อง/จำนวนติดลบตอนโหลด")
     check(other.item_at(&"ring") == null and other.count(&"crest_ring") == 1, "เซฟของระดับสูงเกินคืนเข้ากระเป๋า")
