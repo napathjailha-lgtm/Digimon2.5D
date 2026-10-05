@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EquipmentItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/equipment_item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/equipment/back.svg" id="2"]
+[resource]
+script = ExtResource("1")
+id = &"expedition_pack"
+item_name = "Expedition Pack"
+slot = &"back"
+icon = ExtResource("2")
+rarity = 1
+required_level = 9
+description = "กระเป๋าสำรวจ เพิ่ม HP, DS, VIT และ INT"
+hp_bonus = 60
+ds_bonus = 15
+vitality_bonus = 2
+intelligence_bonus = 1
