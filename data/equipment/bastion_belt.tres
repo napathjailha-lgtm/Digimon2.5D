@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EquipmentItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/equipment_item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/equipment/belt.svg" id="2"]
+[resource]
+script = ExtResource("1")
+id = &"bastion_belt"
+item_name = "Bastion Belt"
+slot = &"belt"
+icon = ExtResource("2")
+rarity = 1
+required_level = 8
+description = "เข็มขัดเสริมเกราะ เพิ่ม VIT/DEF"
+hp_bonus = 50
+defense_bonus = 4
+vitality_bonus = 2
