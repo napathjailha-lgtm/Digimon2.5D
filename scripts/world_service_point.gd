@@ -67,8 +67,24 @@ func request_interaction() -> void:
     if controller != null:
         controller.open_service(StringName(service_id))
 
+func _input(event: InputEvent) -> void:
+    # Android บางอุปกรณ์ไม่ส่ง ScreenTouch เข้า CollisionObject2D._input_event
+    # จึงมี fallback ที่แตะ "ภาพตู้" โดยตรง แต่ยังต้องยืนอยู่ใน interaction_radius
+    if not _near or get_tree().paused or not event is InputEventScreenTouch:
+        return
+    var touch := event as InputEventScreenTouch
+    if not touch.pressed or touch.canceled:
+        return
+
+    var local_touch: Vector2 = get_global_transform_with_canvas().affine_inverse() * touch.position
+    # ตู้ถูกวาดเหนือ origin ราว 50-100 px; hit radius กว้างพอสำหรับนิ้วบน Android
+    if local_touch.distance_to(Vector2(0.0, -70.0)) <= 96.0:
+        request_interaction()
+        get_viewport().set_input_as_handled()
+
+
 func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
-    # บน Web เมาส์ถูก emulate เป็น touch ได้ แต่รองรับ MouseButton ตรงด้วยเพื่อให้ desktop ชัดเจน
+    # Mouse/Touch ผ่าน Area2D ตามปกติ; _input ด้านบนเป็น fallback สำหรับ Android native
     if not _near or get_tree().paused:
         return
     var activate: bool = false
