@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="MonsterData" load_steps=5 format=3]
+[ext_resource type="Script" path="res://scripts/monster_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/original_monsters/frostfang_0.tres" id="art"]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="kt"]
+[ext_resource type="Resource" path="res://data/original_monsters/frostkit_frost_spark.tres" id="k0"]
+[resource]
+script = ExtResource("s")
+id = &"frostfang_0"
+monster_name = "Frostkit"
+evolution_stage = 0
+max_hp = 145
+attack = 16
+move_speed = 250.0
+attack_range = 70.0
+attack_interval = 0.9
+portrait_texture = ExtResource("art")
+static_art = ExtResource("art")
+sprite_scale = Vector2(0.78, 0.78)
+attack_sprite_scale = Vector2(0.78, 0.78)
+cast_sprite_scale = Vector2(0.78, 0.78)
+animation_reference_speed = 250.0
+idle_animation = &"idle_down"
+walk_animation = &"walk_down"
+attack_animation = &"attack_down"
+cast_animation = &"cast_down"
+require_directional_animations = true
+require_action_animations = true
+attack_hit_frame = 2
+evolution_cost = 0.0
+ds_drain_per_second = 0.0
+skills = Array[ExtResource("kt")]([ExtResource("k0")])
