@@ -49,20 +49,20 @@ var state: State = State.IDLE
 var form_index: int = 0
 var current_form: MonsterData
 # ค่าสถานะระหว่างเล่น แยกจาก Resource ต้นแบบ
-var digimon_hp: int = 0
-var digimon_max_hp: int = 0
-@export_range(1.0, 99999.0) var digimon_max_mp: float = 100.0
-var digimon_mp: float = 100.0:
+var partner_hp: int = 0
+var partner_max_hp: int = 0
+@export_range(1.0, 99999.0) var partner_max_mp: float = 100.0
+var partner_mp: float = 100.0:
     set(value):
         if is_finite(value):
-            digimon_mp = clampf(value,0,digimon_max_mp)
+            partner_mp = clampf(value,0,partner_max_mp)
 # Alias เพื่อให้ Nameplate/เซฟ/EXP เดิมใช้งานได้ ข้อมูลจริงมีเพียงชุดเดียว
 var hp: int:
-    get: return digimon_hp
-    set(value): digimon_hp = clampi(value,0,maxi(0,digimon_max_hp))
+    get: return partner_hp
+    set(value): partner_hp = clampi(value,0,maxi(0,partner_max_hp))
 var max_hp: int:
-    get: return digimon_max_hp
-    set(value): digimon_max_hp = maxi(1,value)
+    get: return partner_max_hp
+    set(value): partner_max_hp = maxi(1,value)
 var attack_power: int = 0
 var move_speed: float = 0.0
 var active_skills: Array[MonsterSkill] = []
@@ -90,7 +90,7 @@ func _ready() -> void:
         var starter: StarterPartnerData = GameManager.selected_partner_data()
         if starter != null and not starter.forms.is_empty():
             forms.assign(starter.forms)
-    digimon_mp = digimon_max_mp
+    partner_mp = partner_max_mp
     if is_instance_valid(tamer):
         tamer.battle_permission_changed.connect(_on_tamer_battle_permission)
     _damage_rng.randomize()
@@ -112,7 +112,7 @@ func _ready() -> void:
     combat_action.canceled.connect(_clear_action_context)
     if not _apply_form(0, false):
         set_physics_process(false)
-    mp_changed.emit(digimon_mp,digimon_max_mp)
+    mp_changed.emit(partner_mp,partner_max_mp)
 
 func is_alive() -> bool:
     return hp > 0 and state not in [State.FAINTED, State.EGG]
@@ -226,7 +226,7 @@ func cancel_battle() -> void:
 func command_skill(slot: int, enemy: WildMonster) -> void:
     # Skill command จัดการ Target เอง ไม่เรียก command_attack()
     # เพราะ command_attack() มีหน้าที่ล้าง pending action เมื่อเปลี่ยนเป้า
-    # ซึ่งทำให้คำสั่งสกิลบางจังหวะหลัง Switch/Digivolve ถูกล้างก่อน _battle_tick()
+    # ซึ่งทำให้คำสั่งสกิลบางจังหวะหลัง Switch/Evolution ถูกล้างก่อน _battle_tick()
     _pending_page_skill = null
     _pending_page_form = null
 
@@ -241,7 +241,7 @@ func command_skill(slot: int, enemy: WildMonster) -> void:
     if cooldown_remaining(skill) > 0.0:
         feedback.emit("%s ยังติดคูลดาวน์" % skill.display_name)
         return
-    if digimon_mp < skill.mp_cost:
+    if partner_mp < skill.mp_cost:
         feedback.emit("Partner MP ไม่พอใช้ %s" % skill.display_name)
         return
 
@@ -298,14 +298,14 @@ func _battle_tick() -> void:
     var desired_range: float = current_form.attack_range
     if _pending_page_skill != null:
         var source_slot: int = _pending_page_form.skills.find(_pending_page_skill) if _pending_page_form != null else -1
-        if not can_use_skill_from_form(_pending_page_form, source_slot) or digimon_mp < _pending_page_skill.mp_cost:
+        if not can_use_skill_from_form(_pending_page_form, source_slot) or partner_mp < _pending_page_skill.mp_cost:
             cancel_page_skill()
             feedback.emit("ชุดสกิลถูกล็อกหรือ MP ไม่พอ")
         else:
             desired_range = _pending_page_skill.cast_range
     if _pending_skill >= 0:
         var skill: MonsterSkill = active_skills[_pending_skill]
-        if skill == null or digimon_mp < skill.mp_cost:
+        if skill == null or partner_mp < skill.mp_cost:
             _pending_skill = -1
             feedback.emit("MP ไม่พอใช้สกิล")
         else:
@@ -462,8 +462,8 @@ func get_next_form() -> MonsterData:
     var index: int = form_index + 1
     return forms[index] if form_index >= 0 and index < forms.size() else null
 
-func prepare_digivolve() -> MonsterData:
-    # ปลดล็อกร่างตามเลเวล: Champion 15 / Ultimate 60 / Mega 90
+func prepare_evolution() -> MonsterData:
+    # ปลดล็อกร่างตามเลเวล: Growth 15 / Ascended 60 / Apex 90
     if evolution_busy or not is_alive() or not is_instance_valid(tamer) or not tamer.can_battle():
         return null
     var next_data: MonsterData = get_next_form()
@@ -493,29 +493,29 @@ func prepare_digivolve() -> MonsterData:
     evolution_changed.emit(true)
     return next_data
 
-func finish_digivolve() -> bool:
+func finish_evolution() -> bool:
     # Commit หลังคัตซีนจบ ตรวจสิทธิ์อีกครั้งก่อนเปลี่ยนตัวจริงในสนาม
     if not evolution_busy:
         return false
     if not is_alive() or not is_instance_valid(tamer) or not tamer.can_battle() or current_form != _reserved_previous or not _form_unlocked(_reserved_form):
-        abort_digivolve()
+        abort_evolution()
         return false
     _internal_load = true
     var success: bool = load_monster_data(_reserved_form)
     _internal_load = false
     if not success:
-        abort_digivolve()
+        abort_evolution()
         return false
     evolution_busy = false
     _reserved_cost = 0.0
     _reserved_form = null
     _reserved_previous = null
     evolution_changed.emit(false)
-    feedback.emit("Digivolve: " + current_form.monster_name)
+    feedback.emit("Evolution: " + current_form.monster_name)
     tamer.save_party_progress()
     return true
 
-func abort_digivolve() -> void:
+func abort_evolution() -> void:
     # ยกเลิก/ปิดคัตซีนก่อนจบ: คืน DS ครั้งเดียวและปลด busy
     if not evolution_busy:
         return
@@ -527,11 +527,11 @@ func abort_digivolve() -> void:
     _reserved_previous = null
     evolution_changed.emit(false)
 
-func digivolve() -> bool:
-    # API เปลี่ยนทันทีสำหรับระบบภายใน/ทดสอบ ปุ่ม UI ใช้ DigivolveCutscene
-    if prepare_digivolve() == null:
+func evolve() -> bool:
+    # API เปลี่ยนทันทีสำหรับระบบภายใน/ทดสอบ ปุ่ม UI ใช้ EvolutionCutscene
+    if prepare_evolution() == null:
         return false
-    return finish_digivolve()
+    return finish_evolution()
 
 func load_monster_data(data: MonsterData, preserve_hp: bool = true) -> bool:
     # ร่างไข่ต้องฟื้นผ่าน recover() เท่านั้น ห้าม loader ชุบหรือแสดงร่างต่อสู้
@@ -643,7 +643,7 @@ func enter_fainted(animate: bool = true) -> void:
     # เก็บ Node เดิมไว้: ไม่ใช้ queue_free() กับคู่หู และไม่ล้าง EXP/Level
     if state in [State.FAINTED, State.EGG]:
         return
-    abort_digivolve()
+    abort_evolution()
     hp = 0
     auto_battle = false
     cancel_battle()
@@ -690,20 +690,20 @@ func recover() -> bool:
     sprite.show()
     sprite.modulate = Color.WHITE
     hp = max_hp
-    restore_mp(digimon_max_mp)
+    restore_mp(partner_max_mp)
     skill_cooldowns.clear()
     _basic_cooldown = 0.0
     _change_state(State.IDLE)
     sprite.play(current_form.idle_animation)
     hp_changed.emit(hp, max_hp)
     recovered.emit()
-    feedback.emit("ฟื้นฟูสำเร็จ: Rookie HP เต็ม")
+    feedback.emit("ฟื้นฟูสำเร็จ: Base HP เต็ม")
     if is_instance_valid(tamer):
         tamer.save_party_progress()
     return true
 
 func _effective_stats() -> Dictionary:
-    # คำนวณร่าง + เลเวล + โบนัส Digivice ใหม่เสมอ ไม่แก้ MonsterData
+    # คำนวณร่าง + เลเวล + โบนัส Link Core ใหม่เสมอ ไม่แก้ MonsterData
     var stats: Dictionary = progress.get_effective_stats()
     if is_instance_valid(tamer):
         var bonus: Dictionary = tamer.equipment.total_bonuses()
@@ -752,14 +752,14 @@ func _on_story_unlocks_changed(max_stage: int) -> void:
     # stage เดิมยังเก็บไว้เพื่อ compatibility แต่การปลดร่างหลักใช้เลเวลเป็นตัวกำหนด
     max_story_stage = max_stage
     if current_form != null and not QuestManager.has_flag(current_form.required_story_flag) and not forms.is_empty():
-        abort_digivolve()
+        abort_evolution()
         load_monster_data(forms[0])
 
 func _form_unlocked(data: MonsterData) -> bool:
     if data == null:
         return false
-    # Jogress เป็นร่าง runtime พิเศษ ไม่ได้อยู่ใน forms จึงอนุญาตเมื่อ Manager ผ่านเงื่อนไขแล้ว
-    if data.id == &"omegamon":
+    # Fusion เป็นร่าง runtime พิเศษ ไม่ได้อยู่ใน forms จึงอนุญาตเมื่อ Manager ผ่านเงื่อนไขแล้ว
+    if data.id == &"nova_aegis":
         return true
     var index: int = forms.find(data)
     return index >= 0 and EvolutionRules.can_use_form(progress.level, index) and QuestManager.has_flag(data.required_story_flag)
@@ -806,12 +806,12 @@ func _on_action_impact() -> void:
     _remove_charge_effect()
 
     # SFX ผูกกับ release/impact frame จริงของ Animation ไม่ใช่ตอนกดปุ่ม
-    # ตอนนี้เปิดตัวอย่างสาย Tentomon; สายอื่นเพิ่ม mapping ได้โดยไม่แก้ระบบ AudioManager
+    # ตอนนี้เปิดตัวอย่างสาย Voltbug; สายอื่นเพิ่ม mapping ได้โดยไม่แก้ระบบ AudioManager
     if _action_skill != null and is_instance_valid(tamer) and is_instance_valid(tamer.party_roster):
         var active_family: StringName = &""
         if not tamer.party_roster.members.is_empty():
             active_family = StringName(str(tamer.party_roster.members[tamer.party_roster.active_index].get("id", "")))
-        if active_family == &"tentomon":
+        if active_family == &"voltbug":
             AudioManager.play_sfx(&"electric_attack", -5.0)
 
     if _action_skill == null:
@@ -880,42 +880,42 @@ func can_battle() -> bool:
 
 func consume_mp(amount: float) -> bool:
     # เรียกเมื่อกำลังเริ่มสกิลเท่านั้น ท่าโจมตีธรรมดา/เดิน/ความหิวไม่แตะ MP
-    if not is_finite(amount) or amount < 0 or digimon_mp < amount:
+    if not is_finite(amount) or amount < 0 or partner_mp < amount:
         return false
     if amount > 0:
-        digimon_mp = maxf(0,digimon_mp-amount)
-        mp_changed.emit(digimon_mp,digimon_max_mp)
+        partner_mp = maxf(0,partner_mp-amount)
+        mp_changed.emit(partner_mp,partner_max_mp)
     return true
 
 func restore_mp(amount: float) -> float:
     # เมือง/ไอเทม/Recover เติม MP แต่เปลี่ยนร่างไม่เติมฟรีและไม่หัก MP
     if not is_finite(amount) or amount <= 0:
         return 0
-    var restored: float = minf(amount,digimon_max_mp-digimon_mp)
+    var restored: float = minf(amount,partner_max_mp-partner_mp)
     if restored <= 0:
         return 0
-    digimon_mp += restored
-    mp_changed.emit(digimon_mp,digimon_max_mp)
+    partner_mp += restored
+    mp_changed.emit(partner_mp,partner_max_mp)
     return restored
 
 func _on_tamer_battle_permission(allowed: bool) -> void:
     # หยุด Wind-up, Auto, คำสั่งรอ, Target และลูกไฟเก่าก่อนกลับร่างพื้นฐาน
     if allowed:
         return # ไม่เปิด Auto/ล็อกเป้าหมายเก่าซ้ำเองหลังฟื้น
-    abort_digivolve() # คืน DS ที่จองถ้าคัตซีนยังไม่ Commit
+    abort_evolution() # คืน DS ที่จองถ้าคัตซีนยังไม่ Commit
     auto_battle = false
     cancel_battle()
     for projectile: Node in get_tree().get_nodes_in_group("skill_projectiles"):
         if is_instance_valid(projectile) and projectile.source == self:
             projectile._expire()
     if is_alive() and not forms.is_empty() and current_form != forms[0]:
-        # HP เปลี่ยนตาม max ของ Rookie โดยคงสัดส่วนเดิม ไม่ทำดาเมจจาก Survival ใส่คู่หู
+        # HP เปลี่ยนตาม max ของ Base โดยคงสัดส่วนเดิม ไม่ทำดาเมจจาก Survival ใส่คู่หู
         _apply_form(0,true)
     velocity = Vector2.ZERO
     _desired_velocity = Vector2.ZERO
     if is_alive():
         _change_state(State.FOLLOW if global_position.distance_to(tamer.global_position) > follow_stop_distance else State.IDLE)
-    feedback.emit("Tamer HP ต่ำกว่า 20%: กลับ Rookie และหยุดต่อสู้")
+    feedback.emit("Tamer HP ต่ำกว่า 20%: กลับ Base และหยุดต่อสู้")
 
 func roll_outgoing_damage(amount: int) -> int:
     # หนึ่งแอคชั่นสุ่มครั้งเดียว ก่อนส่งไป projectile/hit resolver
