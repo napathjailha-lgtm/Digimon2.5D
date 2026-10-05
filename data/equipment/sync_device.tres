@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EquipmentItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/equipment_item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/equipment/device.svg" id="2"]
+[resource]
+script = ExtResource("1")
+id = &"sync_device"
+item_name = "Sync Device"
+slot = &"device"
+icon = ExtResource("2")
+rarity = 1
+required_level = 12
+description = "อุปกรณ์ซิงก์คู่หู เพิ่ม DS และพลัง Partner"
+ds_bonus = 20
+partner_hp_bonus = 80
+partner_attack_bonus = 10
+intelligence_bonus = 2
