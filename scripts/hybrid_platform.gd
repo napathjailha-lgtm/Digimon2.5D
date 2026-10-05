@@ -3,13 +3,24 @@ extends RefCounted
 ## ตัวช่วยตรวจแพลตฟอร์ม Hybrid โดยแยก "Web" ออกจาก "Touch device"
 ## Web บนมือถือจะเป็นทั้ง web=true และ touchscreen=true แม้ OS.has_feature("mobile") จะเป็น false
 
+static func is_mobile_device() -> bool:
+    # แยก "มือถือจริง" ออกจาก PC ที่มีจอสัมผัส เพื่อไม่เปิด Mobile layout บน laptop/tablet-PC โดยไม่ตั้งใจ
+    return OS.has_feature("mobile") or OS.has_feature("web_android") or OS.has_feature("web_ios")
+
 static func is_touch_device() -> bool:
-    # Godot Web บนมือถือไม่ได้ติด tag "mobile" เสมอไป
-    # feature web_android/web_ios เป็นวิธีที่ Godot แนะนำสำหรับ Web Mobile
-    return OS.has_feature("mobile") or OS.has_feature("web_android") or OS.has_feature("web_ios") or DisplayServer.is_touchscreen_available()
+    # ใช้กับการรับ input เท่านั้น: PC touchscreen ยังถือว่า touch ได้ แต่ไม่จำเป็นต้องใช้ Mobile layout
+    return is_mobile_device() or DisplayServer.is_touchscreen_available()
 
 static func is_web_touch() -> bool:
     return OS.has_feature("web") and is_touch_device()
+
+static func use_mobile_layout(viewport: Viewport = null) -> bool:
+    if is_mobile_device():
+        return true
+    # fallback สำหรับ browser ที่ไม่รายงาน web_android/web_ios: ต้องเป็น touchscreen + viewport เล็กจริง
+    if OS.has_feature("web") and DisplayServer.is_touchscreen_available() and viewport != null:
+        return is_compact_viewport(viewport)
+    return false
 
 static func is_compact_viewport(viewport: Viewport) -> bool:
     var size: Vector2 = viewport.get_visible_rect().size
@@ -20,10 +31,11 @@ static func is_portrait(viewport: Viewport) -> bool:
     return size.y > size.x
 
 static func configure_web_touch_surface() -> void:
-    # ป้องกัน browser scroll / pinch / text selection แย่ง gesture จาก Godot canvas
-    # เรียกซ้ำได้อย่างปลอดภัยทุก Scene
-    if not OS.has_feature("web"):
+    # Desktop Web ต้องปล่อยให้ Godot คุม canvas resize เอง เพื่อให้ภาพกับ mouse coordinates ตรงกัน
+    # ปิด browser gesture เฉพาะ Web ที่มี touch เท่านั้น และห้ามกำหนด CSS width/height ของ canvas
+    if not is_web_touch():
         return
+
     JavaScriptBridge.eval("""
 (() => {
   let viewport = document.querySelector('meta[name="viewport"]');
@@ -36,37 +48,28 @@ static func configure_web_touch_surface() -> void:
 
   const html = document.documentElement;
   const body = document.body;
+
   if (html) {
     html.style.overscrollBehavior = 'none';
     html.style.touchAction = 'none';
-    html.style.margin = '0';
-    html.style.padding = '0';
-    html.style.width = '100%';
-    html.style.height = '100dvh';
-    html.style.minHeight = '100dvh';
   }
+
   if (body) {
     body.style.overscrollBehavior = 'none';
     body.style.touchAction = 'none';
     body.style.userSelect = 'none';
     body.style.webkitUserSelect = 'none';
-    body.style.margin = '0';
-    body.style.padding = '0';
     body.style.overflow = 'hidden';
-    body.style.width = '100%';
-    body.style.height = '100dvh';
-    body.style.minHeight = '100dvh';
   }
+
   const canvas = document.querySelector('canvas');
   if (canvas) {
     canvas.style.touchAction = 'none';
     canvas.style.webkitUserSelect = 'none';
     canvas.style.userSelect = 'none';
-    canvas.style.width = '100vw';
-    canvas.style.height = '100dvh';
-    canvas.style.maxWidth = '100vw';
-    canvas.style.maxHeight = '100dvh';
-    canvas.style.display = 'block';
+
+    // สำคัญ: ไม่แตะ width/height ของ canvas
+    // html/canvas_resize_policy=2 ให้ Godot จัด backing size และ pointer mapping เอง
   }
 })();
 """, true)
