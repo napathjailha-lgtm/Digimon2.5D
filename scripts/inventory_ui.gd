@@ -195,6 +195,7 @@ func _refresh_popup() -> void:
             ItemData.EffectType.TAMER_FOOD: caption = "กิน • อิ่ม +%d" % item.effect_value
             ItemData.EffectType.PARTNER_HP: caption = "ใช้ • HP +%d" % item.effect_value
             ItemData.EffectType.PARTNER_MP: caption = "ใช้ • MP +%d" % item.effect_value
+            ItemData.EffectType.TAMER_HP: caption = "ใช้ • Tamer HP +%d" % item.effect_value
     use_button.set_caption(caption)
     drop_button.locked = false
     use_button.queue_redraw()
