@@ -24,6 +24,8 @@ jobs:
           include-templates: true
       - name: Import and parse project
         run: godot --headless --path . --editor --quit
+      - name: Resource load smoke test
+        run: godot --headless --path . --script res://tests/resource_load_smoke.gd
       - name: Validate Web export
         run: |
           mkdir -p /tmp/digimon-web
