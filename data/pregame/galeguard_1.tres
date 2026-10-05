@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="MonsterData" load_steps=5 format=3]
+[ext_resource type="Script" path="res://scripts/monster_data.gd" id="s"]
+[ext_resource type="SpriteFrames" path="res://data/pregame/galeguard_frames.tres" id="f"]
+[ext_resource type="Resource" path="res://data/pregame/galeguard_tempest_lance.tres" id="k"]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="kt"]
+[resource]
+script = ExtResource("s")
+id = &"galeguard_1"
+monster_name = "Galeguard"
+evolution_stage = 1
+max_hp = 245
+attack = 40
+move_speed = 275.0
+sprite_frames = ExtResource("f")
+sprite_scale = Vector2(0.58, 0.58)
+attack_sprite_scale = Vector2(0.58, 0.58)
+cast_sprite_scale = Vector2(0.58, 0.58)
+animation_reference_speed = 275.0
+idle_animation = &"idle_down"
+walk_animation = &"walk_down"
+attack_animation = &"attack_down"
+cast_animation = &"cast_down"
+require_directional_animations = true
+require_action_animations = true
+attack_hit_frame = 2
+evolution_cost = 25.0
+ds_drain_per_second = 5.0
+skills = Array[ExtResource("kt")]([ExtResource("k")])
