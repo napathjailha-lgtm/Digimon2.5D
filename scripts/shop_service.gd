@@ -31,7 +31,7 @@ func sell(item_id: String, quantity: int = 1) -> bool:
         feedback.emit("ไอเทมนี้ขายไม่ได้")
         return false
     if item.item_type == ItemData.ItemType.EGG:
-        feedback.emit("Digitama ขายให้ร้านทั่วไปไม่ได้")
+        feedback.emit("Core Egg ขายให้ร้านทั่วไปไม่ได้")
         return false
     if InventoryManager.count(item_id) < quantity:
         feedback.emit("จำนวนไอเทมไม่พอ")
