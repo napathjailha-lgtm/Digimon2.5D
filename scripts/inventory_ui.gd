@@ -185,7 +185,7 @@ func _refresh_popup() -> void:
     type_label.text = item.type_label()
     description_label.text = item.description
     var partner: Node = player.partner
-    partner_label.text = "Tamer HP %d/%d • อิ่ม %.0f • แรง %.0f\n%s HP %d/%d • MP %.0f/%.0f" % [player.hp,player.max_hp,player.tamer_hunger,player.tamer_stamina,partner.current_form.monster_name,partner.hp,partner.max_hp,partner.digimon_mp,partner.digimon_max_mp]
+    partner_label.text = "Tamer HP %d/%d • อิ่ม %.0f • แรง %.0f\n%s HP %d/%d • MP %.0f/%.0f" % [player.hp,player.max_hp,player.tamer_hunger,player.tamer_stamina,partner.current_form.monster_name,partner.hp,partner.max_hp,partner.partner_mp,partner.partner_max_mp]
     use_button.locked = not InventoryManager.can_use_item(item)
     var caption: String = "ใช้ไม่ได้"
     if item.item_type == ItemData.ItemType.EGG:
