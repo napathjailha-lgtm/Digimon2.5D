@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="MonsterData" load_steps=5 format=3]
+[ext_resource type="Script" path="res://scripts/monster_data.gd" id="s"]
+[ext_resource type="SpriteFrames" path="res://data/pregame/emberling_0_frames.tres" id="f"]
+[ext_resource type="Resource" path="res://data/pregame/emberling_0_skill.tres" id="k"]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="kt"]
+[resource]
+script = ExtResource("s")
+id = &"emberling_0"
+monster_name = "Emberling"
+evolution_stage = 0
+max_hp = 120
+attack = 18
+move_speed = 240.0
+sprite_frames = ExtResource("f")
+sprite_scale = Vector2(0.48,0.48)
+attack_sprite_scale = Vector2(0.50,0.50)
+cast_sprite_scale = Vector2(0.50,0.50)
+animation_reference_speed = 240.0
+idle_animation = &"idle"
+walk_animation = &"walk"
+attack_animation = &"attack"
+cast_animation = &"cast"
+require_directional_animations = false
+require_action_animations = true
+attack_hit_frame = 0
+skills = Array[ExtResource("kt")]([ExtResource("k")])
