@@ -85,9 +85,9 @@ func can_use_item(item: ItemData) -> bool:
 
 func _use_error(item: ItemData, player: Node) -> String:
     if item == null or not is_instance_valid(player):
-        return "ไม่พบไอเทมหรือ Tamer"
+        return "ไม่พบไอเทมหรือ Warden"
     if item.item_type == ItemData.ItemType.EGG:
-        return "ต้องนำ Digitama ไปใช้ที่ Digital Incubator กลางหมู่บ้าน"
+        return "ต้องนำ Core Egg ไปใช้ที่ Core Incubator กลางหมู่บ้าน"
     if item.item_type != ItemData.ItemType.CONSUMABLE:
         return "ไข่เก็บไว้สำหรับระบบฟัก ส่วนชิปข้อมูลใช้เป็นไอเทมเควสต์"
     if not is_instance_valid(player.partner) or player.partner.evolution_busy:
@@ -120,13 +120,13 @@ func use_item(item_index: int) -> bool:
     var message: String = ""
     if item.item_type == ItemData.ItemType.EGG:
         _busy = false
-        return _fail("Digitama ฟักได้เฉพาะที่ Digital Incubator")
+        return _fail("Core Egg ฟักได้เฉพาะที่ Core Incubator")
     match item.effect_type:
         ItemData.EffectType.TAMER_FOOD:
             var previous_hp: int = player.hp
             applied = player.eat_food(item.effect_value,item.tamer_hp_restore,item.tamer_stamina_restore)
             healed = player.hp-previous_hp
-            message = "Tamer อิ่ม +%d / HP +%d" % [item.effect_value,healed]
+            message = "Warden อิ่ม +%d / HP +%d" % [item.effect_value,healed]
         ItemData.EffectType.PARTNER_HP:
             var previous_hp: int = player.partner.hp
             heal_requested.emit(item.effect_value)
