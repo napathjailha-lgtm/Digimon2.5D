@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="StarterPartnerData" load_steps=7 format=3]
+[ext_resource type="Script" path="res://scripts/pregame/starter_partner_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/original/creatures/sproutkin_0.svg" id="p"]
+[ext_resource type="Script" path="res://scripts/monster_data.gd" id="mt"]
+[ext_resource type="Resource" path="res://data/pregame/sproutkin_0.tres" id="f0"]
+[ext_resource type="Resource" path="res://data/pregame/sproutkin_1.tres" id="f1"]
+[ext_resource type="Resource" path="res://data/pregame/sproutkin_2.tres" id="f2"]
+[resource]
+script = ExtResource("s")
+id = &"sproutkin"
+display_name = "Sproutkin"
+attribute_name = "Cipher"
+element_name = "พืช"
+description = "คู่หูต้นฉบับธาตุพืช • สายวิวัฒนาการเฉพาะของ Signal Frontier"
+portrait = ExtResource("p")
+forms = Array[ExtResource("mt")]([ExtResource("f0"),ExtResource("f1"),ExtResource("f2")])
