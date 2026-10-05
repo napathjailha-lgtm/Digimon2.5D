@@ -14,11 +14,11 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 [application]
 
-config/name="Digital Adventure Form Skills"
+config/name="Signal Frontier"
 config/version="0.26.0"
 run/main_scene="res://scenes/pregame/loading_screen.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
-config/icon="res://assets/items/digitama.svg"
+config/icon="res://assets/items/core_egg.svg"
 
 [autoload]
 
