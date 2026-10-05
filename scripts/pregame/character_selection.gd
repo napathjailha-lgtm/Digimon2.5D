@@ -82,7 +82,7 @@ func refresh() -> void:
         model_buttons[i].set_pressed_no_signal(GameManager.catalog.tamers[i].id == model_selected)
     name_input.editable = not existing
     action_button.text = "เข้าสู่ Aether Frontier" if existing else "สร้างตัวละคร → เลือกคู่หู"
-    import_button.visible = not existing and FileAccess.file_exists(GameManager.legacy_save_path)
+    import_button.visible = false
     $Margin/Column/Header/Subtitle.text = "%s  /  %s  •  5 ช่องตัวละคร" % [GameManager.username, GameManager.server_selected]
 
 func _continue() -> void:
@@ -100,7 +100,7 @@ func _continue() -> void:
 func _import_legacy() -> void:
     if GameManager.import_legacy_character():
         select_slot(GameManager.selected_slot)
-        show_message("นำเข้าเซฟ v15 แล้ว ไฟล์ต้นฉบับยังอยู่ครบ")
+        show_message("ระบบ Legacy Import ถูกปิดหลังย้ายมาใช้ asset ต้นฉบับ")
 
 func back() -> void:
     GameManager.cancel_creation()
