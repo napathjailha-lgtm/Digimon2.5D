@@ -202,11 +202,12 @@ func _layout() -> void:
     party_status.offset_right = vital_width * 0.5
     party_panel.set_compact(compact_touch or safe_height < 660.0)
 
-    menu.animations_enabled = preferences.animations_enabled
-    GameVisualSettings.motion_enabled = preferences.animations_enabled
-    GameVisualSettings.blur_enabled = preferences.blur_enabled
-    GameVisualSettings.low_effects = preferences.low_effects
-    if not preferences.animations_enabled:
+    var web_mobile_low_power: bool = HybridPlatform.is_web_mobile(get_viewport())
+    menu.animations_enabled = preferences.animations_enabled and not web_mobile_low_power
+    GameVisualSettings.motion_enabled = preferences.animations_enabled and not web_mobile_low_power
+    GameVisualSettings.blur_enabled = preferences.blur_enabled and not web_mobile_low_power
+    GameVisualSettings.low_effects = preferences.low_effects or web_mobile_low_power
+    if not GameVisualSettings.motion_enabled:
         for fx: Node in get_tree().get_nodes_in_group("button_visual_fx"):
             fx.reset()
         for bar: Node in get_tree().get_nodes_in_group("smooth_texture_bars"):

@@ -17,8 +17,10 @@ var atlas: Texture2D
 var textures: Dictionary = {}
 var navigation_ready: bool = false
 var _shadow_sources: Array[Dictionary] = []
+var web_mobile_low_power: bool = false
 
 func _ready() -> void:
+    web_mobile_low_power = not Engine.is_editor_hint() and HybridPlatform.is_web_mobile(get_viewport())
     if layout == null:
         layout = OpenWorldLayout.new()
     actors = get_parent().get_node("Actors") as Node2D
@@ -52,16 +54,17 @@ func _ready() -> void:
     _bake_navigation()
     if not Engine.is_editor_hint():
         _adjust_spawner_positions()
-        # วงดิจิตอลบนพื้นเมืองเป็นการตกแต่งเท่านั้น ไม่แย่งแสงหรือบัง sprite
-        var digital_ring := DigitalWorldAccents.new()
-        digital_ring.position = layout.village_center + Vector2(0, 95)
-        add_child(digital_ring)
-        var depth_layers := DepthParallax.new()
-        depth_layers.name = "DepthLayers"
-        depth_layers.camera = camera
-        depth_layers.world_extent = layout.extent
-        depth_layers.foreground_texture = textures["tree_b"]
-        add_child(depth_layers)
+        # Web Mobile ตัดฉากตกแต่งที่มี _process/parallax ออก เพื่อประหยัด GPU/CPU
+        if not web_mobile_low_power:
+            var digital_ring := DigitalWorldAccents.new()
+            digital_ring.position = layout.village_center + Vector2(0, 95)
+            add_child(digital_ring)
+            var depth_layers := DepthParallax.new()
+            depth_layers.name = "DepthLayers"
+            depth_layers.camera = camera
+            depth_layers.world_extent = layout.extent
+            depth_layers.foreground_texture = textures["tree_b"]
+            add_child(depth_layers)
 
 func _adjust_spawner_positions() -> void:
     # ขยับจุดเกิดที่วางทับพร็อพเพียงเล็กน้อย ให้ fallback ตรงศูนย์ปลอดภัยเสมอ
@@ -180,8 +183,11 @@ func _scatter_nature() -> void:
     var random := RandomNumberGenerator.new()
     random.seed = layout.decoration_seed
     var placed: Array[Vector2] = []
-    # ใช้ seed คงที่: เปิด Scene/Save ใหม่ รูปแบบโลกและเส้นทางไม่เปลี่ยน
-    for attempt: int in range(5200):
+    var tree_limit: int = 240 if web_mobile_low_power else 520
+    var detail_limit: int = 160 if web_mobile_low_power else 440
+    var attempt_limit: int = 3000 if web_mobile_low_power else 5200
+    # ใช้ seed คงที่: Web Mobile ยังเลือกตำแหน่งชุดแรกจาก seed เดิม เพียงหยุดสร้างเร็วขึ้น
+    for attempt: int in range(attempt_limit):
         var point := Vector2(random.randf_range(90, layout.extent.x - 90), random.randf_range(120, layout.extent.y - 80))
         if point.distance_to(layout.village_center) < 650 or absf(point.x - layout.river_x) < 235:
             continue
@@ -201,10 +207,10 @@ func _scatter_nature() -> void:
         # ป่าฝั่งตะวันออกสูงทึบขึ้น ส่วนทุ่งตะวันตกโปร่ง
         var height: float = random.randf_range(205, 290) if point.x > 3100 else random.randf_range(185, 255)
         _add_prop(["tree_a", "tree_b", "pine"][type_index], point, height)
-        if placed.size() >= 520:
+        if placed.size() >= tree_limit:
             break
-    # พุ่ม ดอกไม้ หินเล็ก ช่วยให้ทุ่งมีรายละเอียดโดยไม่ปิดทางหลัก
-    for i: int in range(440):
+    # Web Mobile ลด detail prop เพื่อลด node count / draw calls / collision checks
+    for i: int in range(detail_limit):
         var point := Vector2(random.randf_range(100, layout.extent.x - 100), random.randf_range(130, layout.extent.y - 100))
         if absf(point.x - layout.river_x) < 205 or point.distance_to(layout.village_center) < 500:
             continue
@@ -239,7 +245,8 @@ func _add_prop(kind: String, point: Vector2, height: float, blocking: bool = tru
         prop.z_index = -65
     actors.add_child(prop)
     props.append(prop)
-    if not deck and kind != "flowers":
+    var keep_expensive_shadow: bool = not web_mobile_low_power or kind in ["cottage", "inn", "well", "arch", "bridge"]
+    if not deck and kind != "flowers" and keep_expensive_shadow:
         _project_shadow(sprite, point)
     if blocking:
         var width: float = texture.get_width() * sprite.scale.x
@@ -251,16 +258,18 @@ func _add_prop(kind: String, point: Vector2, height: float, blocking: bool = tru
         _block(footprint)
         # polygon ใช้พิกัดท้องถิ่นของพร็อพตาม footprint จริง ไม่ใช้กรอบยอดไม้ทั้งภาพ
         # ทำให้แสงทอดจากฐาน ไม่เกิดเงาดำทับใบหน้า/ยอดไม้ของตัวเอง
-        var occluder := LightOccluder2D.new()
-        occluder.name = "LightOccluder2D"
-        occluder.occluder_light_mask = 1
-        occluder.sdf_collision = false # ไม่มี shader SDF ใน preset นี้
-        occluder.show_behind_parent = true
-        var polygon := OccluderPolygon2D.new()
-        polygon.polygon = layout.polygon_for_rect(Rect2(footprint.position - point, footprint.size))
-        occluder.occluder = polygon
-        prop.add_child(occluder)
-        prop.move_child(occluder, 0)
+        # LightOccluder ของต้นไม้หลายร้อยชิ้นแพงบน WebGL; เก็บเฉพาะสิ่งปลูกสร้างใน Web Mobile
+        if not web_mobile_low_power or kind in ["cottage", "inn", "well", "arch", "bridge"]:
+            var occluder := LightOccluder2D.new()
+            occluder.name = "LightOccluder2D"
+            occluder.occluder_light_mask = 1
+            occluder.sdf_collision = false # ไม่มี shader SDF ใน preset นี้
+            occluder.show_behind_parent = true
+            var polygon := OccluderPolygon2D.new()
+            polygon.polygon = layout.polygon_for_rect(Rect2(footprint.position - point, footprint.size))
+            occluder.occluder = polygon
+            prop.add_child(occluder)
+            prop.move_child(occluder, 0)
 
 func _project_shadow(source: Sprite2D, point: Vector2) -> void:
     var shadow := Sprite2D.new()

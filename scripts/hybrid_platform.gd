@@ -22,6 +22,10 @@ static func use_mobile_layout(viewport: Viewport = null) -> bool:
         return is_compact_viewport(viewport)
     return false
 
+static func is_web_mobile(viewport: Viewport = null) -> bool:
+    # Profile ประหยัดทรัพยากรใช้เฉพาะ browser บนมือถือ ไม่กระทบ Android native / Web PC
+    return OS.has_feature("web") and use_mobile_layout(viewport)
+
 static func is_compact_viewport(viewport: Viewport) -> bool:
     var size: Vector2 = viewport.get_visible_rect().size
     return size.x < 980.0 or size.y < 600.0

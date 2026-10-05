@@ -34,6 +34,8 @@ func _ready() -> void:
     sun.range_layer_max = 0
     add_child(sun)
     apply_time_of_day()
+    if not Engine.is_editor_hint():
+        refresh_quality()
 
 func get_shadow_direction(_world_point: Vector2 = Vector2.ZERO) -> Vector2:
     # ส่งทิศเดียวกันทุกระบบ แดดขนานจึงไม่ขึ้นกับตำแหน่งของผู้รับแสง
@@ -75,6 +77,8 @@ func add_lantern(point: Vector2) -> void:
     lamps.append(light)
     add_child(light)
     light.energy = 0.75 if dusk else 0.16
+    if not Engine.is_editor_hint() and HybridPlatform.is_web_mobile(get_viewport()):
+        light.enabled = false
 
 func toggle_time_of_day() -> void:
     dusk = not dusk
@@ -101,8 +105,15 @@ func _process(delta: float) -> void:
     refresh_quality()
 
 func refresh_quality() -> void:
-    # มือถือ: แดดมีเงา 1 ดวง + โคมใกล้สุดมีเงา 1 ดวง; Reduce Effects ปิดเงาไฟทั้งหมด
-    # โคมอื่นยังให้แสงสีได้ แต่ไม่สร้าง shadow pass เพิ่ม
+    # Web Mobile: ambient light อย่างเดียว ลด shadow pass และ PointLight draw cost
+    if HybridPlatform.is_web_mobile(get_viewport()):
+        sun.shadow_enabled = false
+        for light: PointLight2D in lamps:
+            light.enabled = false
+            light.shadow_enabled = false
+        return
+
+    # Desktop/native ใช้คุณภาพเดิม
     sun.shadow_enabled = sun_occlusion_enabled and not GameVisualSettings.low_effects
     sun.shadow_filter = Light2D.SHADOW_FILTER_PCF5
     var camera: Camera2D = get_viewport().get_camera_2d()
