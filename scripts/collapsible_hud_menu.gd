@@ -19,7 +19,7 @@ func _ready() -> void:
     drawer.add_theme_stylebox_override("panel", ClassicUIStyle.frame(Color("34779f"), Color("07182ef5")))
     toggle_button.pressed.connect(toggle)
     var actions: Array[StringName] = [&"inventory", &"digimon", &"quest", &"settings", &"equipment", &"map", &"chat", &"character"]
-    var names: Array[String] = ["กระเป๋า", "ดิจิมอน", "เควสต์", "ตั้งค่า", "ดิจิไวซ์", "แผนที่", "แชต", "ตัวละคร"]
+    var names: Array[String] = ["กระเป๋า", "คู่หู", "เควสต์", "ตั้งค่า", "อุปกรณ์", "แผนที่", "แชต", "ตัวละคร"]
     for index: int in range(actions.size()):
         var button := EquipmentButton.new()
         button.custom_minimum_size = Vector2(140, 56)
