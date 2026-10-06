@@ -10,6 +10,7 @@ const DAMAGE_POPUP_SCENE: PackedScene = preload("res://scenes/damage_popup.tscn"
 @onready var damage_origin: Marker2D = $DamageOrigin
 @export var monster_id: StringName = &"wild"
 @export var monster_name: String = ""
+@export var nameplate_color: Color = Color("ffd4d4")
 @export_range(1, 99) var monster_level: int = 1
 @export_range(0, 100000) var exp_reward: int = 60
 ## Inspector เลือก LootTable ของมอนสเตอร์แต่ละชนิด; ไม่กำหนดใช้ตารางสามไอเทมตัวอย่าง
