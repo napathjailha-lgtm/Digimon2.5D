@@ -40,7 +40,7 @@ func _process(delta: float) -> void:
         _name.modulate = Color("ffdc8e")
     elif _actor is WildMonster:
         var actor := _actor as WildMonster
-        _name.text = String(actor.monster_id).capitalize()
+        _name.text = "%s  Lv.%d" % [actor.display_monster_name(), actor.combat_level()]
         var image: Sprite2D = actor.get_node("Sprite2D")
         texture = image.texture
         scale_y = image.scale.y
