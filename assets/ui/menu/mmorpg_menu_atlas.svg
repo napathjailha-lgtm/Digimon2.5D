@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+<defs>
+ <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff59a"/><stop offset="1" stop-color="#e79b24"/></linearGradient>
+ <linearGradient id="blue" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#8ef2ff"/><stop offset="1" stop-color="#2978c8"/></linearGradient>
+ <linearGradient id="red" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ff9b83"/><stop offset="1" stop-color="#c83b4a"/></linearGradient>
+ <linearGradient id="green" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d8f78a"/><stop offset="1" stop-color="#4d9b52"/></linearGradient>
+ <style>.o{stroke:#07131c;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}.hi{stroke:#fff6cf;stroke-width:2;fill:none;stroke-linecap:round}</style>
+</defs>
+
+<!-- row 0: status skills equipment map bag -->
+<g transform="translate(0 0)"><circle cx="30" cy="20" r="11" fill="#ffd0a8" class="o"/><path d="M14 51c2-15 9-21 16-21s14 6 16 21z" fill="url(#red)" class="o"/><path d="M18 16c5-11 22-12 26 2-8-5-17-2-25 2z" fill="#e8593e" class="o"/><path d="M25 21h2m7 0h2" class="hi"/></g>
+<g transform="translate(60 0)"><path d="M10 13l18-5 4 40-18 5z" fill="#2f65aa" class="o"/><path d="M50 13L32 8l-4 40 18 5z" fill="#25528e" class="o"/><path d="M30 10v38" class="hi"/><path d="M17 19l8-2m-7 9l8-2m9-7l8 2m-9 5l8 2" class="hi"/></g>
+<g transform="translate(120 0)"><path d="M14 11l10 6h12l10-6 7 12-8 7-3 23H18l-3-23-8-7z" fill="#8a5e3c" class="o"/><path d="M24 17l-4 13 10 7 10-7-4-13" fill="#b78a59" class="o"/><path d="M24 43h12" class="hi"/></g>
+<g transform="translate(180 0)"><path d="M7 16l14-7 18 6 14-7v38l-14 7-18-6-14 7z" fill="#7cb56b" class="o"/><path d="M21 9v38m18-32v38" class="hi"/><path d="M13 31l8-8 7 8 10-10 9 7" fill="none" stroke="#e9d969" stroke-width="3"/></g>
+<g transform="translate(240 0)"><path d="M15 21h30l7 31H8z" fill="#8a583a" class="o"/><path d="M20 21v-6c0-8 20-8 20 0v6" fill="none" stroke="#d6a06a" stroke-width="5"/><path d="M18 33h24v12H18z" fill="#b77a4e" class="o"/></g>
+
+<!-- row 1: more quests settings mail rewards -->
+<g transform="translate(0 60)"><rect x="9" y="9" width="18" height="18" rx="4" fill="#d9493f" class="o"/><rect x="33" y="9" width="18" height="18" rx="4" fill="#3aa95d" class="o"/><rect x="9" y="33" width="18" height="18" rx="4" fill="#337bd3" class="o"/><rect x="33" y="33" width="18" height="18" rx="4" fill="#e8b52f" class="o"/></g>
+<g transform="translate(60 60)"><path d="M13 11h34v38H13z" fill="#d49a55" class="o"/><path d="M18 15h24v30H18z" fill="#f5deb0" class="o"/><path d="M20 23h20m-20 7h15m-15 7h18" stroke="#82562d" stroke-width="3"/><circle cx="46" cy="10" r="6" fill="#f04f5d" class="o"/></g>
+<g transform="translate(120 60)"><path d="M25 6h10l2 8 7 4 8-2 4 9-6 6v8l6 6-4 9-8-2-7 4-2 8H25l-2-8-7-4-8 2-4-9 6-6v-8l-6-6 4-9 8 2 7-4z" fill="#aeb8c5" class="o"/><circle cx="30" cy="35" r="9" fill="#53677a" class="o"/></g>
+<g transform="translate(180 60)"><rect x="7" y="15" width="46" height="33" rx="4" fill="#f7e4b3" class="o"/><path d="M8 18l22 17 22-17" fill="#d89946" stroke="#8a5525" stroke-width="3"/><circle cx="47" cy="12" r="7" fill="#ed4d61" class="o"/></g>
+<g transform="translate(240 60)"><path d="M12 23h36v30H12z" fill="#e84f57" class="o"/><path d="M30 10v43M12 31h36" class="hi"/><path d="M30 18c-8-13-17-5-12 2 3 4 8 3 12 3m0-5c8-13 17-5 12 2-3 4-8 3-12 3" fill="#f5bf34" class="o"/></g>
+
+<!-- row 2: community wiki help updates explorer -->
+<g transform="translate(0 120)"><path d="M9 17c0-7 7-12 15-12h12c8 0 15 5 15 12v16c0 7-7 12-15 12H24l-10 8 3-9c-5-2-8-6-8-11z" fill="#6674d8" class="o"/><circle cx="22" cy="25" r="2" fill="#fff"/><circle cx="30" cy="25" r="2" fill="#fff"/><circle cx="38" cy="25" r="2" fill="#fff"/></g>
+<g transform="translate(60 120)"><path d="M8 15l18-6 4 39-18 5z" fill="#e8d7a1" class="o"/><path d="M52 15L34 9l-4 39 18 5z" fill="#f4e9bd" class="o"/><path d="M30 10v38" stroke="#8e6d37" stroke-width="3"/><path d="M17 24l8-2m10 0l8 2" stroke="#a57a38" stroke-width="3"/></g>
+<g transform="translate(120 120)"><path d="M14 11h32v40H14z" fill="#f1d18b" class="o"/><path d="M22 10c0-7 16-7 16 0" fill="none" stroke="#b98132" stroke-width="4"/><text x="30" y="39" text-anchor="middle" font-size="24" font-family="sans-serif" font-weight="700" fill="#8a551f">?</text></g>
+<g transform="translate(180 120)"><path d="M12 10h36v43H12z" fill="#8b4d2f" class="o"/><path d="M17 15h26v33H17z" fill="#efd4a0" class="o"/><path d="M20 23h20m-20 8h16m-16 8h19" stroke="#9c6531" stroke-width="3"/><circle cx="46" cy="11" r="6" fill="#f04f5d" class="o"/></g>
+<g transform="translate(240 120)"><circle cx="30" cy="29" r="21" fill="url(#blue)" class="o"/><path d="M16 37c7-10 12-8 18-18 5 7 8 8 12 16-9 7-20 8-30 2z" fill="#d9fbff" opacity=".9"/><path d="M30 4v10m-4-6h8" stroke="#fff" stroke-width="3"/></g>
+
+<!-- row 3: ranking events world boss pvp cards -->
+<g transform="translate(0 180)"><path d="M10 45l7-24 10 7 3-20 4 20 10-7 6 24z" fill="url(#gold)" class="o"/><path d="M14 45h32l-3 8H17z" fill="#c67c21" class="o"/><circle cx="30" cy="34" r="5" fill="#e94b52" class="o"/></g>
+<g transform="translate(60 180)"><path d="M11 13h38v40H11z" fill="#a66c35" class="o"/><path d="M16 18h28v29H16z" fill="#f0d7a0" class="o"/><path d="M21 12V8m18 4V8" stroke="#f0d7a0" stroke-width="5"/><path d="M20 27h20m-20 8h12" stroke="#a76d34" stroke-width="3"/></g>
+<g transform="translate(120 180)"><path d="M30 6l7 10 12-2-3 12 8 9-11 6-1 12-12-4-12 4-1-12-11-6 8-9-3-12 12 2z" fill="#5f8f3a" class="o"/><circle cx="30" cy="31" r="12" fill="#344929" class="o"/><path d="M24 28l4 4 8-8" class="hi"/></g>
+<g transform="translate(180 180)"><path d="M10 12l16 16-5 5L5 17zM50 12L34 28l5 5 16-16z" fill="#cbd7e2" class="o"/><path d="M18 35L8 49m34-14l10 14" stroke="#8f5d2c" stroke-width="5"/><path d="M13 43h11m23 0H36" class="hi"/></g>
+<g transform="translate(240 180)"><rect x="13" y="8" width="30" height="44" rx="3" fill="#5c2135" transform="rotate(-8 28 30)" class="o"/><rect x="20" y="8" width="30" height="44" rx="3" fill="#802a3c" transform="rotate(7 35 30)" class="o"/><circle cx="35" cy="29" r="10" fill="#e4b33f" class="o"/></g>
+
+<!-- row 4: party guild friends chat character -->
+<g transform="translate(0 240)"><circle cx="21" cy="20" r="8" fill="#ffd0a8" class="o"/><circle cx="39" cy="20" r="8" fill="#ffd0a8" class="o"/><path d="M8 49c1-12 6-18 13-18s12 6 13 18z" fill="#4a77c9" class="o"/><path d="M26 49c1-12 6-18 13-18s12 6 13 18z" fill="#cf5d67" class="o"/></g>
+<g transform="translate(60 240)"><path d="M30 6l7 8 12 1-3 12 6 10-10 6-4 11H22l-4-11-10-6 6-10-3-12 12-1z" fill="#315eb5" class="o"/><path d="M20 24h20v16H20z" fill="#e7b83e" class="o"/><path d="M24 24v-7h12v7" class="hi"/></g>
+<g transform="translate(120 240)"><circle cx="20" cy="19" r="8" fill="#ffd0a8" class="o"/><circle cx="40" cy="19" r="8" fill="#ffd0a8" class="o"/><path d="M9 49c2-14 7-20 13-20 4 0 7 2 9 6 2-4 5-6 9-6 6 0 11 6 13 20z" fill="#e95b70" class="o"/><path d="M25 34l5 5 5-5" fill="none" stroke="#fff2d6" stroke-width="3"/></g>
+<g transform="translate(180 240)"><path d="M8 12h44v31H25l-11 9 3-9H8z" fill="#4978c9" class="o"/><path d="M17 23h26m-26 9h18" class="hi"/></g>
+<g transform="translate(240 240)"><circle cx="30" cy="20" r="10" fill="#ffd0a8" class="o"/><path d="M13 52c2-16 9-23 17-23s15 7 17 23z" fill="url(#green)" class="o"/><path d="M18 17c2-12 21-15 26 0-8-4-16-3-26 3z" fill="#5a3a2c" class="o"/></g>
+</svg>
