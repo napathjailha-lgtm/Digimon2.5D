@@ -3,7 +3,7 @@ extends Resource
 ## ต้นแบบไอเทมเท่านั้น จำนวนจริงอยู่ใน InventoryManager
 
 enum ItemType { CONSUMABLE, QUEST_ITEM, EGG, MATERIAL, DATA_CHIP }
-enum EffectType { PARTNER_HP, TAMER_FOOD, PARTNER_MP, TAMER_HP, TAMER_MP }
+enum EffectType { PARTNER_HP, TAMER_FOOD, PARTNER_MP, TAMER_HP, TAMER_MP, TAMER_MP_REGEN }
 
 @export var item_id: String = ""
 @export var item_name: String = ""
@@ -14,6 +14,9 @@ enum EffectType { PARTNER_HP, TAMER_FOOD, PARTNER_MP, TAMER_HP, TAMER_MP }
 @export var effect_type: EffectType = EffectType.PARTNER_HP
 @export_range(0, 9999) var tamer_hp_restore: int = 0
 @export_range(0.0, 100.0) var tamer_stamina_restore: float = 0.0
+@export_group("Tamer MP Regen")
+@export_range(0.0, 100.0, 0.5) var tamer_mp_regen_per_second: float = 0.0
+@export_range(0.0, 300.0, 1.0) var tamer_mp_regen_duration: float = 0.0
 
 @export_group("ร้านค้า")
 @export var shop_sold: bool = false
@@ -33,7 +36,7 @@ enum EffectType { PARTNER_HP, TAMER_FOOD, PARTNER_MP, TAMER_HP, TAMER_MP }
 func type_label() -> String:
     match item_type:
         ItemType.CONSUMABLE:
-            return ["ฟื้น HP คู่หู","อาหาร Tamer","ฟื้น MP คู่หู","ฟื้น HP Tamer","ฟื้น MP Tamer"][clampi(effect_type,0,4)]
+            return ["ฟื้น HP คู่หู","อาหาร Tamer","ฟื้น MP คู่หู","ฟื้น HP Tamer","ฟื้น MP Tamer","Regen MP Tamer"][clampi(effect_type,0,5)]
         ItemType.QUEST_ITEM:
             return "ไอเทมเควสต์"
         ItemType.EGG:
