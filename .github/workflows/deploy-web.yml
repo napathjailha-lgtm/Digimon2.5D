@@ -29,23 +29,27 @@ jobs:
           include-templates: true
 
       - name: Verify project
-        run: godot --headless --path . --editor --quit
+        run: python3 tools/check_godot.py --headless --path . --editor --quit
+
+      - name: Validate every shipped script and resource
+        run: python3 tools/check_godot.py --headless --path . --script res://tests/project_integrity.gd
 
       - name: Resource load smoke test
-        run: godot --headless --path . --script res://tests/resource_load_smoke.gd
+        run: python3 tools/check_godot.py --headless --path . --script res://tests/resource_load_smoke.gd
+
+      - name: Boot and menu runtime regression
+        run: python3 tools/check_godot.py --headless --path . res://tests/current_runtime_test.tscn
 
       - name: Adventure partner progression test
-        run: godot --headless --path . res://tests/adventure_partners_test.tscn
+        run: python3 tools/check_godot.py --headless --path . res://tests/adventure_partners_test.tscn
 
       - name: Export Web
         run: |
           mkdir -p build/web
-          godot --headless --path . --export-release "Web" build/web/index.html
+          python3 tools/check_godot.py --headless --path . --export-release "Web" build/web/index.html
 
       - name: Install Prism web loader
         run: |
-          cp assets/ui/splash/prism_tamer_wide.jpg build/web/prism_tamer_wide.jpg
-          cp assets/ui/splash/prism_tamer_portrait.jpg build/web/prism_tamer_portrait.jpg
           cp assets/ui/splash/prism_tamer_frontier.svg build/web/prism_tamer_frontier.svg
           python3 tools/patch_web_loader.py build/web/index.html
           grep -q 'id="prism-preloader"' build/web/index.html

@@ -210,7 +210,7 @@ func _unhandled_input(event: InputEvent) -> void:
         get_viewport().set_input_as_handled()
         return
     if event is InputEventScreenTouch and event.pressed:
-        var local := drawer.get_global_transform_with_canvas().affine_inverse() * event.position
-        var more_local := more_button.get_global_transform_with_canvas().affine_inverse() * event.position
+        var local: Vector2 = drawer.get_global_transform_with_canvas().affine_inverse() * event.position
+        var more_local: Vector2 = more_button.get_global_transform_with_canvas().affine_inverse() * event.position
         if not Rect2(Vector2.ZERO, drawer.size).has_point(local) and not Rect2(Vector2.ZERO, more_button.size).has_point(more_local):
             set_expanded(false)

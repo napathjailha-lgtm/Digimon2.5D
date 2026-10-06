@@ -115,9 +115,11 @@ func _build_fusion_form() -> MonsterData:
 
     data.sprite_frames = frames
     data.portrait_texture = frames.get_frame_texture(&"idle", 0)
-    data.sprite_scale = Vector2(0.82, 0.82)
-    data.attack_sprite_scale = Vector2(0.90, 0.90)
-    data.cast_sprite_scale = Vector2(0.90, 0.90)
+    # Keep the repaired high-resolution sprite at the original field height.
+    var texture_scale: float = 197.0 / data.portrait_texture.get_height()
+    data.sprite_scale = Vector2.ONE * texture_scale * 0.82
+    data.attack_sprite_scale = Vector2.ONE * texture_scale * 0.90
+    data.cast_sprite_scale = Vector2.ONE * texture_scale * 0.90
     data.animation_reference_speed = 300.0
     data.idle_animation = &"idle"
     data.walk_animation = &"walk"
@@ -140,7 +142,7 @@ func _build_fusion_form() -> MonsterData:
 
 func _build_fusion_frames() -> SpriteFrames:
     # ใช้ภาพ fusion original ที่ครอปจาก sprite sheet ของโปรเจกต์
-    var generated := load("res://assets/original_monsters/prismforge_fusion.png") as Texture2D
+    var generated := load("res://assets/original_monsters/prismforge_fusion_repaired.png") as Texture2D
     if generated == null:
         push_error("FusionManager: ไม่พบภาพ Prismforge fusion")
         return null

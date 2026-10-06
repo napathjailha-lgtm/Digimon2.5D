@@ -23,12 +23,18 @@ jobs:
           use-dotnet: false
           include-templates: true
       - name: Import and parse project
-        run: godot --headless --path . --editor --quit
+        run: python3 tools/check_godot.py --headless --path . --editor --quit
+      - name: Validate every shipped script and resource
+        run: python3 tools/check_godot.py --headless --path . --script res://tests/project_integrity.gd
+
       - name: Resource load smoke test
-        run: godot --headless --path . --script res://tests/resource_load_smoke.gd
+        run: python3 tools/check_godot.py --headless --path . --script res://tests/resource_load_smoke.gd
+      - name: Boot and menu runtime regression
+        run: python3 tools/check_godot.py --headless --path . res://tests/current_runtime_test.tscn
+
       - name: Adventure partner evolution and combat regression
-        run: godot --headless --path . res://tests/adventure_partners_test.tscn
+        run: python3 tools/check_godot.py --headless --path . res://tests/adventure_partners_test.tscn
       - name: Validate Web export
         run: |
           mkdir -p /tmp/digimon-web
-          godot --headless --path . --export-release "Web" /tmp/digimon-web/index.html
+          python3 tools/check_godot.py --headless --path . --export-release "Web" /tmp/digimon-web/index.html
