@@ -294,8 +294,13 @@ func move_party_to_storage(party_index: int) -> bool:
     var moving: Dictionary = members[party_index].duplicate(true)
     if party_index == active_index:
         var next_index: int = 1 if party_index == 0 else 0
+        var previous_index: int = active_index
+        var previous_snapshot: Dictionary = members[previous_index].duplicate(true)
         _switching = true
+        active_index = next_index
         if not _apply_member(members[next_index].duplicate(true)):
+            active_index = previous_index
+            _apply_member(previous_snapshot)
             _switching = false
             return false
         members.remove_at(party_index)
@@ -333,12 +338,15 @@ func select_member(index: int) -> bool:
 
     _switching = true
 
+    # ตั้ง active_index เป็นสมาชิกเป้าหมายก่อนโหลด เพื่อให้ Evolution unlock
+    # ตรวจ unlocked_forms ของตัวที่จะสลับเข้า ไม่ใช่ของตัวที่กำลังออก
+    active_index = index
     if not _apply_member(target_snapshot):
+        active_index = previous_index
         _apply_member(previous_snapshot)
         _switching = false
         return false
 
-    active_index = index
     _switching = false
 
     _capture_active()
