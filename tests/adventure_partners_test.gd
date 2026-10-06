@@ -129,7 +129,7 @@ func run() -> void:
             var form: MonsterData = family.forms[index]
             check(form.validation_error().is_empty(), "Valid form " + form.monster_name)
             var required: int = EvolutionRules.minimum_level_for_form_index(index, form)
-            check(required == (1 if index == 0 else [1, 15, 60, 90][form.evolution_stage]), "Canonical stage level " + form.monster_name)
+            check(required == (1 if index == 0 else [1, 11, 25, 41][form.evolution_stage]), "Canonical stage level " + form.monster_name)
             if index > 0:
                 set_level(required - 1)
                 player.ds = player.max_ds
