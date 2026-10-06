@@ -8,6 +8,36 @@ signal expanded_changed(expanded: bool)
 
 @export_range(0.05, 0.5) var duration: float = 0.18
 
+const MENU_ICON_ATLAS: Texture2D = preload("res://assets/ui/menu/mmorpg_menu_atlas.svg")
+const ICON_CELL := Vector2(60, 60)
+const ICON_COORDS: Dictionary = {
+    &"digimon": Vector2i(0, 0),
+    &"skills": Vector2i(1, 0),
+    &"equipment": Vector2i(2, 0),
+    &"map": Vector2i(3, 0),
+    &"inventory": Vector2i(4, 0),
+    &"more": Vector2i(0, 1),
+    &"quest": Vector2i(1, 1),
+    &"settings": Vector2i(2, 1),
+    &"mail": Vector2i(3, 1),
+    &"rewards": Vector2i(4, 1),
+    &"community": Vector2i(0, 2),
+    &"wiki": Vector2i(1, 2),
+    &"help": Vector2i(2, 2),
+    &"updates": Vector2i(3, 2),
+    &"explorer": Vector2i(4, 2),
+    &"ranking": Vector2i(0, 3),
+    &"event": Vector2i(1, 3),
+    &"world_boss": Vector2i(2, 3),
+    &"pvp": Vector2i(3, 3),
+    &"cards": Vector2i(4, 3),
+    &"party": Vector2i(0, 4),
+    &"guild": Vector2i(1, 4),
+    &"friends": Vector2i(2, 4),
+    &"chat": Vector2i(3, 4),
+    &"character": Vector2i(4, 4),
+}
+
 var expanded: bool = false
 var animations_enabled: bool = true
 var buttons: Dictionary = {}
@@ -51,19 +81,19 @@ func _build_top_bar() -> void:
     top_bar.name = "TopBar"
     top_bar.anchor_left = 1.0
     top_bar.anchor_right = 1.0
-    top_bar.offset_left = -430.0
+    top_bar.offset_left = -446.0
     top_bar.offset_right = 0.0
     top_bar.offset_top = 0.0
     top_bar.offset_bottom = 74.0
-    top_bar.add_theme_constant_override("separation", 4)
+    top_bar.add_theme_constant_override("separation", 3)
     top_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
     add_child(top_bar)
 
     for index: int in range(TOP_ACTIONS.size()):
-        var button := _make_tile(TOP_ACTIONS[index], TOP_NAMES[index], Vector2(68, 70))
+        var button := _make_tile(TOP_ACTIONS[index], TOP_NAMES[index], Vector2(70, 72))
         top_bar.add_child(button)
 
-    more_button = _make_tile(&"more", "More", Vector2(68, 70))
+    more_button = _make_tile(&"more", "More", Vector2(70, 72))
     more_button.pressed.connect(toggle)
     top_bar.add_child(more_button)
     buttons[&"more"] = more_button
@@ -73,12 +103,12 @@ func _build_drawer() -> void:
     drawer.name = "Drawer"
     drawer.anchor_left = 1.0
     drawer.anchor_right = 1.0
-    drawer.offset_left = -462.0
+    drawer.offset_left = -468.0
     drawer.offset_right = -4.0
-    drawer.offset_top = 78.0
-    drawer.offset_bottom = 438.0
+    drawer.offset_top = 76.0
+    drawer.offset_bottom = 424.0
     drawer.mouse_filter = Control.MOUSE_FILTER_STOP
-    drawer.add_theme_stylebox_override("panel", ClassicUIStyle.frame(Color("516b82"), Color("101c2af2")))
+    drawer.add_theme_stylebox_override("panel", ClassicUIStyle.frame(Color("8c7450"), Color("101923f4")))
     add_child(drawer)
 
     var margin := MarginContainer.new()
@@ -105,7 +135,8 @@ func _make_tile(action: StringName, label_text: String, minimum: Vector2) -> Equ
     button.name = String(action).to_pascal_case()
     button.custom_minimum_size = minimum
     button.caption = label_text
-    button.accent = Color("48677f")
+    button.icon = _icon_for(action)
+    button.accent = Color("715a39") if action == &"more" else Color("48677f")
     button.pressed.connect(_request_action.bind(action))
     button.set_meta("action", action)
     buttons[action] = button
@@ -130,6 +161,17 @@ func _make_tile(action: StringName, label_text: String, minimum: Vector2) -> Equ
     button.add_child(badge)
     _badges[action] = badge
     return button
+
+func _icon_for(action: StringName) -> Texture2D:
+    if not ICON_COORDS.has(action):
+        return null
+    var coord: Vector2i = ICON_COORDS[action]
+    var atlas := AtlasTexture.new()
+    atlas.atlas = MENU_ICON_ATLAS
+    atlas.region = Rect2(Vector2(coord.x, coord.y) * ICON_CELL, ICON_CELL)
+    atlas.filter_clip = true
+    return atlas
+
 
 func set_badge(action: StringName, value: int) -> void:
     if not _badges.has(action):
