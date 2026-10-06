@@ -5,6 +5,9 @@ const SPAWNER: PackedScene = preload("res://scenes/monster_spawner.tscn")
 const WILDS: Array[PackedScene] = [preload("res://scenes/wild_monster.tscn"), preload("res://scenes/wild_monster_crab.tscn")]
 const FOREST_BYTE: PackedScene = preload("res://scenes/forest_byte.tscn")
 const FOREST_CRAB: PackedScene = preload("res://scenes/forest_crab.tscn")
+const CRIMSON_BYTE: PackedScene = preload("res://scenes/crimson_byte.tscn")
+const IRON_SHELL: PackedScene = preload("res://scenes/iron_shell_crab.tscn")
+const VOID_SENTINEL: PackedScene = preload("res://scenes/void_sentinel.tscn")
 var created_regular: int = 0
 var _centers: Array[Vector2] = []
 var _environment: OpenWorldEnvironment
@@ -50,6 +53,7 @@ func _ready() -> void:
         _add_spawn("Habitat%03d" % created_regular, point, WILDS[created_regular % WILDS.size()], 90.0, 10.0)
         created_regular += 1
     _add_ep1_forest_population()
+    _add_high_level_population()
     _add_boss("forest_guardian", Vector2(4100, 1900))
     _add_boss("etemon", Vector2(6200, 1600))
     _add_boss("myotismon", Vector2(8700, 3250))
@@ -83,6 +87,27 @@ func _add_ep1_forest_population() -> void:
             continue
         var spawner := _add_spawn("EP1_DataCrab_%02d" % i, point, FOREST_CRAB, 65.0, 10.0)
         _mark_boss(spawner, &"forest_crab")
+
+
+func _add_high_level_population() -> void:
+    # โซนกลาง-ปลายเกาะ: มอนขั้นต่ำ Lv18/Lv28/Lv42 พร้อม EXP และของดรอปเฉพาะ
+    var crimson_points: Array[Vector2] = [Vector2(5050, 3300), Vector2(5350, 3550), Vector2(5650, 3150), Vector2(5900, 3500)]
+    for i: int in range(crimson_points.size()):
+        var p: Vector2 = _walkable_near(crimson_points[i])
+        if p != Vector2.INF:
+            _add_spawn("CrimsonByte_%02d" % i, p, CRIMSON_BYTE, 80.0, 12.0)
+
+    var iron_points: Array[Vector2] = [Vector2(6700, 3900), Vector2(7050, 4200), Vector2(7350, 3750)]
+    for i: int in range(iron_points.size()):
+        var p: Vector2 = _walkable_near(iron_points[i])
+        if p != Vector2.INF:
+            _add_spawn("IronShell_%02d" % i, p, IRON_SHELL, 75.0, 15.0)
+
+    var void_points: Array[Vector2] = [Vector2(8350, 4950), Vector2(8750, 5150), Vector2(9000, 4700)]
+    for i: int in range(void_points.size()):
+        var p: Vector2 = _walkable_near(void_points[i])
+        if p != Vector2.INF:
+            _add_spawn("VoidSentinel_%02d" % i, p, VOID_SENTINEL, 65.0, 18.0)
 
 
 func _walkable_near(point: Vector2) -> Vector2:
