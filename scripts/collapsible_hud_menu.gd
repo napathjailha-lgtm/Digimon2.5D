@@ -64,7 +64,6 @@ func _build_top_bar() -> void:
         top_bar.add_child(button)
 
     more_button = _make_tile(&"more", "More", Vector2(68, 70))
-    more_button.pressed.disconnect(_request_action.bind(&"more")) if more_button.pressed.is_connected(_request_action.bind(&"more")) else null
     more_button.pressed.connect(toggle)
     top_bar.add_child(more_button)
     buttons[&"more"] = more_button
