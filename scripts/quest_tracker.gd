@@ -21,12 +21,60 @@ func _refresh(_quest_id: StringName) -> void:
         detail_label.text = "คุณผ่านเควสต์หลักครบแล้ว"
         progress_label.text = ""
         return
+
+    var current: int = QuestManager.get_progress(quest.id)
+    var remaining: int = maxi(0, quest.required_count - current)
     title_label.text = "[เควสต์หลัก] " + quest.title
-    detail_label.text = quest.description
+    detail_label.text = "%s\n\n%s" % [quest.description, _instruction_text(quest, remaining)]
+
     var reward_text: String = ""
     if quest.reward_exp > 0 or quest.reward_bits > 0:
         reward_text = " • รางวัล EXP %d / %d Bits" % [quest.reward_exp, quest.reward_bits]
-    progress_label.text = "%d / %d • แนะนำ Lv.%d%s • แตะเพื่อนำทาง" % [QuestManager.get_progress(quest.id), quest.required_count, quest.recommended_level, reward_text]
+    progress_label.text = "ความคืบหน้า %d / %d • เหลือ %d • แนะนำ Lv.%d%s\nแตะแผงนี้เพื่อให้นำทางไปยังเป้าหมาย" % [
+        current, quest.required_count, remaining, quest.recommended_level, reward_text
+    ]
+
+func _instruction_text(quest: StoryQuest, remaining: int) -> String:
+    var target_name: String = _target_display_name(quest.target_id)
+    match quest.objective:
+        StoryQuest.Objective.TALK:
+            return "วิธีทำ:\n1) ไปหา %s\n2) เข้าใกล้ NPC แล้วแตะ/คลิกเพื่อคุย\n3) คุยให้จบเพื่อส่งเควสต์" % target_name
+        StoryQuest.Objective.KILL:
+            return "วิธีทำ:\n1) ไปยังพื้นที่ของ %s\n2) แตะ/คลิกเลือกเป้าหมายแล้วสั่ง Partner โจมตี\n3) กำจัดอีก %d ตัว" % [target_name, remaining]
+        StoryQuest.Objective.REACH:
+            return "วิธีทำ:\n1) แตะ Quest Tracker เพื่อเปิด Auto-Navigation\n2) เดินตามเส้นทางไปยัง %s\n3) เข้าเขตเป้าหมายเพื่ออัปเดตเควสต์" % target_name
+    return "ทำตามคำอธิบายเควสต์และแตะ Tracker เพื่อนำทาง"
+
+func _target_display_name(target_id: StringName) -> String:
+    var names: Dictionary = {
+        &"agumon": "Agumon ใกล้จุดเริ่มต้น",
+        &"emberclaw": "Emberclaw",
+        &"friends_reunion": "ทางเข้า Green Data Forest",
+        &"forest_byte": "Forest Byte ใน Green Data Forest",
+        &"forest_guardian": "Forest Guardian ลึกใน Green Data Forest",
+        &"gennai": "Gennai ที่แคมป์กลางเกาะ",
+        &"etemon": "Etemon",
+        &"odaiba_clue": "จุดสืบหาเบาะแสในซากโบราณตะวันออก",
+        &"myotismon": "Myotismon ที่ซากโบราณตะวันออก",
+        &"piedmon": "Piedmon ทางตะวันออกเฉียงใต้",
+        &"devimon": "Devimon",
+    }
+    if names.has(target_id):
+        return str(names[target_id])
+    return String(target_id).replace("_", " ").capitalize()
+
+func show_details() -> void:
+    show()
+    _refresh(&"")
+
+func hide_details() -> void:
+    hide()
+
+func toggle_details() -> void:
+    if visible:
+        hide_details()
+    else:
+        show_details()
 
 func _on_zone_changed(_zone: StringName) -> void:
     _refresh(&"")
