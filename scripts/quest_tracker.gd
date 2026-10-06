@@ -53,6 +53,7 @@ func _target_display_name(target_id: StringName) -> String:
         &"emberclaw": "Emberclaw",
         &"friends_reunion": "ทางเข้า Green Data Forest",
         &"forest_byte": "Forest Byte ใน Green Data Forest",
+        &"forest_crab": "Forest Crab บริเวณชายป่า",
         &"forest_guardian": "Forest Guardian ลึกใน Green Data Forest",
         &"gennai": "Gennai ที่แคมป์กลางเกาะ",
         &"etemon": "Etemon",
