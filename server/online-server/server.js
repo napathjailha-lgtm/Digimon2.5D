@@ -3,7 +3,7 @@ import crypto from "node:crypto";
 import { WebSocketServer, WebSocket } from "ws";
 
 const PORT = Number(process.env.PORT || 8787);
-const MAX_PACKET = 4096;
+const MAX_PACKET = 8192;
 const MAX_CHAT = 160;
 const clients = new Map();
 
@@ -22,12 +22,62 @@ const wss = new WebSocketServer({ server, maxPayload: MAX_PACKET });
 function cleanText(value, max = 24) {
   return String(value ?? "").replace(/[\r\n\t]/g, " ").trim().slice(0, max);
 }
-function safeNumber(value, fallback = 0) {
+function safeNumber(value, fallback = 0, min = -20000, max = 20000) {
   const n = Number(value);
-  return Number.isFinite(n) ? Math.max(-20000, Math.min(20000, n)) : fallback;
+  return Number.isFinite(n) ? Math.max(min, Math.min(max, n)) : fallback;
 }
-function normalizePosition(raw) {
-  return { x: safeNumber(raw?.x), y: safeNumber(raw?.y) };
+function normalizeVector(raw, fallback = { x: 0, y: 0 }) {
+  return {
+    x: safeNumber(raw?.x, fallback.x),
+    y: safeNumber(raw?.y, fallback.y)
+  };
+}
+function normalizeScale(raw, fallback = { x: 0.24, y: 0.24 }) {
+  return {
+    x: safeNumber(raw?.x, fallback.x, 0.01, 4),
+    y: safeNumber(raw?.y, fallback.y, 0.01, 4)
+  };
+}
+function normalizeFacing(value, fallback = "down") {
+  const facing = cleanText(value, 8);
+  return ["up", "down", "left", "right"].includes(facing) ? facing : fallback;
+}
+function normalizePartner(raw, previous = null) {
+  if (!raw || typeof raw !== "object") return null;
+  const formId = cleanText(raw.form_id, 64);
+  if (!formId) return null;
+  return {
+    form_id: formId,
+    name: cleanText(raw.name, 48),
+    position: normalizeVector(raw.position, previous?.position),
+    velocity: normalizeVector(raw.velocity, previous?.velocity),
+    facing: normalizeFacing(raw.facing, previous?.facing),
+    animation: cleanText(raw.animation, 64),
+    scale: normalizeScale(raw.scale, previous?.scale ?? { x: 0.25, y: 0.25 }),
+    offset: normalizeVector(raw.offset, previous?.offset ?? { x: 0, y: 0 }),
+    visible: raw.visible !== false
+  };
+}
+function applyAppearance(client, msg) {
+  client.model = cleanText(msg.tamer_model, 64) || client.model;
+  client.tamerScale = normalizeScale(msg.tamer_scale, client.tamerScale);
+  client.tamerOffset = normalizeVector(msg.tamer_offset, client.tamerOffset);
+  client.partner = normalizePartner(msg.partner, client.partner);
+}
+function playerPayload(type, client) {
+  return {
+    type,
+    id: client.id,
+    name: client.name,
+    zone: client.zone,
+    position: client.position,
+    velocity: client.velocity,
+    facing: client.facing,
+    tamer_model: client.model,
+    tamer_scale: client.tamerScale,
+    tamer_offset: client.tamerOffset,
+    partner: client.partner ?? {}
+  };
 }
 function send(ws, payload) {
   if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(payload));
@@ -42,15 +92,7 @@ function broadcast(payload, except = null, zone = "") {
 function emitExistingPlayers(ws, self) {
   for (const [otherWs, other] of clients) {
     if (otherWs === ws || other.zone !== self.zone) continue;
-    send(ws, {
-      type: "join",
-      id: other.id,
-      name: other.name,
-      zone: other.zone,
-      position: other.position,
-      velocity: other.velocity,
-      facing: other.facing
-    });
+    send(ws, playerPayload("join", other));
   }
 }
 
@@ -62,6 +104,10 @@ wss.on("connection", (ws) => {
     position: { x: 0, y: 0 },
     velocity: { x: 0, y: 0 },
     facing: "down",
+    model: "",
+    tamerScale: { x: 0.24, y: 0.24 },
+    tamerOffset: { x: 0, y: -256 },
+    partner: null,
     lastStateAt: 0,
     lastChatAt: 0
   };
@@ -77,12 +123,10 @@ wss.on("connection", (ws) => {
     if (msg.type === "hello") {
       client.name = cleanText(msg.name) || "Tamer";
       client.zone = cleanText(msg.zone, 40) || "file_island";
-      client.position = normalizePosition(msg.position);
+      client.position = normalizeVector(msg.position, client.position);
+      applyAppearance(client, msg);
       emitExistingPlayers(ws, client);
-      broadcast({
-        type: "join", id: client.id, name: client.name, zone: client.zone,
-        position: client.position, velocity: client.velocity, facing: client.facing
-      }, ws, client.zone);
+      broadcast(playerPayload("join", client), ws, client.zone);
       return;
     }
 
@@ -90,22 +134,21 @@ wss.on("connection", (ws) => {
       const now = Date.now();
       if (now - client.lastStateAt < 40) return;
       client.lastStateAt = now;
+
       const oldZone = client.zone;
       client.zone = cleanText(msg.zone, 40) || client.zone;
       client.name = cleanText(msg.name) || client.name;
-      client.position = normalizePosition(msg.position);
-      client.velocity = normalizePosition(msg.velocity);
-      const facing = cleanText(msg.facing, 8);
-      client.facing = ["up", "down", "left", "right"].includes(facing) ? facing : client.facing;
+      client.position = normalizeVector(msg.position, client.position);
+      client.velocity = normalizeVector(msg.velocity, client.velocity);
+      client.facing = normalizeFacing(msg.facing, client.facing);
+      applyAppearance(client, msg);
+
       if (oldZone !== client.zone) {
         broadcast({ type: "leave", id: client.id }, ws, oldZone);
         emitExistingPlayers(ws, client);
-        broadcast({ type: "join", id: client.id, name: client.name, zone: client.zone, position: client.position }, ws, client.zone);
+        broadcast(playerPayload("join", client), ws, client.zone);
       }
-      broadcast({
-        type: "state", id: client.id, name: client.name, zone: client.zone,
-        position: client.position, velocity: client.velocity, facing: client.facing
-      }, ws, client.zone);
+      broadcast(playerPayload("state", client), ws, client.zone);
       return;
     }
 
