@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/items/tamer_mp_potion.svg" id="2"]
+[resource]
+script = ExtResource("1")
+item_id = "tamer_mp_potion"
+item_name = "ยาเติม MP Tamer"
+item_type = 0
+item_texture = ExtResource("2")
+description = "ฟื้น MP ของ Tamer 50 หน่วย ใช้ไม่ได้เมื่อ MP เต็ม"
+effect_type = 4
+effect_value = 50
+tamer_hp_restore = 0
+tamer_stamina_restore = 0.0
+shop_sold = true
+buy_price = 45
+sell_price = 12
