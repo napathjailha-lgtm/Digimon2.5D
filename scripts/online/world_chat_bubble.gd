@@ -1,6 +1,8 @@
 class_name WorldChatBubble
 extends Label
 
+const THAI_FONT: Font = preload("res://assets/fonts/NotoSansThai.ttf")
+
 @export var lifetime: float = 4.5
 @export var fade_time: float = 0.7
 
@@ -12,6 +14,7 @@ func _ready() -> void:
     horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     vertical_alignment = VERTICAL_ALIGNMENT_CENTER
     autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    add_theme_font_override("font", THAI_FONT)
     add_theme_font_size_override("font_size", 14)
     add_theme_color_override("font_color", Color(1, 1, 1, 1))
     add_theme_color_override("font_outline_color", Color(0.02, 0.04, 0.08, 0.95))
