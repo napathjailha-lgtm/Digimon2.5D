@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q04_forest_crab"
+title = "ฝูงปูข้อมูลขวางเส้นทาง"
+description = "กำจัด Forest Crab 5 ตัวบริเวณชายป่า เพื่อเปิดเส้นทางเข้าสู่ส่วนลึกของ Green Data Forest"
+zone_id = &"file_island"
+objective = 1
+target_id = &"forest_crab"
+required_count = 5
+recommended_level = 9
+reward_exp = 1500
+reward_bits = 220
+unlock_flags = Array[StringName]([])
+unlock_zones = Array[StringName]([])
+unlock_stage = -1
