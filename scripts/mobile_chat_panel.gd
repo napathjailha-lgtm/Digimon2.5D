@@ -14,6 +14,7 @@ var _keyboard_offset: float = 0.0
 
 var bottom_inset: float = 24
 var _rows: VBoxContainer
+var title_label: Label
 signal folded_changed(collapsed: bool)
 
 func _ready() -> void:
@@ -32,11 +33,11 @@ func _ready() -> void:
     margin.add_child(_rows)
     var header := HBoxContainer.new()
     _rows.add_child(header)
-    var title := Label.new()
-    title.text = "พูดคุย • LOCAL"
-    title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-    title.add_theme_font_size_override("font_size", 15)
-    header.add_child(title)
+    title_label = Label.new()
+    title_label.text = "พูดคุย • OFFLINE"
+    title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    title_label.add_theme_font_size_override("font_size", 15)
+    header.add_child(title_label)
     fold_button = _button(header, "+", Vector2(64,44))
     fold_button.pressed.connect(toggle_collapsed)
     var tab_row := HBoxContainer.new()
@@ -45,7 +46,7 @@ func _ready() -> void:
     for index: int in range(3):
         var tab: ClassicCommand = _button(tab_row,["ทั้งหมด","ทั่วไป","ระบบ"][index],Vector2(80,44))
         tab.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-        tab.pressed.connect(_set_filter.bind([&"all",&"local",&"system"][index]))
+        tab.pressed.connect(_set_filter.bind([&"all",&"general",&"system"][index]))
         tabs.append(tab)
     log_view = RichTextLabel.new()
     log_view.custom_minimum_size = Vector2(0,100)
@@ -69,6 +70,8 @@ func _ready() -> void:
     send_button = _button(edit_row,"ส่ง",Vector2(64,48))
     send_button.pressed.connect(_send)
     GameChat.messages_changed.connect(_refresh)
+    OnlineManager.connection_changed.connect(_on_connection_changed)
+    _on_connection_changed(OnlineManager.connected, "Online" if OnlineManager.connected else "Offline")
     set_collapsed(true)
     _refresh()
 
@@ -123,8 +126,12 @@ func _refresh() -> void:
         log_view.add_text("[%s] %s\n" % [entry.sender, entry.body])
         log_view.pop()
     for index: int in range(tabs.size()):
-        tabs[index].tint = Color("226596") if active_filter == [&"all", &"local", &"system"][index] else Color("10385a")
+        tabs[index].tint = Color("226596") if active_filter == [&"all", &"general", &"system"][index] else Color("10385a")
         tabs[index].queue_redraw()
+
+func _on_connection_changed(is_connected: bool, _message: String) -> void:
+    if title_label != null:
+        title_label.text = "พูดคุย • ONLINE" if is_connected else "พูดคุย • OFFLINE"
 
 func toggle_collapsed() -> void:
     set_collapsed(not collapsed)
