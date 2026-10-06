@@ -11,6 +11,8 @@ signal online_count_changed(total: int, zone_count: int)
 signal guild_changed(snapshot: Dictionary)
 signal guild_chat(peer_id: String, sender: String, text: String)
 signal guild_feedback(message: String, ok: bool)
+signal guild_invite_received(invite: Dictionary)
+signal remote_interaction_requested(peer_id: String, display_name: String, guild_name: String)
 
 const DEFAULT_SEND_INTERVAL := 0.10
 const RECONNECT_DELAY := 4.0
@@ -224,6 +226,8 @@ func _handle_packet(raw: String) -> void:
                 str(payload.get("message", "")),
                 bool(payload.get("ok", false))
             )
+        "guild_invite":
+            guild_invite_received.emit(payload.duplicate(true))
 
 func _set_online_counts(total: int, current_zone: int) -> void:
     var safe_total: int = maxi(0, total)
@@ -255,6 +259,44 @@ func join_guild(code: String) -> bool:
         return false
     _send_json({"type": "guild_join", "code": clean})
     return true
+
+
+func invite_to_guild(peer_id: String) -> bool:
+    if not connected:
+        guild_feedback.emit("ยังไม่ได้เชื่อมต่อ Online Server", false)
+        return false
+    if guild.is_empty():
+        guild_feedback.emit("ต้องอยู่ในกิลด์ก่อนจึงจะเชิญผู้เล่นได้", false)
+        return false
+    var clean: String = peer_id.strip_edges().substr(0, 80)
+    if clean.is_empty() or clean == local_peer_id:
+        return false
+    _send_json({"type": "guild_invite", "target_peer_id": clean})
+    return true
+
+
+func respond_guild_invite(invite_id: String, accept: bool) -> bool:
+    if not connected:
+        return false
+    var clean: String = invite_id.strip_edges().substr(0, 80)
+    if clean.is_empty():
+        return false
+    _send_json({
+        "type": "guild_invite_response",
+        "invite_id": clean,
+        "accept": accept
+    })
+    return true
+
+
+func request_remote_interaction(peer_id: String, display_name: String, guild_name: String) -> void:
+    if peer_id.is_empty() or peer_id == local_peer_id:
+        return
+    remote_interaction_requested.emit(
+        peer_id,
+        display_name.strip_edges().substr(0, 24),
+        guild_name.strip_edges().substr(0, 20)
+    )
 
 
 func leave_guild() -> bool:
