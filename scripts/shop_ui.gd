@@ -19,6 +19,7 @@ var visual_fx: ModalVisualFX
 var sell_mode: bool = false
 var _owns_pause: bool = false
 var _previous_back_quit: bool = true
+var _sell_quantities: Dictionary = {}
 
 func _ready() -> void:
     process_mode = Node.PROCESS_MODE_ALWAYS
@@ -145,7 +146,7 @@ func _build() -> void:
     title_stack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     header.add_child(title_stack)
     title_stack.add_child(ServiceUIStyle.label("DIGITAL MERCHANT", 26, ServiceUIStyle.TEXT))
-    title_stack.add_child(ServiceUIStyle.label("ซื้อของใช้และขายวัตถุดิบ • ไม่มีอุปกรณ์ Boss ขายที่นี่", 13, ServiceUIStyle.MUTED))
+    title_stack.add_child(ServiceUIStyle.label("ซื้อของใช้ • ขายไอเทม Digitama และอุปกรณ์ที่ไม่ได้สวมอยู่", 13, ServiceUIStyle.MUTED))
 
     var bits_frame := PanelContainer.new()
     bits_frame.add_theme_stylebox_override("panel", ServiceUIStyle.card(ServiceUIStyle.GOLD, Color("2b210d")))
@@ -222,13 +223,23 @@ func _refresh() -> void:
     if sell_mode:
         for entry: Dictionary in InventoryManager.items():
             var item: ItemData = entry.item
-            if item.sell_price <= 0 or item.item_type == ItemData.ItemType.EGG:
+            if service.item_sell_price(item) <= 0:
                 continue
             list_box.add_child(_item_card(item, int(entry.quantity), true))
             rows += 1
+        var player: Node = InventoryManager.player_node()
+        if is_instance_valid(player) and ("equipment" in player):
+            var equipment: EquipmentInventory = player.equipment
+            if equipment.catalog != null:
+                for gear: EquipmentItemData in equipment.catalog.items:
+                    var owned: int = equipment.count(gear.id)
+                    if owned <= 0 or service.equipment_sell_price(gear) <= 0:
+                        continue
+                    list_box.add_child(_equipment_card(gear, owned))
+                    rows += 1
         if rows == 0:
-            list_box.add_child(_empty_state("ไม่มีของที่ร้านรับซื้อ", "วัตถุดิบและ Data Chip ที่มีราคาขายจะแสดงตรงนี้"))
-        notice.text = "ขายทีละ 1 ชิ้น • Digitama และอุปกรณ์ Boss ไม่รับซื้อ"
+            list_box.add_child(_empty_state("ไม่มีของที่ร้านรับซื้อ", "ไอเทม Digitama และอุปกรณ์ในกระเป๋าที่ขายได้จะแสดงตรงนี้"))
+        notice.text = "เลือกจำนวนด้วย - / + / MAX • อุปกรณ์ที่กำลังสวมอยู่ต้องถอดก่อนขาย"
     else:
         for item: ItemData in InventoryManager.catalog.items:
             if item.shop_sold and item.buy_price > 0:
@@ -267,13 +278,13 @@ func _item_card(item: ItemData, owned: int, selling: bool) -> PanelContainer:
     info.add_child(ServiceUIStyle.label("%s  •  มี %d ชิ้น" % [type_text, owned], 13, ServiceUIStyle.MUTED))
     var desc := ServiceUIStyle.label(item.description, 12, Color("7894a8"))
     desc.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-    desc.custom_minimum_size.x = 350
+    desc.custom_minimum_size.x = 250
     info.add_child(desc)
 
     var price_stack := VBoxContainer.new()
-    price_stack.custom_minimum_size.x = 120
+    price_stack.custom_minimum_size.x = 96
     row.add_child(price_stack)
-    var price: int = item.sell_price if selling else item.buy_price
+    var price: int = service.item_sell_price(item) if selling else item.buy_price
     var price_label := ServiceUIStyle.label(("%+d Bits" if selling else "%d Bits") % price, 16, accent)
     price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
     price_stack.add_child(price_label)
@@ -281,13 +292,96 @@ func _item_card(item: ItemData, owned: int, selling: bool) -> PanelContainer:
     after.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
     price_stack.add_child(after)
 
-    var action := _button("ขาย 1" if selling else "ซื้อ 1", Vector2(110, 44), service.sell.bind(item.item_id, 1) if selling else service.buy.bind(item.item_id, 1), accent)
     if selling:
+        var key: String = "item:" + item.item_id
+        row.add_child(_quantity_picker(key, owned, accent))
+        var action := _button("ขาย", Vector2(90, 44), func(): service.sell(item.item_id, _sell_quantity(key, owned)), accent)
         action.disabled = owned <= 0
+        row.add_child(action)
     else:
+        var action := _button("ซื้อ 1", Vector2(110, 44), service.buy.bind(item.item_id, 1), accent)
         action.disabled = not GameManager.can_afford_bits(item.buy_price)
+        row.add_child(action)
+    return card
+
+func _equipment_card(item: EquipmentItemData, owned: int) -> PanelContainer:
+    var accent: Color = item.rarity_color()
+    var card := PanelContainer.new()
+    card.add_theme_stylebox_override("panel", ServiceUIStyle.card(accent, Color("0a1d2ae8")))
+    var row := HBoxContainer.new()
+    row.add_theme_constant_override("separation", 12)
+    card.add_child(row)
+
+    var icon_frame := PanelContainer.new()
+    icon_frame.custom_minimum_size = Vector2(58, 58)
+    icon_frame.add_theme_stylebox_override("panel", ServiceUIStyle.card(accent.darkened(0.2), Color("08131d")))
+    row.add_child(icon_frame)
+    var icon := TextureRect.new()
+    icon.custom_minimum_size = Vector2(54, 54)
+    icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+    icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+    icon.texture = item.icon
+    icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    icon_frame.add_child(icon)
+
+    var info := VBoxContainer.new()
+    info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    info.add_theme_constant_override("separation", 1)
+    row.add_child(info)
+    info.add_child(ServiceUIStyle.label(item.item_name, 17, ServiceUIStyle.TEXT))
+    info.add_child(ServiceUIStyle.label("อุปกรณ์ %s • Lv.%d • มี %d ชิ้น" % [item.rarity_name(), item.required_level, owned], 13, ServiceUIStyle.MUTED))
+    var desc := ServiceUIStyle.label(item.description, 12, Color("7894a8"))
+    desc.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+    desc.custom_minimum_size.x = 250
+    info.add_child(desc)
+
+    var unit_price: int = service.equipment_sell_price(item)
+    var price_stack := VBoxContainer.new()
+    price_stack.custom_minimum_size.x = 96
+    row.add_child(price_stack)
+    var price_label := ServiceUIStyle.label("%+d Bits" % unit_price, 16, accent)
+    price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+    price_stack.add_child(price_label)
+    var after := ServiceUIStyle.label("ต่อชิ้น", 11, ServiceUIStyle.MUTED)
+    after.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+    price_stack.add_child(after)
+
+    var key: String = "gear:" + String(item.id)
+    row.add_child(_quantity_picker(key, owned, accent))
+    var action := _button("ขาย", Vector2(90, 44), func(): service.sell_equipment(item.id, _sell_quantity(key, owned)), accent)
+    action.disabled = owned <= 0
     row.add_child(action)
     return card
+
+func _sell_quantity(key: String, maximum: int) -> int:
+    var value: int = int(_sell_quantities.get(key, 1))
+    value = clampi(value, 1, maxi(1, maximum))
+    _sell_quantities[key] = value
+    return value
+
+func _quantity_picker(key: String, maximum: int, accent: Color) -> HBoxContainer:
+    var box := HBoxContainer.new()
+    box.custom_minimum_size.x = 150
+    box.add_theme_constant_override("separation", 4)
+    var value_label := ServiceUIStyle.label(str(_sell_quantity(key, maximum)), 15, ServiceUIStyle.TEXT)
+    value_label.custom_minimum_size = Vector2(34, 42)
+    value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    value_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+    var minus := _button("−", Vector2(34, 42), func(): _set_sell_quantity(key, _sell_quantity(key, maximum) - 1, maximum, value_label), accent)
+    var plus := _button("+", Vector2(34, 42), func(): _set_sell_quantity(key, _sell_quantity(key, maximum) + 1, maximum, value_label), accent)
+    var max_button := _button("MAX", Vector2(50, 42), func(): _set_sell_quantity(key, maximum, maximum, value_label), accent)
+    box.add_child(minus)
+    box.add_child(value_label)
+    box.add_child(plus)
+    box.add_child(max_button)
+    return box
+
+func _set_sell_quantity(key: String, value: int, maximum: int, label: Label) -> void:
+    var next: int = clampi(value, 1, maxi(1, maximum))
+    _sell_quantities[key] = next
+    if is_instance_valid(label):
+        label.text = str(next)
+
 
 func _empty_state(title: String, subtitle: String) -> PanelContainer:
     var frame := PanelContainer.new()
