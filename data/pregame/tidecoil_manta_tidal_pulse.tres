@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="MonsterSkill" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/skills_painted/ice.png" id="icon"]
+[resource]
+script = ExtResource("s")
+id = &"tidecoil_manta_tidal_pulse"
+display_name = "Tidal Pulse"
+icon = ExtResource("icon")
+multiplier = 1.28
+cooldown = 4
+cast_range = 250
+mp_cost = 7
+impact_radius = 24.0
+projectile_speed = 520.0
+effect_color = Color(0.3, 0.75, 1.0, 1)
+effect_size = 24
+animation_prefix = &"cast"
+release_frame = 2
+vfx_style = "ice"
