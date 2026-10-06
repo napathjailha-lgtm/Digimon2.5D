@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3]
+[ext_resource type="PackedScene" path="res://scenes/wild_monster.tscn" id="1"]
+[ext_resource type="Texture2D" path="res://assets/monsters/elites/tidecoil_manta.webp" id="2"]
+[ext_resource type="Resource" path="res://data/items/tidecoil_manta_loot.tres" id="3"]
+
+[node name="TidecoilManta" instance=ExtResource("1")]
+monster_id = &"tidecoil_manta"
+monster_name = "Tidecoil Manta"
+nameplate_color = Color(0.42, 0.86, 1, 1)
+monster_level = 27
+exp_reward = 720
+drop_table = ExtResource("3")
+max_hp = 610
+move_speed = 126.0
+attack_damage = 30
+attack_range = 84.0
+wander_radius = 120.0
+leash_distance = 340.0
+
+[node name="Sprite2D" parent="."]
+texture = ExtResource("2")
+scale = Vector2(0.23, 0.23)
+offset = Vector2(0, -236)
+
+[node name="DamageOrigin" parent="."]
+position = Vector2(0, -108)
