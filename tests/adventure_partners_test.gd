@@ -175,6 +175,20 @@ func run() -> void:
         roster.initialize(snapshot)
         check(partner.current_form == family.forms[-1], "Save restore preserves Mega")
 
+    # Regression: gameplay เริ่มต้นอาจยังปลด story stage แค่ Rookie แต่สายหลักต้อง evolve ตาม Level ได้
+    # เพื่อกัน bug ที่คัตซีนเล่นสำเร็จแต่ finish_digivolve() abort เพราะ max_unlocked_stage ต่ำ
+    QuestManager.max_unlocked_stage = MonsterData.EvolutionStage.ROOKIE
+    check(roster.select_member(1), "Select Patamon for cutscene commit regression")
+    set_level(11)
+    player.ds = player.max_ds
+    var patamon_next: MonsterData = partner.get_next_form()
+    check(patamon_next != null and patamon_next.monster_name == "Angemon", "Patamon next form is Angemon")
+    check(partner.prepare_digivolve() == patamon_next, "Patamon reserves Angemon at Lv11 with Rookie story stage")
+    check(partner.finish_digivolve(), "Patamon commits Angemon after cutscene rules")
+    check(partner.current_form == patamon_next, "Patamon remains Angemon after cutscene commit")
+    QuestManager.max_unlocked_stage = MonsterData.EvolutionStage.MEGA
+    check(roster.select_member(0), "Return to Tailmon after cutscene regression")
+
     # Tampered Tailmon save: ปรับเฉพาะ Tailmon เป็น Lv60 ต้องไม่กระทบตัวอื่น
     var saved: Dictionary = roster.get_save_data().duplicate(true)
     for index: int in range(saved["members"].size()):
