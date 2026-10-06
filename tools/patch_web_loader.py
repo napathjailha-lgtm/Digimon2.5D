@@ -27,9 +27,9 @@ if not portrait_uri:
 
 style = r"""
 <style id="prism-loader-style">
-html,body{margin:0!important;width:100%;height:100%;overflow:hidden;background:#000!important;overscroll-behavior:none;}
+html,body{margin:0!important;width:100%;height:100%;min-height:100%;overflow:hidden;background:#000!important;overscroll-behavior:none;}\nhtml{height:-webkit-fill-available;}\nbody{position:fixed;inset:0;width:100vw!important;height:var(--prism-vh,100dvh)!important;min-height:0!important;}
 body{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}
-#canvas{display:block;width:100%;height:100%;background:#000!important;outline:none;opacity:1;}
+#canvas{display:block;position:fixed!important;left:0!important;top:0!important;width:100vw!important;height:var(--prism-vh,100dvh)!important;max-width:none!important;max-height:none!important;background:#000!important;outline:none;opacity:1;touch-action:none;}
 #prism-preloader{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#000;opacity:1;transition:opacity .9s cubic-bezier(.22,1,.36,1);will-change:opacity;}
 #prism-preloader.prism-done{opacity:0;pointer-events:none;}
 #prism-loader-art{position:absolute;inset:0;opacity:0;transform:scale(.992);transition:opacity 1.1s cubic-bezier(.22,1,.36,1),transform 1.1s cubic-bezier(.22,1,.36,1);will-change:opacity,transform;}
@@ -75,6 +75,37 @@ script = r"""
   const started = performance.now();
   let sawGodotStatus = false;
   let revealed = false;
+  let viewportRaf = 0;
+
+  // iOS Safari ใช้ visual viewport แยกจาก layout viewport เมื่อ address/tab bar
+  // ยุบ/ขยาย ถ้าใช้ height:100% อย่างเดียว WebGL canvas จะค้างขนาดเก่าและเกิดภาพฉีก
+  function syncVisualViewport() {
+    if (viewportRaf) cancelAnimationFrame(viewportRaf);
+    viewportRaf = requestAnimationFrame(() => {
+      viewportRaf = 0;
+      const vv = window.visualViewport;
+      const height = Math.max(1, Math.round(vv ? vv.height : window.innerHeight));
+      document.documentElement.style.setProperty('--prism-vh', height + 'px');
+
+      const canvas = document.getElementById('canvas');
+      if (canvas) {
+        canvas.style.width = '100vw';
+        canvas.style.height = height + 'px';
+      }
+    });
+  }
+
+  syncVisualViewport();
+  window.addEventListener('orientationchange', () => {
+    setTimeout(syncVisualViewport, 50);
+    setTimeout(syncVisualViewport, 300);
+  }, { passive: true });
+  window.addEventListener('pageshow', syncVisualViewport, { passive: true });
+  window.addEventListener('resize', syncVisualViewport, { passive: true });
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', syncVisualViewport, { passive: true });
+    window.visualViewport.addEventListener('scroll', syncVisualViewport, { passive: true });
+  }
 
   requestAnimationFrame(() => {
     requestAnimationFrame(() => loader?.classList.add('prism-visible'));
