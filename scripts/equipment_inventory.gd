@@ -84,6 +84,22 @@ func grant_item(item_id: StringName, quantity: int = 1) -> bool:
     changed.emit()
     return true
 
+func remove_item(item_id: StringName, quantity: int = 1) -> bool:
+    # ร้านค้า/ระบบภายนอกตัดได้เฉพาะของที่อยู่ใน bag; ของที่สวมอยู่ต้องถอดก่อน
+    if not _can_change() or catalog == null or catalog.find_item(item_id) == null or quantity <= 0:
+        return false
+    var owned: int = count(item_id)
+    if owned < quantity:
+        feedback.emit("จำนวนอุปกรณ์ไม่พอ")
+        return false
+    var left: int = owned - quantity
+    if left <= 0:
+        bag.erase(String(item_id))
+    else:
+        bag[String(item_id)] = left
+    changed.emit()
+    return true
+
 func total_bonuses() -> Dictionary:
     # รวมใหม่จากช่องจริงทุกครั้ง ไม่เพิ่มซ้ำเมื่อรีเฟรช UI / เปลี่ยนร่าง
     var result: Dictionary = {"attack":0, "hp":0, "ds":0, "defense":0, "critical":0.0, "speed":0.0, "partner_hp":0, "partner_attack":0, "partner_speed":0.0,
