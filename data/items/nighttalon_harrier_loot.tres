@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="LootTable" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="LootTable" load_steps=7 format=3]
 [ext_resource type="Script" path="res://scripts/loot_table.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/loot_drop_entry.gd" id="2"]
 [ext_resource type="Resource" path="res://data/items/tamer_mp_regen_core.tres" id="3"]
 [ext_resource type="Resource" path="res://data/items/tamer_mp_potion.tres" id="4"]
+[ext_resource type="Resource" path="res://data/items/evolution_unlock_mega.tres" id="evo_mega"]
 
 [sub_resource type="Resource" id="regen"]
 script = ExtResource("2")
@@ -18,6 +19,11 @@ chance = 0.25
 min_quantity = 1
 max_quantity = 2
 
+[sub_resource type="Resource" id="mega_drop"]
+script = ExtResource("2")
+item = ExtResource("evo_mega")
+chance = 0.15
+
 [resource]
 script = ExtResource("1")
-entries = Array[ExtResource("2")]([SubResource("regen"), SubResource("potion")])
+entries = Array[ExtResource("2")]([SubResource("regen"), SubResource("potion"), SubResource("mega_drop")])
