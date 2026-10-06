@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="PregameCatalog" load_steps=20 format=3]
+[gd_resource type="Resource" script_class="PregameCatalog" load_steps=25 format=3]
 [ext_resource type="Script" path="res://scripts/pregame/pregame_catalog.gd" id="s"]
 [ext_resource type="Script" path="res://scripts/pregame/tamer_model_data.gd" id="tt"]
 [ext_resource type="Script" path="res://scripts/pregame/starter_partner_data.gd" id="pt"]
@@ -18,7 +18,12 @@
 [ext_resource type="Resource" path="res://data/pregame/tailmon.tres" id="p5"]
 [ext_resource type="Resource" path="res://data/pregame/patamon.tres" id="p6"]
 [ext_resource type="Resource" path="res://data/pregame/gomamon.tres" id="p7"]
+[ext_resource type="Resource" path="res://data/pregame/emberclaw.tres" id="p8"]
+[ext_resource type="Resource" path="res://data/pregame/frostfang.tres" id="p9"]
+[ext_resource type="Resource" path="res://data/pregame/thunder_lynx_partner_family.tres" id="p10"]
+[ext_resource type="Resource" path="res://data/pregame/tidecoil_manta_partner_family.tres" id="p11"]
+[ext_resource type="Resource" path="res://data/pregame/nighttalon_harrier_partner_family.tres" id="p12"]
 [resource]
 script = ExtResource("s")
 tamers = Array[ExtResource("tt")]([ExtResource("t0"), ExtResource("t1"), ExtResource("t2"), ExtResource("t3"), ExtResource("t4"), ExtResource("t5"), ExtResource("t6"), ExtResource("t7")])
-starters = Array[ExtResource("pt")]([ExtResource("p0"), ExtResource("p1"), ExtResource("p2"), ExtResource("p3"), ExtResource("p4"), ExtResource("p5"), ExtResource("p6"), ExtResource("p7")])
+starters = Array[ExtResource("pt")]([ExtResource("p0"), ExtResource("p1"), ExtResource("p2"), ExtResource("p3"), ExtResource("p4"), ExtResource("p5"), ExtResource("p6"), ExtResource("p7"), ExtResource("p8"), ExtResource("p9"), ExtResource("p10"), ExtResource("p11"), ExtResource("p12")])
