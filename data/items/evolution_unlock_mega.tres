@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/items/evolution_unlock_mega.svg" id="2"]
+[resource]
+script = ExtResource("1")
+item_id = "evolution_unlock_mega"
+item_name = "Mega Evolution Core"
+item_type = 3
+item_texture = ExtResource("2")
+description = "คอร์ปลดล็อกร่าง Mega ใช้โดยอัตโนมัติเมื่อเปลี่ยนร่างครั้งแรก และปลดล็อกถาวรให้คู่หูตัวนั้น"
+shop_sold = false
+buy_price = 0
+sell_price = 800
