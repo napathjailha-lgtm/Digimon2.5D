@@ -16,6 +16,26 @@ var party_count: Label
 var storage_count: Label
 var notice: Label
 var visual_fx: ModalVisualFX
+
+var enhancement_panel: PanelContainer
+var enhancement_title: Label
+var enhancement_detail: Label
+var enhancement_egg_source: PanelContainer
+var enhancement_egg_icon: TextureRect
+var enhancement_egg_count: Label
+var enhancement_slots: Array[PanelContainer] = []
+var enhancement_slot_icons: Array[TextureRect] = []
+var enhancement_button: DigimonTouchButton
+var enhancement_drag_ghost: TextureRect
+
+var _enhance_uid: String = ""
+var _enhance_staged: Array[bool] = [false, false, false, false, false]
+var _drag_finger: int = -1
+var _drag_mouse: bool = false
+var _drag_started: bool = false
+var _drag_start := Vector2.ZERO
+const ENHANCE_DRAG_THRESHOLD := 6.0
+
 var _owns_pause: bool = false
 var _previous_back_quit: bool = true
 
@@ -32,6 +52,8 @@ func configure(owner_roster: PartnerRoster) -> void:
         roster.changed.connect(_deferred_refresh)
     if not roster.feedback.is_connected(_show_notice):
         roster.feedback.connect(_show_notice)
+    if not InventoryManager.changed.is_connected(_deferred_refresh):
+        InventoryManager.changed.connect(_deferred_refresh)
 
 func open_screen() -> bool:
     if is_open or roster == null or get_tree().paused:
@@ -73,6 +95,7 @@ func close_screen() -> void:
     if not is_open:
         return
     visual_fx.reset()
+    _cancel_enhancement_drag()
     _release_buttons()
     root.hide()
     is_open = false
@@ -169,6 +192,86 @@ func _build() -> void:
     storage_count.custom_minimum_size.y = 34
     storage_badge.add_child(storage_count)
 
+    enhancement_panel = PanelContainer.new()
+    enhancement_panel.add_theme_stylebox_override("panel", ServiceUIStyle.card(ServiceUIStyle.GOLD, Color("17140af2")))
+    stack.add_child(enhancement_panel)
+
+    var enhancement_margin := MarginContainer.new()
+    for side: String in ["left", "right", "top", "bottom"]:
+        enhancement_margin.add_theme_constant_override("margin_" + side, 10)
+    enhancement_panel.add_child(enhancement_margin)
+
+    var enhancement_row := HBoxContainer.new()
+    enhancement_row.add_theme_constant_override("separation", 10)
+    enhancement_margin.add_child(enhancement_row)
+
+    var enhancement_info := VBoxContainer.new()
+    enhancement_info.custom_minimum_size.x = 255
+    enhancement_info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    enhancement_row.add_child(enhancement_info)
+
+    enhancement_title = ServiceUIStyle.label("ENHANCEMENT CHAMBER", 17, ServiceUIStyle.GOLD)
+    enhancement_info.add_child(enhancement_title)
+    enhancement_detail = ServiceUIStyle.label("เลือก Digimon จาก Party หรือ Storage เพื่อเริ่ม", 12, ServiceUIStyle.MUTED)
+    enhancement_detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    enhancement_info.add_child(enhancement_detail)
+
+    enhancement_egg_source = PanelContainer.new()
+    enhancement_egg_source.custom_minimum_size = Vector2(112, 76)
+    enhancement_egg_source.mouse_filter = Control.MOUSE_FILTER_PASS
+    enhancement_egg_source.add_theme_stylebox_override("panel", ServiceUIStyle.card(ServiceUIStyle.CYAN, Color("081929")))
+    enhancement_row.add_child(enhancement_egg_source)
+
+    var egg_source_row := HBoxContainer.new()
+    egg_source_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    egg_source_row.add_theme_constant_override("separation", 4)
+    enhancement_egg_source.add_child(egg_source_row)
+
+    enhancement_egg_icon = TextureRect.new()
+    enhancement_egg_icon.custom_minimum_size = Vector2(48, 48)
+    enhancement_egg_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+    enhancement_egg_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+    enhancement_egg_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    egg_source_row.add_child(enhancement_egg_icon)
+
+    enhancement_egg_count = ServiceUIStyle.label("x0", 14, ServiceUIStyle.CYAN)
+    enhancement_egg_count.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+    egg_source_row.add_child(enhancement_egg_count)
+
+    var slots_row := HBoxContainer.new()
+    slots_row.add_theme_constant_override("separation", 6)
+    enhancement_row.add_child(slots_row)
+    for slot_index: int in range(PartnerRoster.ENHANCEMENT_EGG_COST):
+        var slot := PanelContainer.new()
+        slot.custom_minimum_size = Vector2(62, 62)
+        slot.mouse_filter = Control.MOUSE_FILTER_PASS
+        slot.add_theme_stylebox_override("panel", ServiceUIStyle.card(Color("465362"), Color("07131f")))
+        slots_row.add_child(slot)
+        enhancement_slots.append(slot)
+
+        var slot_icon := TextureRect.new()
+        slot_icon.custom_minimum_size = Vector2(52, 52)
+        slot_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+        slot_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+        slot_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+        slot_icon.modulate = Color(1, 1, 1, 0.18)
+        slot.add_child(slot_icon)
+        enhancement_slot_icons.append(slot_icon)
+
+    enhancement_button = _button("UPGRADE", Vector2(128, 58), _commit_enhancement, ServiceUIStyle.GOLD)
+    enhancement_button.disabled = true
+    enhancement_row.add_child(enhancement_button)
+
+    enhancement_drag_ghost = TextureRect.new()
+    enhancement_drag_ghost.custom_minimum_size = Vector2(54, 54)
+    enhancement_drag_ghost.size = Vector2(54, 54)
+    enhancement_drag_ghost.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+    enhancement_drag_ghost.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+    enhancement_drag_ghost.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    enhancement_drag_ghost.z_index = 1000
+    enhancement_drag_ghost.visible = false
+    root.add_child(enhancement_drag_ghost)
+
     var columns := HBoxContainer.new()
     columns.add_theme_constant_override("separation", 14)
     columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -207,7 +310,7 @@ func _section_panel(title: String, subtitle: String, accent: Color) -> PanelCont
     var scroll := ScrollContainer.new()
     scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
     scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-    scroll.custom_minimum_size.y = 340
+    scroll.custom_minimum_size.y = 260
     scroll.clip_contents = true
     stack.add_child(scroll)
     var list := VBoxContainer.new()
@@ -220,7 +323,7 @@ func _section_panel(title: String, subtitle: String, accent: Color) -> PanelCont
 func _layout() -> void:
     # Child card มี minimum width ของตัวเอง จึง fit ทั้ง Panel รอบจุดกึ่งกลางแทนการบังคับ width อย่างเดียว
     ResponsiveUI.apply_safe_margins(safe, get_viewport(), 12.0)
-    panel.custom_minimum_size = Vector2(1080, 620)
+    panel.custom_minimum_size = Vector2(1080, 700)
     ResponsiveUI.fit_centered(panel, get_viewport(), 14.0)
     # เรียกซ้ำหลัง Container sort เพื่อให้ pivot ใช้ size จริง
 
@@ -241,6 +344,8 @@ func _refresh() -> void:
     else:
         for index: int in range(roster.storage.size()):
             storage_list.add_child(_member_card(roster.storage[index], index, false))
+
+    _refresh_enhancement_chamber()
 
 func _member_card(entry: Dictionary, index: int, in_party: bool) -> PanelContainer:
     var data: StarterPartnerData = roster.family(StringName(str(entry.get("id", ""))))
@@ -309,9 +414,9 @@ func _member_card(entry: Dictionary, index: int, in_party: bool) -> PanelContain
     actions.add_theme_constant_override("separation", 6)
     row.add_child(actions)
 
-    var enhance_text: String = "MAX +5" if enhance_level >= PartnerRoster.MAX_ENHANCEMENT else "ยกระดับ +%d" % (enhance_level + 1)
-    var enhance := _button(enhance_text, Vector2(118, 42), _enhance.bind(index, in_party), ServiceUIStyle.GOLD)
-    enhance.disabled = enhance_level >= PartnerRoster.MAX_ENHANCEMENT or egg_id.is_empty() or egg_owned < PartnerRoster.ENHANCEMENT_EGG_COST
+    var enhance_text: String = "MAX +5" if enhance_level >= PartnerRoster.MAX_ENHANCEMENT else ("กำลังเลือก" if str(entry.get("uid", "")) == _enhance_uid else "เลือกอัปเกรด")
+    var enhance := _button(enhance_text, Vector2(118, 42), _select_enhancement_target.bind(str(entry.get("uid", ""))), ServiceUIStyle.GOLD)
+    enhance.disabled = enhance_level >= PartnerRoster.MAX_ENHANCEMENT or egg_id.is_empty()
     actions.add_child(enhance)
 
     var action_text: String = "ฝากคลัง" if in_party else "เข้าปาร์ตี้"
@@ -345,9 +450,205 @@ func _button(text: String, minimum: Vector2, callback: Callable, accent: Color) 
     button.pressed.connect(callback)
     return button
 
-func _enhance(index: int, in_party: bool) -> void:
-    roster.enhance_member(index, in_party)
-    _deferred_refresh()
+func _select_enhancement_target(uid: String) -> void:
+    if uid.is_empty():
+        return
+    if _enhance_uid != uid:
+        _enhance_uid = uid
+        _clear_enhancement_staging()
+    _refresh()
+
+
+func _selected_enhancement_target() -> Dictionary:
+    if roster == null or _enhance_uid.is_empty():
+        return {}
+    for index: int in range(roster.members.size()):
+        if str(roster.members[index].get("uid", "")) == _enhance_uid:
+            return {"entry": roster.members[index], "index": index, "in_party": true}
+    for index: int in range(roster.storage.size()):
+        if str(roster.storage[index].get("uid", "")) == _enhance_uid:
+            return {"entry": roster.storage[index], "index": index, "in_party": false}
+    return {}
+
+
+func _clear_enhancement_staging() -> void:
+    for index: int in range(_enhance_staged.size()):
+        _enhance_staged[index] = false
+    _cancel_enhancement_drag()
+
+
+func _staged_egg_count() -> int:
+    var result: int = 0
+    for filled: bool in _enhance_staged:
+        if filled:
+            result += 1
+    return result
+
+
+func _refresh_enhancement_chamber() -> void:
+    if not is_instance_valid(enhancement_panel):
+        return
+
+    var target: Dictionary = _selected_enhancement_target()
+    if target.is_empty():
+        enhancement_title.text = "ENHANCEMENT CHAMBER"
+        enhancement_detail.text = "เลือก Digimon จาก Party หรือ Storage เพื่อเริ่ม"
+        enhancement_egg_icon.texture = null
+        enhancement_egg_count.text = "x0"
+        enhancement_egg_source.modulate = Color(1, 1, 1, 0.45)
+        for index: int in range(enhancement_slots.size()):
+            enhancement_slot_icons[index].texture = null
+            enhancement_slot_icons[index].modulate = Color(1, 1, 1, 0.18)
+        enhancement_button.text = "UPGRADE"
+        enhancement_button.disabled = true
+        return
+
+    var entry: Dictionary = target.entry
+    var family_id := StringName(str(entry.get("id", "")))
+    var family: StarterPartnerData = roster.family(family_id)
+    var level: int = roster.enhancement_level(entry)
+    var egg_id: String = roster.enhancement_egg_item_id(family_id)
+    var egg: ItemData = InventoryManager.catalog.find_item(egg_id)
+    var owned: int = InventoryManager.count(egg_id) if not egg_id.is_empty() else 0
+    var staged: int = _staged_egg_count()
+    var usable: int = mini(owned, PartnerRoster.ENHANCEMENT_EGG_COST)
+
+    # ถ้าของในกระเป๋าลดลงจากระบบอื่น ให้เอาไข่ที่วางเกินจำนวนจริงออกจากช่องท้าย ๆ
+    if staged > usable:
+        for index: int in range(_enhance_staged.size() - 1, -1, -1):
+            if staged <= usable:
+                break
+            if _enhance_staged[index]:
+                _enhance_staged[index] = false
+                staged -= 1
+
+    var display: String = family.display_name if family != null else String(family_id)
+    enhancement_title.text = "%s  +%d → +%d" % [display, level, mini(PartnerRoster.MAX_ENHANCEMENT, level + 1)]
+
+    if level >= PartnerRoster.MAX_ENHANCEMENT:
+        enhancement_detail.text = "MAX ENHANCEMENT +5 • " + roster.enhancement_bonus_text(level)
+    else:
+        enhancement_detail.text = "ลาก Digitama ลง 5 ช่อง • วาง %d/5 • สำเร็จ %.0f%%\n%s" % [
+            staged,
+            roster.enhancement_success_chance(level) * 100.0,
+            roster.enhancement_bonus_text(level)
+        ]
+
+    enhancement_egg_icon.texture = egg.item_texture if egg != null else null
+    enhancement_egg_count.text = "x%d" % owned
+    enhancement_egg_source.modulate = Color.WHITE if owned > staged and level < PartnerRoster.MAX_ENHANCEMENT else Color(1, 1, 1, 0.42)
+
+    for index: int in range(enhancement_slots.size()):
+        var filled: bool = _enhance_staged[index]
+        enhancement_slot_icons[index].texture = egg.item_texture if filled and egg != null else null
+        enhancement_slot_icons[index].modulate = Color.WHITE if filled else Color(1, 1, 1, 0.18)
+        enhancement_slots[index].add_theme_stylebox_override(
+            "panel",
+            ServiceUIStyle.card(ServiceUIStyle.GOLD if filled else Color("465362"), Color("17140a") if filled else Color("07131f"))
+        )
+
+    enhancement_button.text = "UPGRADE +%d" % (level + 1) if level < PartnerRoster.MAX_ENHANCEMENT else "MAX +5"
+    enhancement_button.disabled = level >= PartnerRoster.MAX_ENHANCEMENT or staged < PartnerRoster.ENHANCEMENT_EGG_COST or owned < PartnerRoster.ENHANCEMENT_EGG_COST
+
+
+func _commit_enhancement() -> void:
+    var target: Dictionary = _selected_enhancement_target()
+    if target.is_empty() or _staged_egg_count() < PartnerRoster.ENHANCEMENT_EGG_COST:
+        _show_notice("ลาก Digitama ให้ครบ 5 ช่องก่อนกด UPGRADE")
+        return
+    _clear_enhancement_staging()
+    roster.enhance_member(int(target.index), bool(target.in_party))
+    _refresh.call_deferred()
+
+
+func _point_in_control(control: Control, point: Vector2) -> bool:
+    if not is_instance_valid(control) or not control.is_visible_in_tree():
+        return false
+    var local: Vector2 = control.get_global_transform_with_canvas().affine_inverse() * point
+    return Rect2(Vector2.ZERO, control.size).has_point(local)
+
+
+func _egg_source_can_drag() -> bool:
+    var target: Dictionary = _selected_enhancement_target()
+    if target.is_empty():
+        return false
+    var entry: Dictionary = target.entry
+    var level: int = roster.enhancement_level(entry)
+    if level >= PartnerRoster.MAX_ENHANCEMENT:
+        return false
+    var egg_id: String = roster.enhancement_egg_item_id(StringName(str(entry.get("id", ""))))
+    return not egg_id.is_empty() and InventoryManager.count(egg_id) > _staged_egg_count()
+
+
+func _begin_enhancement_drag(point: Vector2) -> void:
+    _drag_start = point
+    _drag_started = false
+
+
+func _update_enhancement_drag(point: Vector2) -> void:
+    if not _drag_started and point.distance_to(_drag_start) >= ENHANCE_DRAG_THRESHOLD:
+        _drag_started = true
+        enhancement_drag_ghost.texture = enhancement_egg_icon.texture
+        enhancement_drag_ghost.visible = enhancement_drag_ghost.texture != null
+        _release_buttons()
+    if _drag_started:
+        enhancement_drag_ghost.position = point - enhancement_drag_ghost.size * 0.5
+
+
+func _finish_enhancement_drag(point: Vector2) -> void:
+    if _drag_started:
+        for index: int in range(enhancement_slots.size()):
+            if not _enhance_staged[index] and _point_in_control(enhancement_slots[index], point):
+                _enhance_staged[index] = true
+                AudioManager.play_sfx(&"ui_click", -6.0)
+                break
+    _cancel_enhancement_drag()
+    _refresh_enhancement_chamber()
+
+
+func _cancel_enhancement_drag() -> void:
+    _drag_finger = -1
+    _drag_mouse = false
+    _drag_started = false
+    if is_instance_valid(enhancement_drag_ghost):
+        enhancement_drag_ghost.visible = false
+
+
+func _input(event: InputEvent) -> void:
+    if not is_open or not is_instance_valid(enhancement_egg_source):
+        return
+
+    if event is InputEventScreenTouch:
+        if event.pressed and not event.canceled and _drag_finger == -1:
+            if _point_in_control(enhancement_egg_source, event.position) and _egg_source_can_drag():
+                _drag_finger = event.index
+                _begin_enhancement_drag(event.position)
+        elif event.index == _drag_finger and (not event.pressed or event.canceled):
+            if not event.canceled:
+                _finish_enhancement_drag(event.position)
+            else:
+                _cancel_enhancement_drag()
+            if _drag_started:
+                get_viewport().set_input_as_handled()
+
+    elif event is InputEventScreenDrag and event.index == _drag_finger:
+        _update_enhancement_drag(event.position)
+        if _drag_started:
+            get_viewport().set_input_as_handled()
+
+    elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+        if event.pressed:
+            if _point_in_control(enhancement_egg_source, event.position) and _egg_source_can_drag():
+                _drag_mouse = true
+                _begin_enhancement_drag(event.position)
+        elif _drag_mouse:
+            _finish_enhancement_drag(event.position)
+            get_viewport().set_input_as_handled()
+
+    elif event is InputEventMouseMotion and _drag_mouse:
+        _update_enhancement_drag(event.position)
+        if _drag_started:
+            get_viewport().set_input_as_handled()
 
 
 func _move_party(index: int) -> void:
