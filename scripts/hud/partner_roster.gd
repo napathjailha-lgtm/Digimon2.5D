@@ -231,7 +231,8 @@ func member_level(id: StringName) -> int:
 
 
 func current_enhancement_level() -> int:
-    if not initialized or members.is_empty() or active_index < 0 or active_index >= members.size():
+    # ต้องอ่านได้ระหว่าง initialize/_apply_member ด้วย เพราะ actor โหลดสเตตัสก่อน initialized=true
+    if members.is_empty() or active_index < 0 or active_index >= members.size():
         return 0
     return clampi(int(members[active_index].get("enhancement", 0)), 0, MAX_ENHANCEMENT)
 
