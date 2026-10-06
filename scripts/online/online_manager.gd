@@ -8,6 +8,9 @@ signal remote_left(peer_id: String)
 signal remote_state(peer_id: String, payload: Dictionary)
 signal remote_chat(peer_id: String, sender: String, text: String)
 signal online_count_changed(total: int, zone_count: int)
+signal guild_changed(snapshot: Dictionary)
+signal guild_chat(peer_id: String, sender: String, text: String)
+signal guild_feedback(message: String, ok: bool)
 
 const DEFAULT_SEND_INTERVAL := 0.10
 const RECONNECT_DELAY := 4.0
@@ -19,6 +22,7 @@ var connecting: bool = false
 var local_peer_id: String = ""
 var total_online: int = 0
 var zone_online: int = 0
+var guild: Dictionary = {}
 var server_url: String = ""
 var zone_id: StringName = &"file_island"
 var local_player: Tamer
@@ -71,6 +75,8 @@ func disconnect_from_server() -> void:
     connecting = false
     local_peer_id = ""
     _set_online_counts(0, 0)
+    guild.clear()
+    guild_changed.emit({})
     connection_changed.emit(false, "Offline")
 
 func _process(delta: float) -> void:
@@ -100,6 +106,8 @@ func _process(delta: float) -> void:
         connecting = false
         local_peer_id = ""
         _set_online_counts(0, 0)
+        guild.clear()
+        guild_changed.emit({})
         connection_changed.emit(false, "หลุดจาก Online Server")
         if not _manual_disconnect:
             _reconnect_left = RECONNECT_DELAY
@@ -134,6 +142,7 @@ func _presence_payload(packet_type: String) -> Dictionary:
         "type": packet_type,
         "zone": String(zone_id),
         "name": _display_name(),
+        "character_key": _character_key(),
         "position": _vec2(position),
         "tamer_model": String(GameManager.tamer_selected),
         "tamer_scale": _vec2(tamer_scale),
@@ -200,6 +209,21 @@ func _handle_packet(raw: String) -> void:
                 maxi(0, int(payload.get("total", 0))),
                 maxi(0, int(payload.get("zone_count", 0)))
             )
+        "guild_snapshot":
+            var next_guild: Variant = payload.get("guild", {})
+            guild = next_guild.duplicate(true) if next_guild is Dictionary else {}
+            guild_changed.emit(guild.duplicate(true))
+        "guild_chat":
+            guild_chat.emit(
+                str(payload.get("id", "")),
+                str(payload.get("name", "ผู้เล่น")),
+                str(payload.get("text", ""))
+            )
+        "guild_feedback":
+            guild_feedback.emit(
+                str(payload.get("message", "")),
+                bool(payload.get("ok", false))
+            )
 
 func _set_online_counts(total: int, current_zone: int) -> void:
     var safe_total: int = maxi(0, total)
@@ -209,6 +233,56 @@ func _set_online_counts(total: int, current_zone: int) -> void:
     total_online = safe_total
     zone_online = safe_zone
     online_count_changed.emit(total_online, zone_online)
+
+
+func create_guild(name: String) -> bool:
+    if not connected:
+        return false
+    var clean: String = name.strip_edges().substr(0, 20)
+    if clean.length() < 3:
+        guild_feedback.emit("ชื่อกิลด์ต้องยาว 3–20 ตัวอักษร", false)
+        return false
+    _send_json({"type": "guild_create", "name": clean})
+    return true
+
+
+func join_guild(code: String) -> bool:
+    if not connected:
+        return false
+    var clean: String = code.strip_edges().to_upper().substr(0, 12)
+    if clean.is_empty():
+        guild_feedback.emit("กรอกรหัสกิลด์ก่อน", false)
+        return false
+    _send_json({"type": "guild_join", "code": clean})
+    return true
+
+
+func leave_guild() -> bool:
+    if not connected or guild.is_empty():
+        return false
+    _send_json({"type": "guild_leave"})
+    return true
+
+
+func request_guild() -> void:
+    if connected:
+        _send_json({"type": "guild_request"})
+
+
+func send_guild_chat(text: String) -> bool:
+    if not connected or guild.is_empty():
+        return false
+    var clean: String = text.strip_edges().replace("\n", " ").replace("\r", " ").replace("\t", " ").substr(0, MAX_CHAT_LENGTH)
+    if clean.is_empty():
+        return false
+    _send_json({"type": "guild_chat", "text": clean})
+    return true
+
+
+func _character_key() -> String:
+    if GameManager.account_key.is_empty():
+        return ""
+    return (GameManager.account_key + "|" + str(GameManager.selected_slot)).sha256_text()
 
 
 func _on_chat_outgoing(_channel: StringName, text: String) -> void:
