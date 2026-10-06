@@ -165,8 +165,16 @@ func _build_extras() -> void:
     _tracker.navigation_requested.connect(tamer.start_auto_navigation)
     _tracker.feedback.connect(_show_message)
     $Root.add_child(_tracker)
-    _tracker.hide() # ใช้ตัวแก้เป้าหมายเดิม แต่แสดงเพียง shortcut บรรทัดเดียว
-    quest_button.pressed.connect(_tracker.request_navigation)
+    _tracker.hide()
+    quest_button.set_caption("เควสต์หลัก · แตะดูรายละเอียด/นำทาง")
+    quest_button.pressed.connect(_open_quest_details)
+
+func _open_quest_details() -> void:
+    if not is_instance_valid(_tracker):
+        return
+    _tracker.show_details()
+    _tracker.request_navigation()
+
 
 func _build_quick_item_bar() -> void:
     quick_bar = HBoxContainer.new()
