@@ -51,7 +51,7 @@ func run() -> void:
     var egg: ItemData = manager.catalog.find_item("digitama")
     var chip: ItemData = manager.catalog.find_item("data_chip")
     check(manager.player_node() == player and manager.items().is_empty(), "เริ่มกระเป๋าว่างและ bind Tamer ปัจจุบัน")
-    check(manager.catalog.items.size() == 5 and meat.item_texture != null, "ฐานข้อมูล 5 ไอเทมพร้อม Texture")
+    check(manager.catalog.items.size() >= 16 and meat.item_texture != null and manager.catalog.find_item("tamer_mp_potion") != null, "ฐานข้อมูลไอเทมปัจจุบันพร้อม Texture และยา MP Tamer")
     check(not manager.add_item(null, 1) and not manager.add_item(meat, 0) and not manager.add_item(meat, -1), "ปฏิเสธข้อมูล/จำนวนไม่ถูกต้อง")
     var unknown := ItemData.new()
     unknown.item_id = "unknown"
@@ -78,7 +78,7 @@ func run() -> void:
     check(partner.recover(), "Recover เดิมยังทำงาน")
     check(manager.add_item(egg, 1) and manager.add_item(chip, 3), "เก็บไข่กับชิปข้อมูล")
     var hp_before_hatch: int = partner.hp
-    check(manager.use_item(manager.index_of("digitama")) and manager.count("digitama") == 0 and partner.hp == hp_before_hatch and player.party_roster.members.size() == 2, "ไข่ฟักเป็นสมาชิกใหม่และไม่ฟื้น HP ตัวปัจจุบัน")
+    check(not manager.use_item(manager.index_of("digitama")) and manager.count("digitama") == 1 and partner.hp == hp_before_hatch, "Digitama ใช้จากกระเป๋าไม่ได้ ต้องนำไป Incubator")
     check(not manager.use_item(manager.index_of("data_chip")), "ชิปเควสต์ใช้เป็นเนื้อไม่ได้")
     var cap: int = manager.max_stack
     manager.max_stack = 12
@@ -174,7 +174,7 @@ func run() -> void:
     await get_tree().process_frame
     check(partner.hp > previous_hp and manager.count("meat") == 4, "Touch Use ฟื้น HP และลดจำนวนขณะ pause")
     tap(ui.slots[1])
-    check(ui.selected_id == "digitama" and not ui.use_button.locked and ui.use_button.caption == "ฟักไข่", "เลือกไข่ UI แสดงปุ่มฟักเมื่อทีมยังว่าง")
+    check(ui.selected_id == "digitama" and ui.use_button.locked and ui.use_button.caption == "ไป Incubator", "เลือกไข่ UI ชี้ไป Incubator และไม่ให้ฟักจากกระเป๋า")
     tap(ui.drop_button)
     await get_tree().process_frame
     check(manager.count("digitama") == 0 and not ui.popup.visible and ui.selected_id == "", "ทิ้งชิ้นสุดท้ายปิด Popup ไม่ใช้ไอเทมอื่นแทน")
