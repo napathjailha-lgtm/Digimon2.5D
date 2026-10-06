@@ -7,6 +7,7 @@ signal remote_joined(peer_id: String, payload: Dictionary)
 signal remote_left(peer_id: String)
 signal remote_state(peer_id: String, payload: Dictionary)
 signal remote_chat(peer_id: String, sender: String, text: String)
+signal online_count_changed(total: int, zone_count: int)
 
 const DEFAULT_SEND_INTERVAL := 0.10
 const RECONNECT_DELAY := 4.0
@@ -16,6 +17,8 @@ var socket := WebSocketPeer.new()
 var connected: bool = false
 var connecting: bool = false
 var local_peer_id: String = ""
+var total_online: int = 0
+var zone_online: int = 0
 var server_url: String = ""
 var zone_id: StringName = &"file_island"
 var local_player: Tamer
@@ -67,6 +70,7 @@ func disconnect_from_server() -> void:
     connected = false
     connecting = false
     local_peer_id = ""
+    _set_online_counts(0, 0)
     connection_changed.emit(false, "Offline")
 
 func _process(delta: float) -> void:
@@ -95,6 +99,7 @@ func _process(delta: float) -> void:
         connected = false
         connecting = false
         local_peer_id = ""
+        _set_online_counts(0, 0)
         connection_changed.emit(false, "หลุดจาก Online Server")
         if not _manual_disconnect:
             _reconnect_left = RECONNECT_DELAY
@@ -190,6 +195,21 @@ func _handle_packet(raw: String) -> void:
             var id := str(payload.get("id", ""))
             if id != local_peer_id:
                 remote_chat.emit(id, str(payload.get("name", "ผู้เล่น")), str(payload.get("text", "")))
+        "online_count":
+            _set_online_counts(
+                maxi(0, int(payload.get("total", 0))),
+                maxi(0, int(payload.get("zone_count", 0)))
+            )
+
+func _set_online_counts(total: int, current_zone: int) -> void:
+    var safe_total: int = maxi(0, total)
+    var safe_zone: int = clampi(current_zone, 0, safe_total)
+    if total_online == safe_total and zone_online == safe_zone:
+        return
+    total_online = safe_total
+    zone_online = safe_zone
+    online_count_changed.emit(total_online, zone_online)
+
 
 func _on_chat_outgoing(_channel: StringName, text: String) -> void:
     if not send_chat(text):
