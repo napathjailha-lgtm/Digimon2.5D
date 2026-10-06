@@ -183,7 +183,7 @@ func run() -> void:
     roster.initialize(saved)
     if roster.active_index != 0:
         check(roster.select_member(0), "Switch back to Tailmon line")
-    check(partner.current_form.monster_name == "Angewomon", "Restore clamps Tailmon Mega to Ultimate at Lv60")
+    check(partner.current_form.monster_name == "Holydramon", "Restore keeps Tailmon Mega unlocked at Lv60")
 
     var service := IncubatorService.new()
     service.configure(roster)
