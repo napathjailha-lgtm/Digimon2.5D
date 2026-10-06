@@ -14,4 +14,5 @@ attribute_name = "Lunar"
 element_name = "น้ำแข็ง"
 description = "คู่หูหมาป่าน้ำแข็งต้นฉบับ • พัฒนาได้จนถึง Cryoblaster"
 portrait = ExtResource("p")
+starter_available = false
 forms = Array[ExtResource("mt")]([ExtResource("f0"), ExtResource("f1"), ExtResource("f2"), ExtResource("f3")])
