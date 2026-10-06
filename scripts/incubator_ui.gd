@@ -11,6 +11,7 @@ var is_open: bool = false
 var root: Control
 var safe: MarginContainer
 var panel: PanelContainer
+var egg_scroll: ScrollContainer
 var egg_list: VBoxContainer
 var selected_icon: TextureRect
 var selected_name: Label
@@ -174,16 +175,20 @@ func _build() -> void:
     left_margin.add_child(left_stack)
     left_stack.add_child(ServiceUIStyle.label("DIGITAMA INVENTORY", 18, ServiceUIStyle.CYAN))
     left_stack.add_child(ServiceUIStyle.label("เลือกไข่ที่จะวางลงเครื่อง", 12, ServiceUIStyle.MUTED))
-    var scroll := ScrollContainer.new()
-    scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-    scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-    scroll.custom_minimum_size.y = 360
-    scroll.clip_contents = true
-    left_stack.add_child(scroll)
+    egg_scroll = ScrollContainer.new()
+    egg_scroll.name = "EggScroll"
+    egg_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+    egg_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+    egg_scroll.scroll_deadzone = 8
+    egg_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    egg_scroll.custom_minimum_size.y = 360
+    egg_scroll.clip_contents = true
+    egg_scroll.mouse_filter = Control.MOUSE_FILTER_STOP
+    left_stack.add_child(egg_scroll)
     egg_list = VBoxContainer.new()
     egg_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     egg_list.add_theme_constant_override("separation", 8)
-    scroll.add_child(egg_list)
+    egg_scroll.add_child(egg_list)
 
     var right := PanelContainer.new()
     right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
