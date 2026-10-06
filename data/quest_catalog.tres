@@ -1,15 +1,22 @@
-[gd_resource type="Resource" script_class="QuestCatalog" load_steps=13 format=3]
+[gd_resource type="Resource" script_class="QuestCatalog" load_steps=16 format=3]
 [ext_resource type="Script" path="res://scripts/quest_catalog.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/story_quest.gd" id="2"]
 [ext_resource type="Resource" path="res://data/quests/q01_agumon.tres" id="q0"]
-[ext_resource type="Resource" path="res://data/quests/q02_friends.tres" id="q1"]
-[ext_resource type="Resource" path="res://data/quests/q03_green_hunt.tres" id="q2"]
-[ext_resource type="Resource" path="res://data/quests/q04_forest_guardian.tres" id="q3"]
-[ext_resource type="Resource" path="res://data/quests/q04_gennai.tres" id="q4"]
-[ext_resource type="Resource" path="res://data/quests/q05_etemon.tres" id="q5"]
-[ext_resource type="Resource" path="res://data/quests/q06_eighth.tres" id="q6"]
-[ext_resource type="Resource" path="res://data/quests/q07_myotismon.tres" id="q7"]
-[ext_resource type="Resource" path="res://data/quests/q08_piedmon.tres" id="q8"]
+[ext_resource type="Resource" path="res://data/quests/q02_emberclaw.tres" id="q1"]
+[ext_resource type="Resource" path="res://data/quests/q02_friends.tres" id="q2"]
+[ext_resource type="Resource" path="res://data/quests/q03_green_hunt.tres" id="q3"]
+[ext_resource type="Resource" path="res://data/quests/q04_forest_crab.tres" id="q4"]
+[ext_resource type="Resource" path="res://data/quests/q04_forest_guardian.tres" id="q5"]
+[ext_resource type="Resource" path="res://data/quests/q06_devimon.tres" id="q6"]
+[ext_resource type="Resource" path="res://data/quests/q04_gennai.tres" id="q7"]
+[ext_resource type="Resource" path="res://data/quests/q05_etemon.tres" id="q8"]
+[ext_resource type="Resource" path="res://data/quests/q06_eighth.tres" id="q9"]
+[ext_resource type="Resource" path="res://data/quests/q07_myotismon.tres" id="q10"]
+[ext_resource type="Resource" path="res://data/quests/q08_piedmon.tres" id="q11"]
 [resource]
 script = ExtResource("1")
-quests = Array[ExtResource("2")]([ExtResource("q0"), ExtResource("q1"), ExtResource("q2"), ExtResource("q3"), ExtResource("q4"), ExtResource("q5"), ExtResource("q6"), ExtResource("q7"), ExtResource("q8")])
+quests = Array[ExtResource("2")]([
+    ExtResource("q0"), ExtResource("q1"), ExtResource("q2"), ExtResource("q3"),
+    ExtResource("q4"), ExtResource("q5"), ExtResource("q6"), ExtResource("q7"),
+    ExtResource("q8"), ExtResource("q9"), ExtResource("q10"), ExtResource("q11")
+])
