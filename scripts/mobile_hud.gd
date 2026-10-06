@@ -30,6 +30,7 @@ var equipment_screen: EquipmentScreen
 var inventory_screen: InventoryUI
 var smart_panel: HudSmartPanel
 var digimon_screen: DigimonStatusScreen
+var guild_screen: GuildUI
 var exp_strip: ProgressBar
 var chat_panel: MobileChatPanel
 var minimap: MobileMinimap
@@ -120,6 +121,10 @@ func _ready() -> void:
     digimon_screen = DigimonStatusScreen.new()
     add_child(digimon_screen)
     digimon_screen.configure(self)
+    guild_screen = GuildUI.new()
+    guild_screen.name = "GuildUI"
+    add_child(guild_screen)
+    guild_screen.configure(self)
     InventoryManager.feedback.connect(_show_message)
     InventoryManager.item_picked_up.connect(_on_item_picked_up)
     InventoryManager.changed.connect(_refresh_quick_items)
@@ -515,8 +520,9 @@ func _menu_action(action: StringName) -> void:
             preferences.minimap_visible = not preferences.minimap_visible
             _save_preferences()
         &"chat": chat_panel.toggle_collapsed()
+        &"guild": guild_screen.open_screen()
         &"character": _return_to_characters()
-        &"mail", &"rewards", &"community", &"wiki", &"help", &"updates", &"explorer", &"ranking", &"event", &"world_boss", &"pvp", &"cards", &"party", &"guild", &"friends":
+        &"mail", &"rewards", &"community", &"wiki", &"help", &"updates", &"explorer", &"ranking", &"event", &"world_boss", &"pvp", &"cards", &"party", &"friends":
             _show_message("เมนู %s กำลังเตรียมระบบ" % String(action).replace("_", " ").capitalize())
 
 func _toggle_stats() -> void:
@@ -591,7 +597,7 @@ func _on_chat_editing(editing: bool) -> void:
     _sync_skill_input()
 
 func _sync_skill_input() -> void:
-    var blocked: bool = chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open)
+    var blocked: bool = chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open) or (is_instance_valid(guild_screen) and guild_screen.is_open)
     skill_panel.process_mode = Node.PROCESS_MODE_DISABLED if blocked else Node.PROCESS_MODE_INHERIT
     party_panel.process_mode = skill_panel.process_mode
 
@@ -627,7 +633,7 @@ func _request_digivolve(partner_node: PartnerMonster) -> void:
 func _unhandled_input(event: InputEvent) -> void:
     # Web/PC shortcuts: Space = โจมตี, 1-4 = สกิล, 5-8 = Quick Item, J = Fusion
     # ใช้ unhandled_input เพื่อไม่แย่งปุ่มจาก LineEdit/เมนูที่กำลังรับคีย์บอร์ด
-    if chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open):
+    if chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open) or (is_instance_valid(guild_screen) and guild_screen.is_open):
         return
     if event.is_action_pressed(&"basic_attack"):
         tamer.command_attack()
@@ -766,7 +772,7 @@ func _return_to_characters() -> void:
 
 func _refresh_combat_controls() -> void:
     # Cannot Battle ปิด Attack/Auto/Digivolve/สกิล แต่ Recover/อาหารยังใช้งานได้
-    var blocked: bool = chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open)
+    var blocked: bool = chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open) or (is_instance_valid(guild_screen) and guild_screen.is_open)
     attack_button.locked = blocked or not partner.can_battle() or partner.evolution_busy
     recover_button.locked = blocked or partner.evolution_busy
     auto_button.locked = attack_button.locked
