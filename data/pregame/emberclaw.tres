@@ -14,4 +14,5 @@ attribute_name = "Solar"
 element_name = "ไฟ"
 description = "คู่หูมังกรเพลิงต้นฉบับ • พัฒนาได้จนถึง Aegisdrake"
 portrait = ExtResource("p")
+starter_available = false
 forms = Array[ExtResource("mt")]([ExtResource("f0"), ExtResource("f1"), ExtResource("f2"), ExtResource("f3")])
