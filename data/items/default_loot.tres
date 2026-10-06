@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="LootTable" load_steps=29 format=3]
+[gd_resource type="Resource" script_class="LootTable" load_steps=31 format=3]
 [ext_resource type="Script" path="res://scripts/loot_table.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/loot_drop_entry.gd" id="2"]
 [ext_resource type="Resource" path="res://data/items/meat.tres" id="3"]
@@ -15,6 +15,7 @@
 [ext_resource type="Resource" path="res://data/items/tailmon_digitama.tres" id="tailmon_egg"]
 [ext_resource type="Resource" path="res://data/items/patamon_digitama.tres" id="patamon_egg"]
 [ext_resource type="Resource" path="res://data/items/gomamon_digitama.tres" id="gomamon_egg"]
+[ext_resource type="Resource" path="res://data/items/evolution_unlock_champion.tres" id="evo_champion"]
 
 [sub_resource type="Resource" id="meat"]
 script = ExtResource("2")
@@ -85,6 +86,11 @@ script = ExtResource("2")
 item = ExtResource("gomamon_egg")
 chance = 0.0125
 
+[sub_resource type="Resource" id="evo_champion_drop"]
+script = ExtResource("2")
+item = ExtResource("evo_champion")
+chance = 0.03
+
 [resource]
 script = ExtResource("1")
 entries = Array[ExtResource("2")]([
@@ -100,5 +106,6 @@ entries = Array[ExtResource("2")]([
     SubResource("patamon_egg"),
     SubResource("gomamon_egg"),
     SubResource("food"),
-    SubResource("mp")
+    SubResource("mp"),
+    SubResource("evo_champion_drop")
 ])
