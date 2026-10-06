@@ -34,6 +34,10 @@ jobs:
 
       - name: Adventure partner evolution and combat regression
         run: python3 tools/check_godot.py --headless --path . res://tests/adventure_partners_test.tscn
+
+      - name: Inventory, loot and consumable regression
+        run: python3 tools/check_godot.py --headless --path . res://tests/inventory_loot_test.tscn
+
       - name: Validate Web export
         run: |
           mkdir -p /tmp/digimon-web
