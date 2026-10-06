@@ -625,7 +625,112 @@ func take_damage(amount: int, _attacker: Node2D = null) -> void:
     hp = maxi(0, hp - resolve_incoming_damage(amount))
     hp_changed.emit(hp, max_hp)
     if hp == 0:
+        _apply_defeat_penalty()
         enter_fainted()
+
+func _apply_defeat_penalty() -> void:
+    # เรียกเฉพาะจาก take_damage() เมื่อ HP ลดถึง 0 จริง ไม่เรียกจากการโหลดเซฟ/คำสั่ง debug
+    var level_before: int = progress.level
+    var lost_exp: int = progress.lose_exp_percent(0.10)
+    _refresh_stats_after_progress_loss()
+
+    var payment: Dictionary = _collect_defeat_fee(200)
+    var sold_text: String = str(payment.get("sold", ""))
+    var unpaid: int = int(payment.get("unpaid", 0))
+    var level_text: String = ""
+    if progress.level < level_before:
+        level_text = " • Lv.%d→Lv.%d" % [level_before, progress.level]
+
+    var message: String = "แพ้การต่อสู้: เสีย EXP %d%s • ค่าฟื้นฟู 200 Bits" % [lost_exp, level_text]
+    if not sold_text.is_empty():
+        message += " • ขายอัตโนมัติ: " + sold_text
+    if unpaid > 0:
+        message += " • ทรัพย์สินไม่พอชำระอีก %d Bits" % unpaid
+    feedback.emit(message)
+
+func _refresh_stats_after_progress_loss() -> void:
+    if current_form == null:
+        return
+    var stats: Dictionary = _effective_stats()
+    max_hp = int(stats.max_hp)
+    attack_power = int(stats.attack)
+    hp = mini(hp, max_hp)
+    move_speed = float(stats.speed)
+    agent.max_speed = move_speed
+    hp_changed.emit(hp, max_hp)
+
+func _collect_defeat_fee(required_bits: int) -> Dictionary:
+    var owed: int = maxi(0, required_bits)
+    var sold_names: Array[String] = []
+    if owed <= 0:
+        return {"unpaid": 0, "sold": ""}
+
+    var cash: int = mini(GameManager.bits, owed)
+    if cash > 0 and GameManager.spend_bits(cash):
+        owed -= cash
+    if owed <= 0:
+        return {"unpaid": 0, "sold": ""}
+
+    var shop := ShopService.new()
+
+    # 1) Inventory ปกติก่อน
+    for entry: Dictionary in InventoryManager.items():
+        if owed <= 0:
+            break
+        var item: ItemData = entry.item
+        var unit_price: int = shop.item_sell_price(item)
+        var owned: int = int(entry.quantity)
+        if item == null or unit_price <= 0 or owned <= 0:
+            continue
+        var quantity: int = mini(owned, ceili(float(owed) / float(unit_price)))
+        if not InventoryManager.remove_item(item.item_id, quantity):
+            continue
+        var value: int = unit_price * quantity
+        var applied: int = mini(owed, value)
+        owed -= applied
+        if value > applied:
+            GameManager.add_bits(value - applied)
+        sold_names.append("%s x%d" % [item.item_name, quantity])
+
+    # 2) อุปกรณ์ที่อยู่ใน bag
+    if owed > 0 and is_instance_valid(tamer) and tamer.equipment.catalog != null:
+        for gear: EquipmentItemData in tamer.equipment.catalog.items:
+            if owed <= 0:
+                break
+            var owned: int = tamer.equipment.count(gear.id)
+            var unit_price: int = shop.equipment_sell_price(gear)
+            if owned <= 0 or unit_price <= 0:
+                continue
+            var quantity: int = mini(owned, ceili(float(owed) / float(unit_price)))
+            if not tamer.equipment.remove_item(gear.id, quantity):
+                continue
+            var value: int = unit_price * quantity
+            var applied: int = mini(owed, value)
+            owed -= applied
+            if value > applied:
+                GameManager.add_bits(value - applied)
+            sold_names.append("%s x%d" % [gear.item_name, quantity])
+
+    # 3) ยังไม่ครบ: ถอดของที่สวมอยู่และขายเป็นทางเลือกสุดท้าย
+    if owed > 0 and is_instance_valid(tamer):
+        for slot_id: StringName in EquipmentInventory.SLOTS:
+            if owed <= 0:
+                break
+            var equipped_item: EquipmentItemData = tamer.equipment.item_at(slot_id)
+            if equipped_item == null:
+                continue
+            var unit_price: int = shop.equipment_sell_price(equipped_item)
+            if unit_price <= 0 or not tamer.equipment.take_off(slot_id):
+                continue
+            if not tamer.equipment.remove_item(equipped_item.id, 1):
+                continue
+            var applied: int = mini(owed, unit_price)
+            owed -= applied
+            if unit_price > applied:
+                GameManager.add_bits(unit_price - applied)
+            sold_names.append("%s (ถอดจาก %s)" % [equipped_item.item_name, EquipmentInventory.LABELS.get(String(slot_id), String(slot_id))])
+
+    return {"unpaid": owed, "sold": ", ".join(sold_names)}
 
 func restore_hp(amount: int) -> int:
     # เนื้อฟื้น HP เท่าที่ขาดจริง ไม่ชุบร่างไข่และไม่ให้ฟื้นระหว่างจองคัตซีน
