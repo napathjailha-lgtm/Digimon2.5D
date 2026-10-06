@@ -64,10 +64,13 @@ func sell(item_id: String, quantity: int = 1) -> bool:
 
 func sell_equipment(item_id: StringName, quantity: int = 1) -> bool:
     var player: Node = InventoryManager.player_node()
-    if not is_instance_valid(player) or not ("equipment" in player):
+    if not is_instance_valid(player):
         feedback.emit("ไม่พบกระเป๋าอุปกรณ์")
         return false
-    var inventory: EquipmentInventory = player.equipment
+    var inventory: EquipmentInventory = player.get("equipment") as EquipmentInventory
+    if inventory == null:
+        feedback.emit("ไม่พบกระเป๋าอุปกรณ์")
+        return false
     var item: EquipmentItemData = inventory.catalog.find_item(item_id) if inventory.catalog != null else null
     var unit_price: int = equipment_sell_price(item)
     if item == null or quantity <= 0 or unit_price <= 0:
