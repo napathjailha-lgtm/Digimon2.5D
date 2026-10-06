@@ -510,12 +510,16 @@ wss.on("connection", (ws) => {
     if (!msg || typeof msg !== "object") return;
 
     if (msg.type === "hello") {
+      const incomingCharacterKey = cleanText(msg.character_key, 80);
+      // Autoload connects from the login screen too. Count/register a player only
+      // after a real character is bound to the world.
+      if (!incomingCharacterKey) return;
+
       const wasReady = client.ready;
       const oldZone = client.zone;
       const previousGuildId = guildIdForClient(client);
 
-      client.characterKey =
-        cleanText(msg.character_key, 80) || client.characterKey || client.id;
+      client.characterKey = incomingCharacterKey;
       client.name = cleanText(msg.name) || "Tamer";
       client.zone = cleanText(msg.zone, 40) || "file_island";
       client.position = normalizeVector(msg.position, client.position);
