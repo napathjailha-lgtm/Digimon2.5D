@@ -763,10 +763,12 @@ func _form_unlocked(data: MonsterData) -> bool:
         return true
     var index: int = forms.find(data)
     # ร่างฐานของสายเล่นได้เสมอ (Tailmon เป็น Champion ตามข้อมูลแต่เป็น starter ได้)
-    # ร่างถัดไปต้องผ่านทั้ง Level และ Story stage ของ EP1
+    # ระบบปัจจุบันใช้ Level เป็นตัวปลดร่างหลัก; Story ผูกเฉพาะร่างที่ระบุ required_story_flag จริง
+    # ห้ามใช้ max_unlocked_stage ซ้ำที่นี่ เพราะ prepare_digivolve() ไม่ได้ใช้ stage cap
+    # มิฉะนั้นจะเกิดอาการ "คัตซีนขึ้น แต่จบแล้วกลับร่างเดิม"
     if index == 0:
         return true
-    return index > 0 and EvolutionRules.can_use_form(progress.level, index, data) and QuestManager.can_use_form(data)
+    return index > 0 and EvolutionRules.can_use_form(progress.level, index, data) and QuestManager.has_flag(data.required_story_flag)
 
 func _start_basic_attack() -> bool:
     if not can_battle():
