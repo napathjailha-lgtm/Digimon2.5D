@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3]
 [ext_resource type="PackedScene" path="res://scenes/wild_monster.tscn" id="1"]
-[ext_resource type="Texture2D" path="res://assets/monsters/elites/tidecoil_manta.webp" id="2"]
+[ext_resource type="Texture2D" path="res://assets/monsters/elites/tidecoil_manta.svg" id="2"]
 [ext_resource type="Resource" path="res://data/items/tidecoil_manta_loot.tres" id="3"]
 
 [node name="TidecoilManta" instance=ExtResource("1")]
