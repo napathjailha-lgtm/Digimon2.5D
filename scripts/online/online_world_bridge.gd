@@ -1,6 +1,7 @@
 extends Node
 
 const REMOTE_TAMER_SCENE := preload("res://scenes/online/remote_tamer.tscn")
+const THAI_FONT: Font = preload("res://assets/fonts/NotoSansThai.ttf")
 
 @export var zone_id: StringName = &"file_island"
 @export var actors_path: NodePath = NodePath("../Actors")
@@ -8,6 +9,7 @@ const REMOTE_TAMER_SCENE := preload("res://scenes/online/remote_tamer.tscn")
 
 var remotes: Dictionary = {}
 var local_chat_bubble: WorldChatBubble
+var local_guild_label: Label
 
 func _ready() -> void:
     OnlineManager.remote_joined.connect(_on_remote_joined)
@@ -15,12 +17,15 @@ func _ready() -> void:
     OnlineManager.remote_state.connect(_on_remote_state)
     OnlineManager.remote_chat.connect(_on_remote_chat)
     OnlineManager.connection_changed.connect(_on_connection_changed)
+    OnlineManager.guild_changed.connect(_on_guild_changed)
     GameChat.local_message_submitted.connect(_on_local_chat_submitted)
 
     var tamer := get_node_or_null(local_tamer_path) as Tamer
     if tamer != null:
         _ensure_local_chat_bubble(tamer)
+        _ensure_local_guild_label(tamer)
         OnlineManager.bind_world(tamer, zone_id)
+        _on_guild_changed(OnlineManager.guild)
 
 func _exit_tree() -> void:
     var tamer := get_node_or_null(local_tamer_path) as Tamer
@@ -65,6 +70,32 @@ func _ensure_local_chat_bubble(tamer: Tamer) -> void:
     local_chat_bubble.position = Vector2(-120.0, -198.0)
     local_chat_bubble.size = Vector2(240.0, 56.0)
     tamer.add_child(local_chat_bubble)
+
+func _ensure_local_guild_label(tamer: Tamer) -> void:
+    if is_instance_valid(local_guild_label):
+        return
+    local_guild_label = Label.new()
+    local_guild_label.name = "GuildLabel"
+    local_guild_label.position = Vector2(-90.0, -158.0)
+    local_guild_label.size = Vector2(180.0, 24.0)
+    local_guild_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    local_guild_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    local_guild_label.add_theme_font_override("font", THAI_FONT)
+    local_guild_label.add_theme_font_size_override("font_size", 12)
+    local_guild_label.add_theme_color_override("font_color", Color("c8a7ff"))
+    local_guild_label.add_theme_color_override("font_outline_color", Color("080512"))
+    local_guild_label.add_theme_constant_override("outline_size", 3)
+    local_guild_label.visible = false
+    tamer.add_child(local_guild_label)
+
+
+func _on_guild_changed(snapshot: Dictionary) -> void:
+    if not is_instance_valid(local_guild_label):
+        return
+    var guild_name: String = str(snapshot.get("name", "")).strip_edges().substr(0, 20)
+    local_guild_label.visible = not guild_name.is_empty()
+    local_guild_label.text = "<%s>" % guild_name if not guild_name.is_empty() else ""
+
 
 func _on_connection_changed(is_connected: bool, message: String) -> void:
     GameChat.add_system(message)
