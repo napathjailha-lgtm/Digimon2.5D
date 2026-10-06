@@ -106,6 +106,11 @@ func _use_error(item: ItemData, player: Node) -> String:
             if item.effect_value <= 0 or player.hp >= player.max_hp: return "HP Tamer เต็มแล้ว ไอเทมยังอยู่ในกระเป๋า"
         ItemData.EffectType.TAMER_MP:
             if item.effect_value <= 0 or player.tamer_mp >= player.max_tamer_mp: return "MP Tamer เต็มแล้ว ไอเทมยังอยู่ในกระเป๋า"
+        ItemData.EffectType.TAMER_MP_REGEN:
+            if item.tamer_mp_regen_per_second <= 0.0 or item.tamer_mp_regen_duration <= 0.0:
+                return "ไอเทม Regen MP ตั้งค่าไม่ถูกต้อง"
+            if player.tamer_mp >= player.max_tamer_mp:
+                return "MP Tamer เต็มแล้ว ไอเทมยังอยู่ในกระเป๋า"
         _: return "ไม่รู้จักผลของไอเทม"
     return ""
 
@@ -153,6 +158,9 @@ func use_item(item_index: int) -> bool:
             var restored_mp: float = maxf(0.0, player.tamer_mp - previous_mp)
             applied = restored_mp > 0.0
             message = "Tamer MP +%.0f" % restored_mp
+        ItemData.EffectType.TAMER_MP_REGEN:
+            applied = player.start_mp_regen(item.tamer_mp_regen_per_second, item.tamer_mp_regen_duration)
+            message = "Tamer MP Regen +%.1f/วิ • %.0f วิ" % [item.tamer_mp_regen_per_second, item.tamer_mp_regen_duration]
     if not applied:
         _busy = false
         return false
