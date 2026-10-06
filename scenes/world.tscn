@@ -271,5 +271,126 @@ respawn_time = 7.0
 monster_parent = NodePath("../../Actors")
 popup_layer = NodePath("../../DamagePopups")
 
+[node name="DataHarborSafeZone" parent="." instance=ExtResource("safe_zone")]
+position = Vector2(5600, 2700)
+
+[node name="DataHarborTitle" type="Label" parent="StoryPoints"]
+offset_left = 5380.0
+offset_top = 2170.0
+offset_right = 5820.0
+offset_bottom = 2212.0
+text = "DATA HARBOR"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.82, 0.94, 1, 1)
+theme_override_colors/font_outline_color = Color(0.02, 0.05, 0.1, 0.95)
+theme_override_constants/outline_size = 6
+mouse_filter = 2
+
+[node name="DataHarborArchive" type="Area2D" parent="StoryPoints"]
+position = Vector2(5330, 2550)
+collision_layer = 16
+collision_mask = 0
+script = ExtResource("service_point")
+service_id = "archive"
+title = "DATA HARBOR ARCHIVE"
+interaction_radius = 135.0
+accent_color = Color(0.33, 0.78, 0.9, 1)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StoryPoints/DataHarborArchive"]
+shape = SubResource("service_shape")
+position = Vector2(0, -52)
+[node name="Marker" type="Sprite2D" parent="StoryPoints/DataHarborArchive"]
+texture = ExtResource("archive_terminal")
+position = Vector2(0, -82)
+scale = Vector2(0.58, 0.58)
+[node name="Title" type="Label" parent="StoryPoints/DataHarborArchive"]
+offset_left = -120.0
+offset_top = -198.0
+offset_right = 120.0
+offset_bottom = -164.0
+text = "DATA HARBOR ARCHIVE"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 16
+mouse_filter = 2
+[node name="Prompt" type="Label" parent="StoryPoints/DataHarborArchive"]
+offset_left = -92.0
+offset_top = 8.0
+offset_right = 92.0
+offset_bottom = 38.0
+text = "E / แตะเพื่อใช้งาน"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 14
+mouse_filter = 2
+
+[node name="DataHarborMerchant" type="Area2D" parent="StoryPoints"]
+position = Vector2(5870, 2550)
+collision_layer = 16
+collision_mask = 0
+script = ExtResource("service_point")
+service_id = "shop"
+title = "DATA HARBOR MERCHANT"
+interaction_radius = 135.0
+accent_color = Color(0.88, 0.74, 0.45, 1)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StoryPoints/DataHarborMerchant"]
+shape = SubResource("service_shape")
+position = Vector2(0, -52)
+[node name="Marker" type="Sprite2D" parent="StoryPoints/DataHarborMerchant"]
+texture = ExtResource("merchant_terminal")
+position = Vector2(0, -82)
+scale = Vector2(0.58, 0.58)
+[node name="Title" type="Label" parent="StoryPoints/DataHarborMerchant"]
+offset_left = -125.0
+offset_top = -198.0
+offset_right = 125.0
+offset_bottom = -164.0
+text = "DATA HARBOR MERCHANT"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 16
+mouse_filter = 2
+[node name="Prompt" type="Label" parent="StoryPoints/DataHarborMerchant"]
+offset_left = -92.0
+offset_top = 8.0
+offset_right = 92.0
+offset_bottom = 38.0
+text = "E / แตะเพื่อใช้งาน"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 14
+mouse_filter = 2
+
+[node name="DataHarborIncubator" type="Area2D" parent="StoryPoints"]
+position = Vector2(5600, 2920)
+collision_layer = 16
+collision_mask = 0
+script = ExtResource("service_point")
+service_id = "incubator"
+title = "DATA HARBOR INCUBATOR"
+interaction_radius = 150.0
+accent_color = Color(0.73, 0.58, 0.96, 1)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StoryPoints/DataHarborIncubator"]
+shape = SubResource("service_shape")
+position = Vector2(0, -58)
+[node name="Marker" type="Sprite2D" parent="StoryPoints/DataHarborIncubator"]
+texture = ExtResource("incubator_terminal")
+position = Vector2(0, -92)
+scale = Vector2(0.58, 0.58)
+[node name="Title" type="Label" parent="StoryPoints/DataHarborIncubator"]
+offset_left = -130.0
+offset_top = -215.0
+offset_right = 130.0
+offset_bottom = -181.0
+text = "DATA HARBOR INCUBATOR"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 16
+mouse_filter = 2
+[node name="Prompt" type="Label" parent="StoryPoints/DataHarborIncubator"]
+offset_left = -92.0
+offset_top = 12.0
+offset_right = 92.0
+offset_bottom = 42.0
+text = "E / แตะเพื่อใช้งาน"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 14
+mouse_filter = 2
+
 [node name="WorldPopulation" type="Node" parent="."]
 script = ExtResource("population")
