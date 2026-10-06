@@ -117,36 +117,47 @@ func _add_high_level_population() -> void:
 
 
 func _add_elite_population() -> void:
-    # มอนสเตอร์ภาพชุดใหม่ กระจายตามช่วงกลาง-ปลายเกาะโดยไม่อัดรวมจุดเดียว
-    var tide_points: Array[Vector2] = [Vector2(4320, 2520), Vector2(4680, 2750), Vector2(4920, 2220)]
+    # Elite ชุดใหม่เริ่มมองเห็นได้จากรอบนอก Data Harbor แล้วค่อยไล่ระดับไปปลายเกาะ
+    # ใช้ activation radius มากกว่ามอนทั่วไปเล็กน้อย เพื่อไม่ให้ผู้เล่นเดินผ่านโซนแล้วเห็นพื้นที่ว่าง
+    var tide_points: Array[Vector2] = [
+        Vector2(4580, 2550), Vector2(4720, 3050), Vector2(4850, 2050)
+    ]
     for i: int in range(tide_points.size()):
         var p: Vector2 = _walkable_near(tide_points[i])
         if p != Vector2.INF:
-            _add_spawn("TidecoilManta_%02d" % i, p, TIDECOIL_MANTA, 92.0, 13.0)
+            _add_elite_spawn("TidecoilManta_%02d" % i, p, TIDECOIL_MANTA, 92.0, 13.0)
 
-    var thunder_points: Array[Vector2] = [Vector2(5250, 3950), Vector2(5600, 4300), Vector2(5950, 3900)]
+    var thunder_points: Array[Vector2] = [
+        Vector2(6300, 2500), Vector2(6350, 3150), Vector2(6150, 3550)
+    ]
     for i: int in range(thunder_points.size()):
         var p: Vector2 = _walkable_near(thunder_points[i])
         if p != Vector2.INF:
-            _add_spawn("ThunderLynx_%02d" % i, p, THUNDER_LYNX, 105.0, 12.0)
+            _add_elite_spawn("ThunderLynx_%02d" % i, p, THUNDER_LYNX, 105.0, 12.0)
 
-    var magma_points: Array[Vector2] = [Vector2(6420, 4750), Vector2(6820, 5050), Vector2(7160, 4620)]
+    var magma_points: Array[Vector2] = [
+        Vector2(6650, 3550), Vector2(6950, 3900), Vector2(7200, 4300)
+    ]
     for i: int in range(magma_points.size()):
         var p: Vector2 = _walkable_near(magma_points[i])
         if p != Vector2.INF:
-            _add_spawn("MagmaRam_%02d" % i, p, MAGMA_RAM, 88.0, 15.0)
+            _add_elite_spawn("MagmaRam_%02d" % i, p, MAGMA_RAM, 88.0, 15.0)
 
-    var verdant_points: Array[Vector2] = [Vector2(7550, 5350), Vector2(7920, 5650)]
+    var verdant_points: Array[Vector2] = [
+        Vector2(7480, 4550), Vector2(7850, 5000)
+    ]
     for i: int in range(verdant_points.size()):
         var p: Vector2 = _walkable_near(verdant_points[i])
         if p != Vector2.INF:
-            _add_spawn("VerdantBulwark_%02d" % i, p, VERDANT_BULWARK, 78.0, 20.0)
+            _add_elite_spawn("VerdantBulwark_%02d" % i, p, VERDANT_BULWARK, 78.0, 20.0)
 
-    var night_points: Array[Vector2] = [Vector2(8480, 5650), Vector2(8850, 5900), Vector2(9300, 5050)]
+    var night_points: Array[Vector2] = [
+        Vector2(8250, 5000), Vector2(8650, 5350), Vector2(9150, 5000)
+    ]
     for i: int in range(night_points.size()):
         var p: Vector2 = _walkable_near(night_points[i])
         if p != Vector2.INF:
-            _add_spawn("NighttalonHarrier_%02d" % i, p, NIGHTTALON_HARRIER, 110.0, 18.0)
+            _add_elite_spawn("NighttalonHarrier_%02d" % i, p, NIGHTTALON_HARRIER, 110.0, 18.0)
 
 
 func _walkable_near(point: Vector2) -> Vector2:
@@ -179,6 +190,12 @@ func _add_spawn(label: String, point: Vector2, scene: PackedScene, radius: float
     _world.get_node("Spawners").add_child(spawner)
     _centers.append(point)
     return spawner
+
+func _add_elite_spawn(label: String, point: Vector2, scene: PackedScene, radius: float, respawn: float) -> MonsterSpawner:
+    var spawner: MonsterSpawner = _add_spawn(label, point, scene, radius, respawn)
+    spawner.activation_radius = 2300.0
+    return spawner
+
 
 func _mark_boss(spawner: MonsterSpawner, id: StringName) -> void:
     # Tracker หาเป้าหมายได้แม้บอสยังไม่ถูกสร้างหรือกำลังรอเกิดใหม่
