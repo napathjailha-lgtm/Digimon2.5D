@@ -29,6 +29,7 @@ GameManager="*res://scripts/GameManager.gd"
 InventoryManager="*res://scripts/InventoryManager.gd"
 VisualDirector="*res://scripts/visual/visual_director.gd"
 AudioManager="*res://scripts/AudioManager.gd"
+SceneChanger="*res://scripts/SceneChanger.gd"
 
 [display]
 
