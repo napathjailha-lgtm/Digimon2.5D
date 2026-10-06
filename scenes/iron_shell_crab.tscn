@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="PackedScene" path="res://scenes/forest_crab.tscn" id="1"]
+[ext_resource type="Resource" path="res://data/items/iron_shell_loot.tres" id="2"]
+[node name="IronShellCrab" instance=ExtResource("1")]
+monster_id = &"iron_shell_crab"
+monster_name = "Iron Shell Crab"
+monster_level = 28
+exp_reward = 700
+drop_table = ExtResource("2")
+max_hp = 620
+move_speed = 98.0
+attack_damage = 31
+attack_range = 68.0
+wander_radius = 90.0
+[node name="Sprite2D" parent="."]
+modulate = Color(0.58, 0.72, 0.95, 1)
