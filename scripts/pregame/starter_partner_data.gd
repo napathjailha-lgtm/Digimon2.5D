@@ -8,6 +8,8 @@ extends Resource
 @export var element_name: String
 @export_multiline var description: String
 @export var portrait: Texture2D
+## false = หาได้จากไข่/กิจกรรมเท่านั้น และห้ามถูกสุ่มเป็น Starter
+@export var starter_available: bool = true
 @export var forms: Array[MonsterData] = []
 
 func evolution_path() -> String:
