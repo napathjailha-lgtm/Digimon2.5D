@@ -7,6 +7,8 @@ signal feedback(message: String)
 @onready var title_label: Label = $Panel/Margin/VBox/Title
 @onready var detail_label: Label = $Panel/Margin/VBox/Detail
 @onready var progress_label: Label = $Panel/Margin/VBox/Progress
+@export_range(1.0, 15.0, 0.5) var auto_hide_seconds: float = 5.0
+var _hide_token: int = 0
 
 func _ready() -> void:
     mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -64,10 +66,19 @@ func _target_display_name(target_id: StringName) -> String:
     return String(target_id).replace("_", " ").capitalize()
 
 func show_details() -> void:
+    _hide_token += 1
+    var token: int = _hide_token
     show()
     _refresh(&"")
+    _auto_hide_after_delay(token)
+
+func _auto_hide_after_delay(token: int) -> void:
+    await get_tree().create_timer(auto_hide_seconds).timeout
+    if token == _hide_token and visible:
+        hide_details()
 
 func hide_details() -> void:
+    _hide_token += 1
     hide()
 
 func toggle_details() -> void:
@@ -88,6 +99,7 @@ func _input(event: InputEvent) -> void:
             get_viewport().set_input_as_handled()
             if event.pressed and not event.canceled:
                 request_navigation()
+                hide_details()
 
 func request_navigation() -> void:
     var quest: StoryQuest = QuestManager.get_current_quest()
