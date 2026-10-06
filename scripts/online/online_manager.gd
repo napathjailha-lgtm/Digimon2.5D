@@ -6,7 +6,7 @@ signal connection_changed(connected: bool, message: String)
 signal remote_joined(peer_id: String, payload: Dictionary)
 signal remote_left(peer_id: String)
 signal remote_state(peer_id: String, payload: Dictionary)
-signal remote_chat(sender: String, text: String)
+signal remote_chat(peer_id: String, sender: String, text: String)
 
 const DEFAULT_SEND_INTERVAL := 0.10
 const RECONNECT_DELAY := 4.0
@@ -187,10 +187,13 @@ func _handle_packet(raw: String) -> void:
             if not id.is_empty() and id != local_peer_id:
                 remote_state.emit(id, payload)
         "chat":
-            remote_chat.emit(str(payload.get("name", "ผู้เล่น")), str(payload.get("text", "")))
+            var id := str(payload.get("id", ""))
+            if id != local_peer_id:
+                remote_chat.emit(id, str(payload.get("name", "ผู้เล่น")), str(payload.get("text", "")))
 
 func _on_chat_outgoing(_channel: StringName, text: String) -> void:
-    send_chat(text)
+    if not send_chat(text):
+        GameChat.add_system("ยังไม่ได้เชื่อมต่อ Online Server ข้อความนี้ยังไม่ถูกส่ง")
 
 func _send_json(payload: Dictionary) -> void:
     if socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
