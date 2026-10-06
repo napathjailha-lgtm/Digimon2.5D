@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="StarterPartnerData" load_steps=4 format=3]
+[ext_resource type="Script" path="res://scripts/pregame/starter_partner_data.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/monsters/elites/nighttalon_harrier.svg" id="p"]
+[ext_resource type="Script" path="res://scripts/monster_data.gd" id="mt"]
+[ext_resource type="Resource" path="res://data/pregame/nighttalon_harrier_partner.tres" id="f0"]
+[resource]
+script = ExtResource("s")
+id = &"nighttalon_harrier_partner"
+display_name = "Nighttalon Harrier"
+attribute_name = "Abyss"
+element_name = "ลม"
+description = "คู่หูนกล่าเงาต้นฉบับ • พบได้จาก Digitama ที่ดรอปจาก Nighttalon Harrier เท่านั้น"
+portrait = ExtResource("p")
+starter_available = false
+forms = Array[ExtResource("mt")]([ExtResource("f0")])
