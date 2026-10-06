@@ -8,6 +8,11 @@ const FOREST_CRAB: PackedScene = preload("res://scenes/forest_crab.tscn")
 const CRIMSON_BYTE: PackedScene = preload("res://scenes/crimson_byte.tscn")
 const IRON_SHELL: PackedScene = preload("res://scenes/iron_shell_crab.tscn")
 const VOID_SENTINEL: PackedScene = preload("res://scenes/void_sentinel.tscn")
+const THUNDER_LYNX: PackedScene = preload("res://scenes/thunder_lynx.tscn")
+const MAGMA_RAM: PackedScene = preload("res://scenes/magma_ram.tscn")
+const TIDECOIL_MANTA: PackedScene = preload("res://scenes/tidecoil_manta.tscn")
+const VERDANT_BULWARK: PackedScene = preload("res://scenes/verdant_bulwark.tscn")
+const NIGHTTALON_HARRIER: PackedScene = preload("res://scenes/nighttalon_harrier.tscn")
 var created_regular: int = 0
 var _centers: Array[Vector2] = []
 var _environment: OpenWorldEnvironment
@@ -54,6 +59,7 @@ func _ready() -> void:
         created_regular += 1
     _add_ep1_forest_population()
     _add_high_level_population()
+    _add_elite_population()
     _add_boss("forest_guardian", Vector2(4100, 1900))
     _add_boss("etemon", Vector2(6200, 1600))
     _add_boss("myotismon", Vector2(8700, 3250))
@@ -108,6 +114,39 @@ func _add_high_level_population() -> void:
         var p: Vector2 = _walkable_near(void_points[i])
         if p != Vector2.INF:
             _add_spawn("VoidSentinel_%02d" % i, p, VOID_SENTINEL, 65.0, 18.0)
+
+
+func _add_elite_population() -> void:
+    # มอนสเตอร์ภาพชุดใหม่ กระจายตามช่วงกลาง-ปลายเกาะโดยไม่อัดรวมจุดเดียว
+    var tide_points: Array[Vector2] = [Vector2(4320, 2520), Vector2(4680, 2750), Vector2(4920, 2220)]
+    for i: int in range(tide_points.size()):
+        var p: Vector2 = _walkable_near(tide_points[i])
+        if p != Vector2.INF:
+            _add_spawn("TidecoilManta_%02d" % i, p, TIDECOIL_MANTA, 92.0, 13.0)
+
+    var thunder_points: Array[Vector2] = [Vector2(5250, 3950), Vector2(5600, 4300), Vector2(5950, 3900)]
+    for i: int in range(thunder_points.size()):
+        var p: Vector2 = _walkable_near(thunder_points[i])
+        if p != Vector2.INF:
+            _add_spawn("ThunderLynx_%02d" % i, p, THUNDER_LYNX, 105.0, 12.0)
+
+    var magma_points: Array[Vector2] = [Vector2(6420, 4750), Vector2(6820, 5050), Vector2(7160, 4620)]
+    for i: int in range(magma_points.size()):
+        var p: Vector2 = _walkable_near(magma_points[i])
+        if p != Vector2.INF:
+            _add_spawn("MagmaRam_%02d" % i, p, MAGMA_RAM, 88.0, 15.0)
+
+    var verdant_points: Array[Vector2] = [Vector2(7550, 5350), Vector2(7920, 5650)]
+    for i: int in range(verdant_points.size()):
+        var p: Vector2 = _walkable_near(verdant_points[i])
+        if p != Vector2.INF:
+            _add_spawn("VerdantBulwark_%02d" % i, p, VERDANT_BULWARK, 78.0, 20.0)
+
+    var night_points: Array[Vector2] = [Vector2(8480, 5650), Vector2(8850, 5900), Vector2(9300, 5050)]
+    for i: int in range(night_points.size()):
+        var p: Vector2 = _walkable_near(night_points[i])
+        if p != Vector2.INF:
+            _add_spawn("NighttalonHarrier_%02d" % i, p, NIGHTTALON_HARRIER, 110.0, 18.0)
 
 
 func _walkable_near(point: Vector2) -> Vector2:
