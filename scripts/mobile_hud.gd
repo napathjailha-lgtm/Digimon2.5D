@@ -34,6 +34,9 @@ var exp_strip: ProgressBar
 var chat_panel: MobileChatPanel
 var minimap: MobileMinimap
 var target_card: Panel
+var online_badge: PanelContainer
+var online_count_label: Label
+var _online_compact: bool = false
 var _target_bar: SmoothTextureBar
 var _target_instance_id: int = 0
 var critical_fx: CriticalScreenFX
@@ -160,6 +163,7 @@ func _build_extras() -> void:
     if bool(world.get("open_world_enabled")):
         minimap.world_layout = (world.get_node("OpenWorldEnvironment") as OpenWorldEnvironment).layout
     _build_target_card()
+    _build_online_badge()
     _tracker = preload("res://scenes/quest_tracker.tscn").instantiate() as QuestTracker
     _tracker.tamer = tamer
     _tracker.navigation_requested.connect(tamer.start_auto_navigation)
@@ -168,6 +172,70 @@ func _build_extras() -> void:
     _tracker.hide()
     quest_button.set_caption("เควสต์หลัก · แตะดูรายละเอียด/นำทาง")
     quest_button.pressed.connect(_open_quest_details)
+
+func _build_online_badge() -> void:
+    online_badge = PanelContainer.new()
+    online_badge.name = "OnlineCountBadge"
+    online_badge.anchor_left = 1.0
+    online_badge.anchor_right = 1.0
+    online_badge.offset_left = -252.0
+    online_badge.offset_right = -72.0
+    online_badge.offset_top = 10.0
+    online_badge.offset_bottom = 46.0
+    online_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    online_badge.z_index = 40
+
+    var style := StyleBoxFlat.new()
+    style.bg_color = Color(0.025, 0.08, 0.11, 0.90)
+    style.border_color = Color(0.20, 0.75, 0.52, 0.88)
+    style.set_border_width_all(1)
+    style.set_corner_radius_all(10)
+    style.content_margin_left = 10
+    style.content_margin_right = 10
+    style.content_margin_top = 5
+    style.content_margin_bottom = 5
+    online_badge.add_theme_stylebox_override("panel", style)
+    $Root/Safe/Layout.add_child(online_badge)
+
+    online_count_label = Label.new()
+    online_count_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    online_count_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+    online_count_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    online_count_label.add_theme_font_size_override("font_size", 13)
+    online_count_label.add_theme_color_override("font_color", Color("a9f0c8"))
+    online_badge.add_child(online_count_label)
+
+    if not OnlineManager.online_count_changed.is_connected(_on_online_count_changed):
+        OnlineManager.online_count_changed.connect(_on_online_count_changed)
+    if not OnlineManager.connection_changed.is_connected(_on_online_connection_badge):
+        OnlineManager.connection_changed.connect(_on_online_connection_badge)
+    _refresh_online_badge()
+
+
+func _on_online_count_changed(_total: int, _zone_count: int) -> void:
+    _refresh_online_badge()
+
+
+func _on_online_connection_badge(_connected: bool, _message: String) -> void:
+    _refresh_online_badge()
+
+
+func _refresh_online_badge() -> void:
+    if not is_instance_valid(online_count_label):
+        return
+    if not OnlineManager.connected:
+        online_count_label.text = "○ OFFLINE"
+        online_count_label.add_theme_color_override("font_color", Color("9ca8b3"))
+        online_badge.tooltip_text = "ไม่ได้เชื่อมต่อ Online Server"
+        return
+
+    online_count_label.add_theme_color_override("font_color", Color("a9f0c8"))
+    if _online_compact:
+        online_count_label.text = "● ONLINE %d" % OnlineManager.total_online
+    else:
+        online_count_label.text = "● ออนไลน์ %d  •  แมพ %d" % [OnlineManager.total_online, OnlineManager.zone_online]
+    online_badge.tooltip_text = "ผู้เล่นออนไลน์ทั้งหมด %d • อยู่ในแมพเดียวกัน %d" % [OnlineManager.total_online, OnlineManager.zone_online]
+
 
 func _open_quest_details() -> void:
     if not is_instance_valid(_tracker):
@@ -268,6 +336,15 @@ func _layout() -> void:
     var safe_height: float = maxf(1.0, viewport_size.y - inset.y - inset.w)
     var touch_mode: bool = HybridPlatform.use_mobile_layout(get_viewport())
     var compact_touch: bool = touch_mode and (safe_width < 1050.0 or safe_height < 620.0)
+
+    if is_instance_valid(online_badge):
+        _online_compact = touch_mode and safe_width < 920.0
+        online_badge.offset_left = -202.0 if _online_compact else -252.0
+        online_badge.offset_right = -72.0
+        online_badge.offset_top = 8.0
+        online_badge.offset_bottom = 42.0
+        online_count_label.add_theme_font_size_override("font_size", 12 if _online_compact else 13)
+        _refresh_online_badge()
 
     # วงสกิลเดิมมีฐาน 374x330; จอมือถือเว็บขนาดเล็กย่อทั้งกลุ่มโดยไม่เปลี่ยน hitbox ภายใน
     var combat_scale: float = preferences.combat_scale
