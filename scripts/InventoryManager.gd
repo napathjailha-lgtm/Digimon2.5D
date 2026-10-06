@@ -155,6 +155,12 @@ func use_item(item_index: int) -> bool:
     feedback.emit("ใช้ %s — %s" % [item.item_name,message])
     return true
 
+func use_item_by_id(item_id: String) -> bool:
+    var index: int = index_of(item_id)
+    if index < 0:
+        return _fail("ไม่มีไอเทมนี้ในกระเป๋า")
+    return use_item(index)
+
 func remove_item(item_id: String, quantity: int = 1) -> bool:
     # API กลางสำหรับร้านค้าและ Incubator ตัดของผ่านจุดเดียว
     if _busy or quantity <= 0:
