@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/items/tamer_mp_regen_core.svg" id="2"]
+[resource]
+script = ExtResource("1")
+item_id = "tamer_mp_regen_core"
+item_name = "Tamer MP Regen Core"
+item_type = 0
+item_texture = ExtResource("2")
+description = "ฟื้น MP ของ Tamer ต่อเนื่อง 6 MP/วินาที เป็นเวลา 20 วินาที ใช้ได้แม้อยู่ร่างวิวัฒนาการ"
+effect_type = 5
+effect_value = 0
+tamer_mp_regen_per_second = 6.0
+tamer_mp_regen_duration = 20.0
+shop_sold = false
+buy_price = 0
+sell_price = 35
