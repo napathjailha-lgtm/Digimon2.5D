@@ -43,10 +43,10 @@ func _ready() -> void:
     var tab_row := HBoxContainer.new()
     tab_row.name = "Tabs"
     _rows.add_child(tab_row)
-    for index: int in range(3):
-        var tab: ClassicCommand = _button(tab_row,["ทั้งหมด","ทั่วไป","ระบบ"][index],Vector2(80,44))
+    for index: int in range(4):
+        var tab: ClassicCommand = _button(tab_row,["ทั้งหมด","ทั่วไป","กิลด์","ระบบ"][index],Vector2(68,44))
         tab.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-        tab.pressed.connect(_set_filter.bind([&"all",&"general",&"system"][index]))
+        tab.pressed.connect(_set_filter.bind([&"all",&"general",&"guild",&"system"][index]))
         tabs.append(tab)
     log_view = RichTextLabel.new()
     log_view.custom_minimum_size = Vector2(0,100)
@@ -122,11 +122,16 @@ func _refresh() -> void:
     for entry: Dictionary in GameChat.messages:
         if active_filter != &"all" and entry.channel != active_filter:
             continue
-        log_view.push_color(Color("e5c87b") if entry.channel == &"system" else Color("8bdfed"))
+        var row_color := Color("8bdfed")
+        if entry.channel == &"system":
+            row_color = Color("e5c87b")
+        elif entry.channel == &"guild":
+            row_color = Color("c8a7ff")
+        log_view.push_color(row_color)
         log_view.add_text("[%s] %s\n" % [entry.sender, entry.body])
         log_view.pop()
     for index: int in range(tabs.size()):
-        tabs[index].tint = Color("226596") if active_filter == [&"all", &"general", &"system"][index] else Color("10385a")
+        tabs[index].tint = Color("226596") if active_filter == [&"all", &"general", &"guild", &"system"][index] else Color("10385a")
         tabs[index].queue_redraw()
 
 func _on_connection_changed(is_connected: bool, _message: String) -> void:
