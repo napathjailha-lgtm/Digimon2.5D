@@ -174,6 +174,20 @@ func cancel_creation() -> void:
     # Back จากหน้า Starter ไม่กินช่องและไม่ให้ไอเทมหรือ Progress ล่วงหน้า
     pending_character.clear()
 
+func random_starter_id() -> StringName:
+    ensure_catalog()
+    if catalog == null or catalog.starters.is_empty():
+        return &""
+    # ผูกผลสุ่มไว้กับ draft เดิม ป้องกัน Back/เข้าใหม่เพื่อ reroll คู่หู
+    var cached: StringName = StringName(str(pending_character.get("random_starter", "")))
+    if cached != &"" and catalog.starter_by_id(cached) != null:
+        return cached
+    var rng := RandomNumberGenerator.new()
+    rng.randomize()
+    var selected: StarterPartnerData = catalog.starters[rng.randi_range(0, catalog.starters.size() - 1)]
+    pending_character["random_starter"] = String(selected.id)
+    return selected.id
+
 func confirm_starter(starter_id: StringName) -> bool:
     # ตรวจ draft อีกครั้งและ commit ครั้งเดียว กันกดยืนยันรัวสร้างหลายตัว
     if account_key.is_empty() or pending_character.is_empty() or catalog.starter_by_id(starter_id) == null:
