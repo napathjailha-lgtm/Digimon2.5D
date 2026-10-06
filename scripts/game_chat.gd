@@ -8,12 +8,19 @@ var messages: Array[Dictionary] = []
 
 func _ready() -> void:
     add_system("ยินดีต้อนรับสู่ Digital Adventure")
-    add_system("แชตทั่วไปเป็นการทดสอบภายในเครื่อง")
+    add_system("แชตจะเชื่อม Online Server อัตโนมัติเมื่อเปิดใช้งาน")
     QuestManager.quest_completed.connect(_on_quest_completed)
 
 func add_system(text: String) -> void:
     # ข้อความระบบอยู่ต่อเมื่อเปลี่ยนโซน เพราะเก็บใน Autoload
     _append(&"system", "ระบบ", text)
+
+func add_remote(sender: String, text: String) -> void:
+    var clean_sender: String = sender.strip_edges().substr(0, 24)
+    var clean_text: String = text.strip_edges().replace("\n", " ").replace("\r", " ").replace("\t", " ").substr(0, 160)
+    if clean_sender.is_empty() or clean_text.is_empty():
+        return
+    _append(&"online", clean_sender, clean_text)
 
 func submit_local(text: String) -> bool:
     # จำกัดความยาวและข้ามข้อความว่าง ไม่ส่งออกเครือข่ายอัตโนมัติ
