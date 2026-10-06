@@ -1,0 +1,9 @@
+# Local Godot cache must be rebuilt from source on every clean checkout.
+.godot/
+build/
+*.apk
+*.aab
+*.ap_
+__pycache__/
+Thumbs.db
+Desktop.ini

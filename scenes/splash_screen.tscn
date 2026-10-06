@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/splash_screen.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/ui/splash/prism_tamer_wide.jpg" id="2_wide"]
-[ext_resource type="Texture2D" path="res://assets/ui/splash/prism_tamer_portrait.jpg" id="3_portrait"]
+[ext_resource type="Texture2D" path="res://assets/ui/splash/prism_tamer_frontier.svg" id="2_wide"]
+[ext_resource type="Texture2D" path="res://assets/ui/splash/prism_tamer_frontier.svg" id="3_portrait"]
 
 [node name="SplashScreen" type="Control"]
 layout_mode = 3
