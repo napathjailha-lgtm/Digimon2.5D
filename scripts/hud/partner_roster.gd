@@ -67,6 +67,7 @@ func initialize(saved: Dictionary = {}) -> void:
             var member: Dictionary = (entry as Dictionary).duplicate(true)
             _ensure_uid(member)
             member["progress"] = _entry_progress(member, legacy_progress)
+            member["unlocked_forms"] = _sanitize_unlocked_forms(member, data)
             members.append(member)
 
     var raw_storage: Variant = saved.get("storage", [])
@@ -81,6 +82,7 @@ func initialize(saved: Dictionary = {}) -> void:
             var stored: Dictionary = (entry as Dictionary).duplicate(true)
             _ensure_uid(stored)
             stored["progress"] = _entry_progress(stored, legacy_progress)
+            stored["unlocked_forms"] = _sanitize_unlocked_forms(stored, stored_data)
             storage.append(stored)
 
     _switching = true
@@ -95,6 +97,7 @@ func initialize(saved: Dictionary = {}) -> void:
         var first: Dictionary = _capture(id)
         _ensure_uid(first)
         first["progress"] = _sanitize_progress(partner.progress.get_save_data())
+        first["unlocked_forms"] = [String(partner.forms[0].id)]
         members.append(first)
         active_index = 0
     else:
@@ -135,6 +138,50 @@ func _sanitize_progress(raw: Dictionary) -> Dictionary:
         exp = 0
     return {"level": level, "exp": exp}
 
+
+func _sanitize_unlocked_forms(entry: Dictionary, data: StarterPartnerData) -> Array[String]:
+    var result: Array[String] = []
+    if data == null or data.forms.is_empty():
+        return result
+    result.append(String(data.forms[0].id))
+    var raw: Variant = entry.get("unlocked_forms", [])
+    if raw is Array:
+        for value: Variant in raw:
+            var form_id: String = str(value)
+            if form_id.is_empty() or form_id in result:
+                continue
+            for form: MonsterData in data.forms:
+                if form != null and String(form.id) == form_id:
+                    result.append(form_id)
+                    break
+    return result
+
+func is_active_form_unlocked(form_id: StringName) -> bool:
+    if not initialized or members.is_empty() or active_index < 0 or active_index >= members.size():
+        return false
+    var raw: Variant = members[active_index].get("unlocked_forms", [])
+    return raw is Array and String(form_id) in raw
+
+func unlock_active_form(form_id: StringName) -> bool:
+    if not initialized or members.is_empty() or active_index < 0 or active_index >= members.size():
+        return false
+    var data: StarterPartnerData = family(StringName(str(members[active_index].get("id", ""))))
+    if data == null:
+        return false
+    var valid: bool = false
+    for form: MonsterData in data.forms:
+        if form != null and form.id == form_id:
+            valid = true
+            break
+    if not valid:
+        return false
+    var unlocked: Array[String] = _sanitize_unlocked_forms(members[active_index], data)
+    if String(form_id) not in unlocked:
+        unlocked.append(String(form_id))
+    members[active_index]["unlocked_forms"] = unlocked
+    changed.emit()
+    tamer.save_party_progress()
+    return true
 
 func _make_uid(id: StringName) -> String:
     return "%s-%d-%d" % [String(id), Time.get_ticks_usec(), randi()]
@@ -191,6 +238,7 @@ func add_partner(id: StringName) -> bool:
         "mp": partner.digimon_max_mp,
         "egg": false,
         "progress": {"level": 1, "exp": 0},
+        "unlocked_forms": [String(rookie.id)],
         "cooldowns": {},
         "basic_cooldown": 0.0
     })
@@ -217,7 +265,7 @@ func add_hatched_to_storage(id: StringName) -> bool:
     storage.append({
         "uid": _make_uid(id), "id": String(id), "form_id": String(rookie.id),
         "hp": hp_max, "max_hp": hp_max, "mp": partner.digimon_max_mp, "egg": false,
-        "progress": {"level": 1, "exp": 0}, "cooldowns": {}, "basic_cooldown": 0.0
+        "progress": {"level": 1, "exp": 0}, "unlocked_forms": [String(rookie.id)], "cooldowns": {}, "basic_cooldown": 0.0
     })
     changed.emit()
     tamer.save_party_progress()
@@ -334,6 +382,10 @@ func _apply_member(entry: Dictionary) -> bool:
             continue
         if index > 0 and not QuestManager.can_use_form(possible):
             continue
+        if index > 0:
+            var unlocked_forms: Variant = entry.get("unlocked_forms", [])
+            if not (unlocked_forms is Array) or String(possible.id) not in unlocked_forms:
+                continue
 
         form = possible
         if String(possible.id) == str(entry.get("form_id", "")):
@@ -431,10 +483,12 @@ func _capture_active() -> void:
         return
 
     # actor ปัจจุบันเป็น source of truth เฉพาะสมาชิก active เท่านั้น
+    var previous_unlocked: Variant = members[active_index].get("unlocked_forms", [])
     members[active_index] = _capture(
         StringName(members[active_index].get("id", "")),
         str(members[active_index].get("uid", ""))
     )
+    members[active_index]["unlocked_forms"] = previous_unlocked.duplicate(true) if previous_unlocked is Array else []
 
 
 func _on_partner_progress_changed(
@@ -492,7 +546,7 @@ func get_save_data() -> Dictionary:
         _capture_active()
 
     return {
-        "version": 4,
+        "version": 5,
         "active_id": members[active_index].get("id", ""),
         "active_uid": members[active_index].get("uid", ""),
         "members": members.duplicate(true),
