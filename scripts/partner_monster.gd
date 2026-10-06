@@ -463,7 +463,7 @@ func get_next_form() -> MonsterData:
     return forms[index] if form_index >= 0 and index < forms.size() else null
 
 func prepare_digivolve() -> MonsterData:
-    # ปลดล็อกร่างตามเลเวล: Champion 15 / Ultimate 60 / Mega 90
+    # ปลดล็อกร่างตามเลเวล: Champion 11 / Ultimate 25 / Mega 41
     if evolution_busy or not is_alive() or not is_instance_valid(tamer) or not tamer.can_battle():
         return null
     var next_data: MonsterData = get_next_form()
