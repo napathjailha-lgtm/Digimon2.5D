@@ -620,8 +620,9 @@ func load_monster_data(data: MonsterData, preserve_hp: bool = true) -> bool:
     # เปลี่ยนภาพและหยุดแอนิเมชันจากร่างเดิมก่อน
     sprite.stop()
     sprite.sprite_frames = data.sprite_frames
-    sprite.scale = data.sprite_scale
-    animator.configure_scales(data.sprite_scale, data.attack_sprite_scale, data.cast_sprite_scale)
+    var visual_scales: Dictionary = _normalized_visual_scales(data)
+    sprite.scale = visual_scales.base
+    animator.configure_scales(visual_scales.base, visual_scales.attack, visual_scales.cast)
     # AtlasTexture ตัดแต่ละร่างให้พอดีตัว ตั้งเท้าให้ตรงจุด Origin ทุกครั้ง
     var idle_texture: Texture2D = data.sprite_frames.get_frame_texture(data.idle_animation, 0)
     sprite.offset.y = -idle_texture.get_height() * 0.5
@@ -645,6 +646,47 @@ func load_monster_data(data: MonsterData, preserve_hp: bool = true) -> bool:
     form_changed.emit(data)
     hp_changed.emit(hp, max_hp)
     return true
+
+func _visual_size_cap(data: MonsterData) -> Vector2:
+    # ร่างแรกของทุกสายต้องอยู่ขนาดคู่หูเริ่มต้น แม้ข้อมูลสายอย่าง Tailmon จะเริ่มที่ Champion
+    if data == null or forms.find(data) <= 0:
+        return Vector2(100.0, 96.0)
+    match data.evolution_stage:
+        MonsterData.EvolutionStage.CHAMPION:
+            return Vector2(136.0, 122.0)
+        MonsterData.EvolutionStage.ULTIMATE:
+            return Vector2(158.0, 142.0)
+        MonsterData.EvolutionStage.MEGA:
+            return Vector2(180.0, 158.0)
+        _:
+            return Vector2(100.0, 96.0)
+
+func _cap_visual_scale(texture: Texture2D, requested: Vector2, cap: Vector2) -> Vector2:
+    if texture == null or requested.x <= 0.0 or requested.y <= 0.0:
+        return requested
+    var visible: Texture2D = WalkTextureTools.visible_texture(texture)
+    if visible == null:
+        visible = texture
+    var size: Vector2 = visible.get_size()
+    if size.x <= 0.0 or size.y <= 0.0:
+        return requested
+    var rendered: Vector2 = Vector2(size.x * requested.x, size.y * requested.y)
+    var factor: float = minf(1.0, minf(cap.x / maxf(1.0, rendered.x), cap.y / maxf(1.0, rendered.y)))
+    return requested * factor
+
+func _normalized_visual_scales(data: MonsterData) -> Dictionary:
+    var idle_texture: Texture2D = data.sprite_frames.get_frame_texture(data.idle_animation, 0)
+    var cap: Vector2 = _visual_size_cap(data)
+    # ใช้ factor จากเฟรม Idle เดียวกันกับทั้งชุด เพื่อไม่ให้ตัวกระตุกใหญ่/เล็กตอน Attack หรือ Cast
+    var normalized_base: Vector2 = _cap_visual_scale(idle_texture, data.sprite_scale, cap)
+    var factor_x: float = normalized_base.x / maxf(0.001, data.sprite_scale.x)
+    var factor_y: float = normalized_base.y / maxf(0.001, data.sprite_scale.y)
+    var factor: float = minf(factor_x, factor_y)
+    return {
+        "base": normalized_base,
+        "attack": data.attack_sprite_scale * factor,
+        "cast": data.cast_sprite_scale * factor
+    }
 
 func _apply_form(index: int, preserve_hp: bool) -> bool:
     # Wrapper สำหรับกลับร่างเมื่อ DS หมด และใช้ใน Scene เริ่มต้น
