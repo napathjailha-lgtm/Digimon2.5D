@@ -9,6 +9,8 @@ const DAMAGE_POPUP_SCENE: PackedScene = preload("res://scenes/damage_popup.tscn"
 @export var popup_layer: Node2D
 @onready var damage_origin: Marker2D = $DamageOrigin
 @export var monster_id: StringName = &"wild"
+@export var monster_name: String = ""
+@export_range(1, 99) var monster_level: int = 1
 @export_range(0, 100000) var exp_reward: int = 60
 ## Inspector เลือก LootTable ของมอนสเตอร์แต่ละชนิด; ไม่กำหนดใช้ตารางสามไอเทมตัวอย่าง
 @export var drop_table: LootTable
@@ -78,6 +80,12 @@ func _ready() -> void:
 
 func is_alive() -> bool:
     return hp > 0
+
+func combat_level() -> int:
+    return maxi(monster_level, _scaled_partner_level)
+
+func display_monster_name() -> String:
+    return monster_name if not monster_name.is_empty() else String(monster_id).replace("_", " ").capitalize()
 
 func set_selected(selected: bool) -> void:
     ring.visible = selected and is_alive()
@@ -218,12 +226,14 @@ func _movement_direction(goal: Vector2) -> Vector2:
 func _apply_scaling_from_active_partner() -> void:
     # Dynamic Scaling: HP/ATK โตตามเลเวลคู่หูที่ใช้งานอยู่
     var tamer := get_tree().get_first_node_in_group("tamer") as Tamer
-    var level: int = 1
+    var player_level: int = 1
     if is_instance_valid(tamer) and is_instance_valid(tamer.partner):
-        level = clampi(tamer.partner.progress.level, 1, EvolutionRules.MAX_LEVEL)
+        player_level = clampi(tamer.partner.progress.level, 1, EvolutionRules.MAX_LEVEL)
+    # monster_level คือขั้นต่ำจริง มอนโซนสูงจึงไม่อ่อนลงเมื่อผู้เล่นเลเวลต่ำ
+    var level: int = maxi(monster_level, player_level)
     _scaled_partner_level = level
 
-    # เส้นโค้งค่อนข้างนุ่ม: Lv90 ประมาณ 5.45x จากฐาน
+    # เส้นโค้งเดิมตามเลเวล แต่มี monster_level เป็น floor
     var level_scale: float = 1.0 + float(level - 1) * 0.05
     var boss_scale: float = world_boss_multiplier if is_world_boss else 1.0
     max_hp = maxi(1, roundi(float(_base_max_hp) * level_scale * boss_scale))
