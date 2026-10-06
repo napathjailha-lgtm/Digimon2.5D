@@ -17,6 +17,8 @@ signal auto_navigation_failed(message: String)
 @export_range(100.0, 6000.0) var braking: float = 2800.0
 @export var max_ds: float = 100.0 # storage เดิม; ใช้เป็น Tamer MP
 @export var ds_regen_per_second: float = 3.0 # อัตราฟื้น Tamer MP
+var _mp_regen_buff_rate: float = 0.0
+var _mp_regen_buff_left: float = 0.0
 @export var joystick: MobileJoystick
 @export var partner: PartnerMonster
 @export_flags_2d_physics var enemy_layer: int = 4
@@ -132,9 +134,14 @@ func _physics_process(delta: float) -> void:
     velocity = SmoothMotion.step(velocity, desired_velocity, acceleration, braking, delta)
     move_and_slide()
     animator.update_motion(get_real_velocity(), animation_reference_speed)
-    # ฟื้น DS เมื่ออยู่ร่างพื้นฐานเท่านั้น
+    # ฟื้น MP พื้นฐานเมื่ออยู่ร่าง Rookie และบัฟ Regen จากไอเทมทำงานได้ทุก Form
     if is_instance_valid(partner) and partner.form_index == 0:
         restore_ds(ds_regen_per_second * delta)
+    if _mp_regen_buff_left > 0.0:
+        _mp_regen_buff_left = maxf(0.0, _mp_regen_buff_left - delta)
+        restore_mp(_mp_regen_buff_rate * delta)
+        if _mp_regen_buff_left <= 0.0:
+            _mp_regen_buff_rate = 0.0
 
 func _unhandled_input(event: InputEvent) -> void:
     # Mobile: แตะศัตรู / Web-PC: คลิกซ้ายศัตรู
@@ -290,6 +297,18 @@ func restore_mp(amount: float) -> void:
         tamer_mp = next_mp
         ds_changed.emit(ds, max_ds) # compatibility
         mp_changed.emit(tamer_mp, max_tamer_mp)
+
+func start_mp_regen(rate_per_second: float, duration: float) -> bool:
+    if not is_finite(rate_per_second) or not is_finite(duration) or rate_per_second <= 0.0 or duration <= 0.0:
+        return false
+    if tamer_mp >= max_tamer_mp:
+        return false
+    _mp_regen_buff_rate = maxf(_mp_regen_buff_rate, rate_per_second)
+    _mp_regen_buff_left = maxf(_mp_regen_buff_left, duration)
+    return true
+
+func mp_regen_time_left() -> float:
+    return _mp_regen_buff_left
 
 func consume_ds(amount: float) -> bool:
     # API เก่า: ส่งต่อไป Tamer MP เพื่อไม่ให้ save/plugin เดิมพัง
