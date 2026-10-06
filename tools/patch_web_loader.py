@@ -1,9 +1,29 @@
 #!/usr/bin/env python3
 from pathlib import Path
 import sys
+import base64
+import html as html_lib
 
 path = Path(sys.argv[1] if len(sys.argv) > 1 else "build/web/index.html")
 html = path.read_text(encoding="utf-8")
+
+def data_uri(file_path: Path, mime: str) -> str:
+    """ฝัง asset ลง HTML โดยตรง ป้องกัน GitHub Pages/base-path ทำ URL รูปแตก"""
+    if not file_path.exists():
+        return ""
+    raw = file_path.read_bytes()
+    # JPEG ต้องมี SOI marker; ถ้าไฟล์ผิดชนิดจะไม่ส่ง broken image ให้ browser
+    if mime == "image/jpeg" and not raw.startswith(b"\xff\xd8\xff"):
+        return ""
+    return f"data:{mime};base64," + base64.b64encode(raw).decode("ascii")
+
+wide_uri = data_uri(path.parent / "prism_tamer_wide.jpg", "image/jpeg")
+portrait_uri = data_uri(path.parent / "prism_tamer_portrait.jpg", "image/jpeg")
+fallback_uri = data_uri(path.parent / "prism_tamer_frontier.svg", "image/svg+xml")
+if not wide_uri:
+    wide_uri = fallback_uri
+if not portrait_uri:
+    portrait_uri = wide_uri or fallback_uri
 
 style = r"""
 <style id="prism-loader-style">
@@ -29,12 +49,12 @@ body{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}
 </style>
 """
 
-loader = r"""
+loader = f"""
 <div id="prism-preloader" aria-label="Loading Prism Tamer Frontier">
   <div id="prism-loader-art">
     <picture>
-      <source media="(orientation: portrait)" srcset="prism_tamer_portrait.jpg">
-      <img src="prism_tamer_wide.jpg" alt="">
+      <source media="(orientation: portrait)" srcset="{html_lib.escape(portrait_uri, quote=True)}">
+      <img src="{html_lib.escape(wide_uri, quote=True)}" alt="" onerror="this.style.display='none'">
     </picture>
     <div id="prism-loader-shade"></div>
   </div>
