@@ -1,8 +1,12 @@
 class_name DigimonTouchButton
 extends Button
 ## ปุ่มในหน้าต่างใช้ touch จริง เพราะโปรเจกต์ปิด emulate_mouse_from_touch
-## รับตอนปล่อยนิ้ว และเคารพขอบ ScrollContainer เพื่อไม่กดปุ่มที่เลื่อนพ้นหน้าต่าง
+## ถ้าอยู่ใน ScrollContainer ต้องไม่กิน touch-down เพื่อให้ drag gesture ไปถึงตัว scroll
+
 var _finger: int = -1
+var _dragged: bool = false
+var _press_position := Vector2.ZERO
+const DRAG_THRESHOLD := 8.0
 
 func _ready() -> void:
     mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -20,29 +24,57 @@ func _contains(point: Vector2) -> bool:
         ancestor = ancestor.get_parent()
     return true
 
+func _inside_scroll_container() -> bool:
+    var ancestor: Node = get_parent()
+    while ancestor != null:
+        if ancestor is ScrollContainer:
+            return true
+        ancestor = ancestor.get_parent()
+    return false
+
 func _input(event: InputEvent) -> void:
     if not is_visible_in_tree():
-        _finger = -1
+        release_input()
         return
+
     if event is InputEventScreenTouch:
         if event.pressed and not event.canceled and _finger == -1 and _contains(event.position):
-            if not disabled:
-                _finger = event.index
-                modulate = Color(1.2, 1.2, 1.2)
-            get_viewport().set_input_as_handled()
+            if disabled:
+                return
+            _finger = event.index
+            _dragged = false
+            _press_position = event.position
+            modulate = Color(1.2, 1.2, 1.2)
+
+            # ปุ่มที่อยู่ใน ScrollContainer ต้องปล่อย touch-down ผ่านไป
+            # ไม่เช่นนั้น ScrollContainer จะไม่รู้ว่ามี gesture เริ่มต้นและลากไม่ได้บน iOS/Android Web
+            if not _inside_scroll_container():
+                get_viewport().set_input_as_handled()
+
         elif event.index == _finger and (not event.pressed or event.canceled):
+            var should_press: bool = (
+                not disabled
+                and not event.canceled
+                and not _dragged
+                and _contains(event.position)
+            )
+            _finger = -1
+            _dragged = false
+            modulate = Color.WHITE
+            if should_press:
+                pressed.emit()
+                get_viewport().set_input_as_handled()
+
+    elif event is InputEventScreenDrag and event.index == _finger:
+        if event.position.distance_to(_press_position) >= DRAG_THRESHOLD:
+            _dragged = true
             _finger = -1
             modulate = Color.WHITE
-            get_viewport().set_input_as_handled()
-            if not disabled and not event.canceled and _contains(event.position):
-                pressed.emit()
-    elif event is InputEventScreenDrag and event.index == _finger:
-        # ยกเลิก click เมื่อลาก เพื่อให้ผู้เล่นเลื่อนเนื้อหาได้อย่างปลอดภัย
-        _finger = -1
-        modulate = Color.WHITE
+            # ห้าม set_input_as_handled() ตรงนี้ ให้ ScrollContainer รับ drag ต่อ
 
 func release_input() -> void:
     _finger = -1
+    _dragged = false
     modulate = Color.WHITE
 
 func _notification(what: int) -> void:
