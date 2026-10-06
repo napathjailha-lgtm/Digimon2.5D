@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="MonsterData" load_steps=6 format=3]
+[ext_resource type="Script" path="res://scripts/monster_data.gd" id="s"]
+[ext_resource type="SpriteFrames" path="res://data/pregame/thunder_lynx_frames.tres" id="f"]
+[ext_resource type="Texture2D" path="res://assets/monsters/elites/thunder_lynx.svg" id="portrait"]
+[ext_resource type="Script" path="res://scripts/skill_data.gd" id="kt"]
+[ext_resource type="Resource" path="res://data/pregame/thunder_lynx_storm_pounce.tres" id="k0"]
+[resource]
+script = ExtResource("s")
+id = &"thunder_lynx_0"
+monster_name = "Thunder Lynx"
+portrait_texture = ExtResource("portrait")
+evolution_stage = 0
+max_hp = 150
+attack = 20
+move_speed = 270
+attack_range = 68.0
+attack_interval = 0.9
+critical_chance = 4.0
+sprite_frames = ExtResource("f")
+sprite_scale = Vector2(0.24, 0.24)
+attack_sprite_scale = Vector2(0.24, 0.24)
+cast_sprite_scale = Vector2(0.24, 0.24)
+animation_reference_speed = 270
+idle_animation = &"idle_down"
+walk_animation = &"walk_down"
+attack_animation = &"attack_down"
+cast_animation = &"cast_down"
+require_directional_animations = true
+require_action_animations = true
+attack_hit_frame = 2
+evolution_cost = 0.0
+ds_drain_per_second = 0.0
+skills = Array[ExtResource("kt")]([ExtResource("k0")])
