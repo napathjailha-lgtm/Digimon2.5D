@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3]
+[gd_scene load_steps=27 format=3]
 [ext_resource type="Script" path="res://scripts/depth/party_depth_camera.gd" id="depth_camera"]
 [ext_resource type="Script" path="res://scripts/story_world.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/tamer.tscn" id="2"]
@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" path="res://scenes/safe_zone.tscn" id="safe_zone"]
 [ext_resource type="Script" path="res://scripts/world_service_controller.gd" id="service_controller"]
 [ext_resource type="Script" path="res://scripts/world_service_point.gd" id="service_point"]
+[ext_resource type="Script" path="res://scripts/online/online_world_bridge.gd" id="online_bridge"]
 [ext_resource type="Texture2D" path="res://assets/ui/services/archive_terminal.svg" id="archive_terminal"]
 [ext_resource type="Texture2D" path="res://assets/ui/services/merchant_terminal.svg" id="merchant_terminal"]
 [ext_resource type="Texture2D" path="res://assets/ui/services/incubator_terminal.svg" id="incubator_terminal"]
@@ -394,3 +395,9 @@ mouse_filter = 2
 
 [node name="WorldPopulation" type="Node" parent="."]
 script = ExtResource("population")
+
+[node name="OnlineWorldBridge" type="Node" parent="."]
+script = ExtResource("online_bridge")
+zone_id = &"file_island"
+actors_path = NodePath("../Actors")
+local_tamer_path = NodePath("../Actors/Tamer")
