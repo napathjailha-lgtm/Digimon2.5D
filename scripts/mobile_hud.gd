@@ -31,6 +31,9 @@ var inventory_screen: InventoryUI
 var smart_panel: HudSmartPanel
 var digimon_screen: DigimonStatusScreen
 var guild_screen: GuildUI
+var _selected_remote_peer_id: String = ""
+var _selected_remote_name: String = ""
+var _selected_remote_guild: String = ""
 var exp_strip: ProgressBar
 var chat_panel: MobileChatPanel
 var minimap: MobileMinimap
@@ -125,6 +128,8 @@ func _ready() -> void:
     guild_screen.name = "GuildUI"
     add_child(guild_screen)
     guild_screen.configure(self)
+    OnlineManager.remote_interaction_requested.connect(_on_remote_player_interaction)
+    OnlineManager.guild_feedback.connect(_on_guild_feedback_toast)
     InventoryManager.feedback.connect(_show_message)
     InventoryManager.item_picked_up.connect(_on_item_picked_up)
     InventoryManager.changed.connect(_refresh_quick_items)
@@ -497,6 +502,38 @@ func _refresh_quest(_id: StringName) -> void:
 func _on_page_changed(title: String, _index: int, _count: int) -> void:
     page_label.text = title
 
+func _on_remote_player_interaction(peer_id: String, display_name: String, guild_name: String) -> void:
+    if peer_id.is_empty() or not OnlineManager.connected:
+        return
+    if get_tree().paused or menu.expanded or smart_panel.is_open or digimon_screen.is_open or guild_screen.is_open:
+        return
+
+    _selected_remote_peer_id = peer_id
+    _selected_remote_name = display_name if not display_name.is_empty() else "ผู้เล่น"
+    _selected_remote_guild = guild_name
+
+    var detail: String = "Tamer: %s" % _selected_remote_name
+    detail += "\nกิลด์: %s" % ("<%s>" % guild_name if not guild_name.is_empty() else "ยังไม่มีกิลด์")
+    var options: Array[Dictionary] = []
+
+    if OnlineManager.guild.is_empty():
+        detail += "\n\nคุณต้องมีกิลด์ก่อนจึงจะเชิญผู้เล่นได้"
+    elif not guild_name.is_empty():
+        if guild_name == str(OnlineManager.guild.get("name", "")):
+            detail += "\n\nผู้เล่นนี้อยู่กิลด์เดียวกับคุณแล้ว"
+        else:
+            detail += "\n\nผู้เล่นนี้มีกิลด์อยู่แล้ว"
+    else:
+        options.append({"id": &"guild_invite_player", "label": "ชวนเข้ากิลด์"})
+
+    smart_panel.open_kind(&"player", "ผู้เล่นออนไลน์", detail, options)
+
+
+func _on_guild_feedback_toast(message: String, _ok: bool) -> void:
+    if not message.is_empty():
+        _show_message(message)
+
+
 func _menu_action(action: StringName) -> void:
     # คำสั่ง modal ใช้ Pause ownership ของแต่ละหน้าต่าง ห้ามเปิดซ้อน
     match action:
@@ -552,6 +589,12 @@ func _open_settings() -> void:
     smart_panel.open_kind(&"settings", "ตั้งค่า HUD", "ปรับขนาดปุ่มและลดการเคลื่อนไหวได้ทันที\nบันทึกอัตโนมัติบนเครื่องนี้", _settings_options())
 
 func _modal_action(action: StringName) -> void:
+    if action == &"guild_invite_player":
+        var peer_id: String = _selected_remote_peer_id
+        smart_panel.close_screen()
+        if not OnlineManager.invite_to_guild(peer_id):
+            _show_message("ส่งคำเชิญกิลด์ไม่สำเร็จ")
+        return
     if action == &"navigate":
         smart_panel.close_screen()
         _tracker.request_navigation()
