@@ -58,6 +58,30 @@ func _digimon_exp_required(at_level: int) -> int:
     var post_champion: int = at_level - 15
     return 800 + 65 * post_champion + 2 * post_champion * post_champion
 
+func total_exp_earned() -> int:
+    var total: int = current_exp
+    for at_level: int in range(1, level):
+        total += exp_required(at_level)
+    return total
+
+func lose_exp_percent(percent: float) -> int:
+    var safe_percent: float = clampf(percent, 0.0, 1.0)
+    var before: int = total_exp_earned()
+    if before <= 0 or safe_percent <= 0.0:
+        return 0
+    var lost: int = mini(before, maxi(1, ceili(float(before) * safe_percent)))
+    var remaining: int = before - lost
+
+    level = 1
+    max_exp = exp_required(level)
+    while level < level_cap and remaining >= max_exp:
+        remaining -= max_exp
+        level += 1
+        max_exp = exp_required(level)
+    current_exp = 0 if level >= level_cap else clampi(remaining, 0, maxi(0, max_exp - 1))
+    progress_changed.emit(level, current_exp, max_exp)
+    return lost
+
 func add_exp(amount: int) -> void:
     # ไม่รับ EXP ติดลบ และหยุดสะสมเมื่อถึงเพดาน
     if amount <= 0 or level >= level_cap:
