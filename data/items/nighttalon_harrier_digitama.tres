@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/items/digitama.svg" id="2"]
+[resource]
+script = ExtResource("1")
+item_id = "digitama_nighttalon_harrier"
+item_name = "Nighttalon Harrier Digitama"
+item_type = 2
+item_texture = ExtResource("2")
+description = "ไข่หายากจาก Nighttalon Harrier เท่านั้น • ฟักสำเร็จได้ Nighttalon Harrier 100%"
+egg_partner_id = &"nighttalon_harrier_partner"
+required_chip_id = "data_chip_data"
+inject_goal = 5
+inject_success_chance = 0.68
+egg_break_chance = 0.14
+sell_price = 0
