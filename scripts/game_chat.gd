@@ -16,6 +16,14 @@ func add_system(text: String) -> void:
     # ข้อความระบบอยู่ต่อเมื่อเปลี่ยนโซน เพราะเก็บใน Autoload
     _append(&"system", "ระบบ", text)
 
+func add_guild(sender: String, text: String) -> void:
+    var clean_sender: String = sender.strip_edges().substr(0, 24)
+    var clean_text: String = text.strip_edges().replace("\n", " ").replace("\r", " ").replace("\t", " ").substr(0, 160)
+    if clean_sender.is_empty() or clean_text.is_empty():
+        return
+    _append(&"guild", clean_sender, clean_text)
+
+
 func add_remote(sender: String, text: String) -> void:
     var clean_sender: String = sender.strip_edges().substr(0, 24)
     var clean_text: String = text.strip_edges().replace("\n", " ").replace("\r", " ").replace("\t", " ").substr(0, 160)
