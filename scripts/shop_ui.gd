@@ -228,9 +228,9 @@ func _refresh() -> void:
             list_box.add_child(_item_card(item, int(entry.quantity), true))
             rows += 1
         var player: Node = InventoryManager.player_node()
-        if is_instance_valid(player) and ("equipment" in player):
-            var equipment: EquipmentInventory = player.equipment
-            if equipment.catalog != null:
+        if is_instance_valid(player):
+            var equipment: EquipmentInventory = player.get("equipment") as EquipmentInventory
+            if equipment != null and equipment.catalog != null:
                 for gear: EquipmentItemData in equipment.catalog.items:
                     var owned: int = equipment.count(gear.id)
                     if owned <= 0 or service.equipment_sell_price(gear) <= 0:
