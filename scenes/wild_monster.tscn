@@ -104,6 +104,8 @@ chance = 0.003
 [sub_resource type="CircleShape2D" id="body"]
 radius = 24.0
 [node name="WildMonster" type="CharacterBody2D"]
+monster_name = "Data Sprout"
+monster_level = 3
 script = ExtResource("1")
 equipment_drops = Array[ExtResource("equip_drop_script")]([SubResource("equip_drop_0"), SubResource("equip_drop_1"), SubResource("equip_drop_2"), SubResource("equip_drop_3"), SubResource("equip_drop_4"), SubResource("equip_drop_5"), SubResource("equip_drop_6"), SubResource("equip_drop_7"), SubResource("equip_drop_8"), SubResource("equip_drop_9"), SubResource("equip_drop_10"), SubResource("equip_drop_11"), SubResource("equip_drop_12"), SubResource("equip_drop_13"), SubResource("equip_drop_14"), SubResource("equip_drop_15")])
 collision_layer = 4
