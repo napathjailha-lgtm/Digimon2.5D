@@ -37,6 +37,9 @@ jobs:
           grep -q 'permissions/internet=true' export_presets.cfg
           grep -q 'server_url="wss://online-server-production-aa88.up.railway.app"' project.godot
 
+      - name: Validate online server syntax
+        run: node --check server/online-server/server.js
+
       - name: Validate every shipped script and resource
         run: python3 tools/check_godot.py --headless --path . --script res://tests/project_integrity.gd
 
