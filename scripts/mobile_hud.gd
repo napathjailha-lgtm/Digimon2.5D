@@ -45,6 +45,8 @@ var chat_editing: bool = false
 var party_roster: PartnerRoster
 var fusion_manager: FusionManager
 var _rotate_overlay: ColorRect
+var quick_bar: HBoxContainer
+var quick_buttons: Array[HybridCommand] = []
 var safe_inset_override := Vector4(-1, -1, -1, -1) # ใช้ทดสอบรอยบาก; ค่า -1 ให้อ่าน OS จริง
 
 func _ready() -> void:
@@ -117,7 +119,9 @@ func _ready() -> void:
     digimon_screen.configure(self)
     InventoryManager.feedback.connect(_show_message)
     InventoryManager.item_picked_up.connect(_on_item_picked_up)
+    InventoryManager.changed.connect(_refresh_quick_items)
     _build_extras()
+    _build_quick_item_bar()
     _build_mobile_web_overlay()
     critical_fx = CriticalScreenFX.new()
     critical_fx.name = "CriticalScreenFX"
@@ -163,6 +167,86 @@ func _build_extras() -> void:
     $Root.add_child(_tracker)
     _tracker.hide() # ใช้ตัวแก้เป้าหมายเดิม แต่แสดงเพียง shortcut บรรทัดเดียว
     quest_button.pressed.connect(_tracker.request_navigation)
+
+func _build_quick_item_bar() -> void:
+    quick_bar = HBoxContainer.new()
+    quick_bar.name = "QuickItemBar"
+    quick_bar.anchor_left = 0.5
+    quick_bar.anchor_right = 0.5
+    quick_bar.anchor_top = 1.0
+    quick_bar.anchor_bottom = 1.0
+    quick_bar.add_theme_constant_override("separation", 6)
+    quick_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    $Root.add_child(quick_bar)
+    for slot: int in range(4):
+        var button := HybridCommand.new()
+        button.custom_minimum_size = Vector2(58, 58)
+        button.size = Vector2(58, 58)
+        button.illustrated = true
+        button.pressed.connect(_use_quick_slot.bind(slot))
+        quick_bar.add_child(button)
+        quick_buttons.append(button)
+    _refresh_quick_items()
+
+func _quick_item_candidates() -> Array[String]:
+    var result: Array[String] = []
+    for item: ItemData in InventoryManager.catalog.items:
+        if item.item_type == ItemData.ItemType.CONSUMABLE:
+            result.append(item.item_id)
+    return result
+
+func _quick_item(slot: int) -> ItemData:
+    if slot < 0 or slot >= preferences.quick_item_slots.size():
+        return null
+    return InventoryManager.catalog.find_item(preferences.quick_item_slots[slot])
+
+func _refresh_quick_items(_a: Variant = null, _b: Variant = null) -> void:
+    if quick_buttons.size() != 4 or InventoryManager.catalog == null:
+        return
+    for slot: int in range(4):
+        var button: HybridCommand = quick_buttons[slot]
+        var item: ItemData = _quick_item(slot)
+        var key_number: int = slot + 5
+        if item == null:
+            button.icon = null
+            button.empty_slot = true
+            button.locked = true
+            button.set_caption("%d · ว่าง" % key_number)
+        else:
+            var count: int = InventoryManager.count(item.item_id)
+            button.icon = item.item_texture
+            button.empty_slot = false
+            button.locked = count <= 0 or not InventoryManager.can_use_item(item)
+            button.set_caption("%d · %d" % [key_number, count])
+        button.queue_redraw()
+
+func _use_quick_slot(slot: int) -> void:
+    if chat_editing or menu.expanded or get_tree().paused or partner.evolution_busy:
+        return
+    var item: ItemData = _quick_item(slot)
+    if item == null:
+        _show_message("ช่องลัด %d ยังไม่ได้ตั้งไอเทม" % (slot + 5))
+        return
+    if InventoryManager.count(item.item_id) <= 0:
+        _show_message("%s หมดแล้ว" % item.item_name)
+        return
+    InventoryManager.use_item_by_id(item.item_id)
+    _refresh_quick_items()
+
+func _cycle_quick_slot(slot: int) -> void:
+    var candidates: Array[String] = _quick_item_candidates()
+    if candidates.is_empty() or slot < 0 or slot >= 4:
+        return
+    var current: String = preferences.quick_item_slots[slot]
+    var index: int = candidates.find(current)
+    preferences.quick_item_slots[slot] = candidates[(index + 1) % candidates.size()]
+    _save_preferences()
+    _refresh_quick_items()
+
+func _quick_slot_label(slot: int) -> String:
+    var item: ItemData = _quick_item(slot)
+    return "ช่องลัด %d: %s" % [slot + 5, "ว่าง" if item == null else item.item_name]
+
 
 func _layout() -> void:
     # Web-mobile ใช้ viewport จริงของ browser และปรับ HUD ให้พื้นที่นิ้วโป้งไม่ชนกัน
@@ -227,6 +311,8 @@ func _layout() -> void:
     chat_panel.layout_panel()
     quest_button.visible = chat_panel.collapsed
 
+    if is_instance_valid(quick_bar):
+        quick_bar.position = Vector2((viewport_size.x - quick_bar.size.x) * 0.5, viewport_size.y - inset.w - 238.0)
     target_card.offset_top = inset.y
     target_card.offset_bottom = inset.y + 59
     message.offset_top = inset.y + 78
@@ -302,6 +388,7 @@ func _refresh_bars(_a: Variant = null, _b: Variant = null, _c: Variant = null) -
     if not is_instance_valid(exp_strip):
         return
     party_status.update_values(tamer, partner)
+    _refresh_quick_items()
     if is_instance_valid(critical_fx):
         critical_fx.set_critical(not tamer.can_battle())
     _refresh_combat_controls()
@@ -363,6 +450,10 @@ func _settings_options() -> Array[Dictionary]:
         {"id": &"size", "label": "ปุ่มต่อสู้: %d%%" % roundi(preferences.combat_scale*100)},
         {"id": &"map", "label": "แผนที่: " + ("แสดง" if preferences.minimap_visible else "ซ่อน")},
         {"id": &"chat", "label": "แชต: " + ("ย่อ" if chat_panel.collapsed else "ขยาย")},
+        {"id": &"quick_0", "label": _quick_slot_label(0)},
+        {"id": &"quick_1", "label": _quick_slot_label(1)},
+        {"id": &"quick_2", "label": _quick_slot_label(2)},
+        {"id": &"quick_3", "label": _quick_slot_label(3)},
         {"id": &"light", "label": "สลับแสงกลางวัน / เย็น"}
     ]
 
@@ -381,6 +472,10 @@ func _modal_action(action: StringName) -> void:
         &"size": preferences.combat_scale = 1.15 if preferences.combat_scale < 1.1 else 1.0
         &"map": preferences.minimap_visible = not preferences.minimap_visible
         &"chat": chat_panel.toggle_collapsed()
+        &"quick_0": _cycle_quick_slot(0)
+        &"quick_1": _cycle_quick_slot(1)
+        &"quick_2": _cycle_quick_slot(2)
+        &"quick_3": _cycle_quick_slot(3)
         &"light":
             var environment: Node = tamer.get_parent().get_parent().get_node_or_null("OpenWorldEnvironment")
             if environment != null:
@@ -429,6 +524,8 @@ func release_for_equipment() -> void:
     chat_editing = false
     for button: TouchCommand in [attack_button,evolve_button,auto_button,recover_button,cycle_button]:
         button.release_input()
+    for quick_button: HybridCommand in quick_buttons:
+        quick_button.release_input()
 
 func _request_digivolve(partner_node: PartnerMonster) -> void:
     if is_instance_valid(active_cutscene) or get_tree().paused:
@@ -443,7 +540,7 @@ func _request_digivolve(partner_node: PartnerMonster) -> void:
     active_cutscene = cutscene
 
 func _unhandled_input(event: InputEvent) -> void:
-    # Web/PC shortcuts: Space = โจมตี, 1-4 = สกิลปัจจุบัน, J = Fusion
+    # Web/PC shortcuts: Space = โจมตี, 1-4 = สกิล, 5-8 = Quick Item, J = Fusion
     # ใช้ unhandled_input เพื่อไม่แย่งปุ่มจาก LineEdit/เมนูที่กำลังรับคีย์บอร์ด
     if chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open):
         return
@@ -461,6 +558,9 @@ func _unhandled_input(event: InputEvent) -> void:
         get_viewport().set_input_as_handled()
     elif event.is_action_pressed(&"skill_4"):
         tamer.command_skill(3)
+        get_viewport().set_input_as_handled()
+    elif event is InputEventKey and event.pressed and not event.echo and event.keycode >= KEY_5 and event.keycode <= KEY_8:
+        _use_quick_slot(int(event.keycode - KEY_5))
         get_viewport().set_input_as_handled()
     elif event.is_action_pressed(&"fusion") and is_instance_valid(fusion_manager):
         fusion_manager.request_fusion()
