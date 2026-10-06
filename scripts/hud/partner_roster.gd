@@ -7,6 +7,12 @@ signal switched(index: int)
 signal feedback(message: String)
 
 const CAPACITY: int = 3
+const MAX_ENHANCEMENT: int = 5
+const ENHANCEMENT_EGG_COST: int = 5
+const ENHANCEMENT_SUCCESS: Array[float] = [1.0, 0.85, 0.70, 0.55, 0.40]
+const ENHANCEMENT_HP_PER_LEVEL: float = 0.06
+const ENHANCEMENT_ATTACK_PER_LEVEL: float = 0.05
+const ENHANCEMENT_SPEED_PER_LEVEL: float = 0.015
 
 var tamer: Tamer
 var partner: PartnerMonster
@@ -17,11 +23,13 @@ var active_index: int = 0
 var initialized: bool = false
 var _switching: bool = false
 var _legacy_family: StarterPartnerData
+var _enhancement_rng := RandomNumberGenerator.new()
 
 func configure(player: Tamer) -> void:
     tamer = player
     partner = player.partner
     GameManager.ensure_catalog()
+    _enhancement_rng.randomize()
 
     _legacy_family = StarterPartnerData.new()
     _legacy_family.id = &"legacy"
@@ -68,6 +76,7 @@ func initialize(saved: Dictionary = {}) -> void:
             _ensure_uid(member)
             member["progress"] = _entry_progress(member, legacy_progress)
             member["unlocked_forms"] = _sanitize_unlocked_forms(member, data)
+            member["enhancement"] = clampi(int(member.get("enhancement", 0)), 0, MAX_ENHANCEMENT)
             members.append(member)
 
     var raw_storage: Variant = saved.get("storage", [])
@@ -83,6 +92,7 @@ func initialize(saved: Dictionary = {}) -> void:
             _ensure_uid(stored)
             stored["progress"] = _entry_progress(stored, legacy_progress)
             stored["unlocked_forms"] = _sanitize_unlocked_forms(stored, stored_data)
+            stored["enhancement"] = clampi(int(stored.get("enhancement", 0)), 0, MAX_ENHANCEMENT)
             storage.append(stored)
 
     _switching = true
@@ -220,6 +230,92 @@ func member_level(id: StringName) -> int:
     return best
 
 
+func current_enhancement_level() -> int:
+    if not initialized or members.is_empty() or active_index < 0 or active_index >= members.size():
+        return 0
+    return clampi(int(members[active_index].get("enhancement", 0)), 0, MAX_ENHANCEMENT)
+
+
+func enhancement_level(entry: Dictionary) -> int:
+    return clampi(int(entry.get("enhancement", 0)), 0, MAX_ENHANCEMENT)
+
+
+func enhancement_success_chance(current_level: int) -> float:
+    var safe_level: int = clampi(current_level, 0, MAX_ENHANCEMENT)
+    if safe_level >= MAX_ENHANCEMENT:
+        return 0.0
+    return ENHANCEMENT_SUCCESS[safe_level]
+
+
+func enhancement_egg_item_id(partner_id: StringName) -> String:
+    if InventoryManager.catalog == null:
+        return ""
+    for item: ItemData in InventoryManager.catalog.items:
+        if item != null and item.item_type == ItemData.ItemType.EGG and item.egg_partner_id == partner_id:
+            return item.item_id
+    return ""
+
+
+func enhancement_bonus_text(level: int) -> String:
+    var safe_level: int = clampi(level, 0, MAX_ENHANCEMENT)
+    return "HP +%d%% • ATK +%d%% • SPD +%.1f%%" % [
+        roundi(ENHANCEMENT_HP_PER_LEVEL * safe_level * 100.0),
+        roundi(ENHANCEMENT_ATTACK_PER_LEVEL * safe_level * 100.0),
+        ENHANCEMENT_SPEED_PER_LEVEL * safe_level * 100.0
+    ]
+
+
+func enhance_member(index: int, in_party: bool) -> bool:
+    if not initialized:
+        feedback.emit("ระบบ Digimon ยังไม่พร้อม")
+        return false
+    var source: Array[Dictionary] = members if in_party else storage
+    if index < 0 or index >= source.size():
+        feedback.emit("ไม่พบ Digimon ที่เลือก")
+        return false
+
+    var entry: Dictionary = source[index]
+    var current: int = enhancement_level(entry)
+    if current >= MAX_ENHANCEMENT:
+        feedback.emit("Digimon ตัวนี้ Enhancement +5 สูงสุดแล้ว")
+        return false
+
+    var family_id := StringName(str(entry.get("id", "")))
+    var egg_id: String = enhancement_egg_item_id(family_id)
+    if egg_id.is_empty():
+        feedback.emit("สายพันธุ์นี้ไม่มี Digitama สำหรับใช้ยกระดับ")
+        return false
+
+    var owned: int = InventoryManager.count(egg_id)
+    if owned < ENHANCEMENT_EGG_COST:
+        var egg: ItemData = InventoryManager.catalog.find_item(egg_id)
+        var egg_name: String = egg.item_name if egg != null else egg_id
+        feedback.emit("ต้องใช้ %s x%d • มี %d" % [egg_name, ENHANCEMENT_EGG_COST, owned])
+        return false
+
+    if not InventoryManager.remove_item(egg_id, ENHANCEMENT_EGG_COST):
+        feedback.emit("ใช้ Digitama ไม่สำเร็จ")
+        return false
+
+    var target_level: int = current + 1
+    var chance: float = enhancement_success_chance(current)
+    var success: bool = _enhancement_rng.randf() < chance
+    if success:
+        entry["enhancement"] = target_level
+        source[index] = entry
+        if in_party and index == active_index:
+            partner.refresh_enhancement_stats()
+        changed.emit()
+        tamer.save_party_progress()
+        feedback.emit("Enhancement สำเร็จ +%d • %s" % [target_level, enhancement_bonus_text(target_level)])
+        return true
+
+    changed.emit()
+    tamer.save_party_progress()
+    feedback.emit("Enhancement +%d ล้มเหลว • Digitama ถูกใช้ 5 ใบ • ระดับยัง +%d" % [target_level, current])
+    return false
+
+
 func add_partner(id: StringName) -> bool:
     # Digimon ใหม่เริ่ม Lv.1 ของตัวเอง ไม่รับเลเวลจากสมาชิกเดิม
     var data: StarterPartnerData = family(id)
@@ -239,6 +335,7 @@ func add_partner(id: StringName) -> bool:
         "egg": false,
         "progress": {"level": 1, "exp": 0},
         "unlocked_forms": [String(rookie.id)],
+        "enhancement": 0,
         "cooldowns": {},
         "basic_cooldown": 0.0
     })
@@ -265,7 +362,7 @@ func add_hatched_to_storage(id: StringName) -> bool:
     storage.append({
         "uid": _make_uid(id), "id": String(id), "form_id": String(rookie.id),
         "hp": hp_max, "max_hp": hp_max, "mp": partner.digimon_max_mp, "egg": false,
-        "progress": {"level": 1, "exp": 0}, "unlocked_forms": [String(rookie.id)], "cooldowns": {}, "basic_cooldown": 0.0
+        "progress": {"level": 1, "exp": 0}, "unlocked_forms": [String(rookie.id)], "enhancement": 0, "cooldowns": {}, "basic_cooldown": 0.0
     })
     changed.emit()
     tamer.save_party_progress()
@@ -479,6 +576,7 @@ func _capture(id: StringName, uid: String = "") -> Dictionary:
         "mp": partner.digimon_mp,
         "egg": not partner.is_alive(),
         "progress": _sanitize_progress(partner.progress.get_save_data()),
+        "enhancement": current_enhancement_level(),
         "cooldowns": cooldowns,
         "basic_cooldown": partner._basic_cooldown
     }
@@ -492,11 +590,13 @@ func _capture_active() -> void:
 
     # actor ปัจจุบันเป็น source of truth เฉพาะสมาชิก active เท่านั้น
     var previous_unlocked: Variant = members[active_index].get("unlocked_forms", [])
+    var previous_enhancement: int = enhancement_level(members[active_index])
     members[active_index] = _capture(
         StringName(members[active_index].get("id", "")),
         str(members[active_index].get("uid", ""))
     )
     members[active_index]["unlocked_forms"] = previous_unlocked.duplicate(true) if previous_unlocked is Array else []
+    members[active_index]["enhancement"] = previous_enhancement
 
 
 func _on_partner_progress_changed(
@@ -554,7 +654,7 @@ func get_save_data() -> Dictionary:
         _capture_active()
 
     return {
-        "version": 5,
+        "version": 6,
         "active_id": members[active_index].get("id", ""),
         "active_uid": members[active_index].get("uid", ""),
         "members": members.duplicate(true),
