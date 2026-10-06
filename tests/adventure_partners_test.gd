@@ -172,7 +172,7 @@ func run() -> void:
         var hud: MobileHUD = world.get_node("MobileHUD")
         check(hud.skill_panel.pages.size() == 1 and hud.skill_panel.pages[0].form == family.forms[-1], "Skill UI exposes only active Mega skills")
         check(hud.digimon_screen.open_screen(), "Open Mega status")
-        check(hud.digimon_screen.title_name.text == mega_names[member] and hud.digimon_screen.stage_label.text == "MEGA", "Status shows correct Mega")
+        check(hud.digimon_screen.title_name.text == mega_names[member] and hud.digimon_screen.stage_label.text.begins_with("MEGA"), "Status shows correct Mega and enhancement badge")
         check(hud.digimon_screen.preview.sprite.sprite_frames == family.forms[-1].sprite_frames, "Status uses current form art")
         hud.digimon_screen.close_screen()
         var snapshot: Dictionary = roster.get_save_data().duplicate(true)
@@ -202,6 +202,23 @@ func run() -> void:
     if roster.active_index != 0:
         check(roster.select_member(0), "Switch back to Tailmon line")
     check(partner.current_form.monster_name == "Holydramon", "Restore keeps Tailmon Mega unlocked at Lv60")
+
+    # Enhancement: ใช้ Digitama สายเดียวกัน 5 ใบ, +1 สำเร็จ 100%, โบนัสมีผลจริงและเซฟแยกต่อ Digimon
+    var enhance_egg: ItemData = InventoryManager.catalog.find_item("digitama_tailmon")
+    check(enhance_egg != null, "Tailmon Digitama available for enhancement")
+    if enhance_egg != null:
+        var egg_before: int = InventoryManager.count(enhance_egg.item_id)
+        check(InventoryManager.add_item(enhance_egg, PartnerRoster.ENHANCEMENT_EGG_COST), "Add five duplicate eggs for enhancement test")
+        var hp_before_enhance: int = partner.max_hp
+        var attack_before_enhance: int = partner.attack_power
+        check(roster.current_enhancement_level() == 0, "Old save migrates enhancement to +0")
+        check(roster.enhance_member(roster.active_index, true), "Enhancement +1 succeeds at 100 percent")
+        check(roster.current_enhancement_level() == 1, "Active Digimon becomes Enhancement +1")
+        check(InventoryManager.count(enhance_egg.item_id) == egg_before, "Enhancement consumes exactly five duplicate eggs")
+        check(partner.max_hp > hp_before_enhance and partner.attack_power > attack_before_enhance, "Enhancement increases live HP and ATK stats")
+        var enhanced_snapshot: Dictionary = roster.get_save_data().duplicate(true)
+        roster.initialize(enhanced_snapshot)
+        check(roster.current_enhancement_level() == 1, "Enhancement persists after roster save restore")
 
     var service := IncubatorService.new()
     service.configure(roster)
