@@ -39,6 +39,21 @@ theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("name_bg")
 mouse_filter = 2
 
+[node name="GuildLabel" type="Label" parent="."]
+visible = false
+offset_left = -90.0
+offset_top = -158.0
+offset_right = 90.0
+offset_bottom = -134.0
+text = "<Guild>"
+horizontal_alignment = 1
+theme_override_fonts/font = ExtResource("thai_font")
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.78, 0.66, 1, 1)
+theme_override_colors/font_outline_color = Color(0.03, 0.02, 0.07, 1)
+theme_override_constants/outline_size = 3
+mouse_filter = 2
+
 
 [node name="PartnerVisual" type="Node2D" parent="."]
 visible = false
