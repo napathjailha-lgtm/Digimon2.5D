@@ -52,6 +52,16 @@ func run() -> void:
     var chip: ItemData = manager.catalog.find_item("data_chip")
     check(manager.player_node() == player and manager.items().is_empty(), "เริ่มกระเป๋าว่างและ bind Tamer ปัจจุบัน")
     check(manager.catalog.items.size() >= 16 and meat.item_texture != null and manager.catalog.find_item("tamer_mp_potion") != null, "ฐานข้อมูลไอเทมปัจจุบันพร้อม Texture และยา MP Tamer")
+    var rare_partner_ids: Array[StringName] = [&"emberclaw", &"frostfang", &"thunder_lynx_partner", &"tidecoil_manta_partner", &"nighttalon_harrier_partner"]
+    var rare_egg_ids: Array[String] = ["digitama_emberclaw", "digitama_frostfang", "digitama_thunder_lynx", "digitama_tidecoil_manta", "digitama_nighttalon_harrier"]
+    var rare_catalog_ok: bool = true
+    for rare_id: StringName in rare_partner_ids:
+        var rare_family: StarterPartnerData = GameManager.catalog.starter_by_id(rare_id)
+        rare_catalog_ok = rare_catalog_ok and rare_family != null and not rare_family.starter_available and not rare_family.forms.is_empty()
+    for rare_egg_id: String in rare_egg_ids:
+        var rare_egg: ItemData = manager.catalog.find_item(rare_egg_id)
+        rare_catalog_ok = rare_catalog_ok and rare_egg != null and rare_egg.item_type == ItemData.ItemType.EGG
+    check(rare_catalog_ok, "5 Drop-only Partners อยู่ใน Catalog/Incubator แต่ไม่เป็น Starter")
     check(not manager.add_item(null, 1) and not manager.add_item(meat, 0) and not manager.add_item(meat, -1), "ปฏิเสธข้อมูล/จำนวนไม่ถูกต้อง")
     var unknown := ItemData.new()
     unknown.item_id = "unknown"
