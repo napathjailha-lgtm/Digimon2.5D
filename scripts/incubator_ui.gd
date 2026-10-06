@@ -271,8 +271,13 @@ func _build() -> void:
     egg_scroll.clip_contents = true
     egg_scroll.mouse_filter = Control.MOUSE_FILTER_STOP
     left_stack.add_child(egg_scroll)
+    var egg_scrollbar := egg_scroll.get_v_scroll_bar()
+    egg_scrollbar.custom_minimum_size.x = 22.0
+    egg_scrollbar.mouse_filter = Control.MOUSE_FILTER_STOP
     egg_list = VBoxContainer.new()
+    egg_list.mouse_filter = Control.MOUSE_FILTER_PASS
     egg_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    egg_list.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
     egg_list.add_theme_constant_override("separation", 8)
     egg_scroll.add_child(egg_list)
 
@@ -413,8 +418,10 @@ func _refresh() -> void:
 func _egg_card(item: ItemData, quantity: int, selected: bool) -> PanelContainer:
     var accent: Color = ServiceUIStyle.GOLD if selected else ServiceUIStyle.CYAN
     var card := PanelContainer.new()
+    card.mouse_filter = Control.MOUSE_FILTER_PASS
     card.add_theme_stylebox_override("panel", ServiceUIStyle.card(accent, Color("091d2ce8")))
     var row := HBoxContainer.new()
+    row.mouse_filter = Control.MOUSE_FILTER_PASS
     row.add_theme_constant_override("separation", 10)
     card.add_child(row)
 
@@ -427,6 +434,7 @@ func _egg_card(item: ItemData, quantity: int, selected: bool) -> PanelContainer:
     row.add_child(icon)
 
     var info := VBoxContainer.new()
+    info.mouse_filter = Control.MOUSE_FILTER_PASS
     info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     row.add_child(info)
     info.add_child(ServiceUIStyle.label(item.item_name, 16, ServiceUIStyle.TEXT))
