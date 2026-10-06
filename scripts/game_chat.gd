@@ -3,6 +3,7 @@ extends Node
 ## ตัวอย่างเป็นแชตภายในเครื่อง: outgoing_message คือจุดเชื่อมเซิร์ฟเวอร์ในอนาคต
 signal messages_changed
 signal outgoing_message(channel: StringName, text: String)
+signal local_message_submitted(text: String)
 const MAX_MESSAGES: int = 100
 var messages: Array[Dictionary] = []
 
@@ -20,15 +21,16 @@ func add_remote(sender: String, text: String) -> void:
     var clean_text: String = text.strip_edges().replace("\n", " ").replace("\r", " ").replace("\t", " ").substr(0, 160)
     if clean_sender.is_empty() or clean_text.is_empty():
         return
-    _append(&"online", clean_sender, clean_text)
+    _append(&"general", clean_sender, clean_text)
 
 func submit_local(text: String) -> bool:
     # จำกัดความยาวและข้ามข้อความว่าง ไม่ส่งออกเครือข่ายอัตโนมัติ
     var clean: String = text.strip_edges().replace("\n", " ").replace("\r", " ").replace("\t", " ").substr(0, 160)
     if clean.is_empty():
         return false
-    _append(&"local", "คุณ", clean)
-    outgoing_message.emit(&"local", clean)
+    _append(&"general", "คุณ", clean)
+    local_message_submitted.emit(clean)
+    outgoing_message.emit(&"general", clean)
     return true
 
 func _append(channel: StringName, sender: String, body: String) -> void:
