@@ -44,7 +44,7 @@ func _process(delta: float) -> void:
         var image: Sprite2D = actor.get_node("Sprite2D")
         texture = image.texture
         scale_y = image.scale.y
-        _name.modulate = Color("ffd4d4")
+        _name.modulate = actor.nameplate_color
     if texture != null:
         position.y = -WalkTextureTools.visible_texture(texture).get_height() * scale_y - 12.0
     queue_redraw()
