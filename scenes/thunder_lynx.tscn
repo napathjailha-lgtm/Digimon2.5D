@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3]
+[ext_resource type="PackedScene" path="res://scenes/wild_monster.tscn" id="1"]
+[ext_resource type="Texture2D" path="res://assets/monsters/elites/thunder_lynx.webp" id="2"]
+[ext_resource type="Resource" path="res://data/items/thunder_lynx_loot.tres" id="3"]
+
+[node name="ThunderLynx" instance=ExtResource("1")]
+monster_id = &"thunder_lynx"
+monster_name = "Thunder Lynx"
+nameplate_color = Color(0.45, 0.9, 1, 1)
+monster_level = 24
+exp_reward = 620
+drop_table = ExtResource("3")
+max_hp = 520
+move_speed = 138.0
+attack_damage = 28
+attack_range = 72.0
+wander_radius = 110.0
+leash_distance = 330.0
+
+[node name="Sprite2D" parent="."]
+texture = ExtResource("2")
+scale = Vector2(0.24, 0.24)
+offset = Vector2(0, -220)
+
+[node name="DamageOrigin" parent="."]
+position = Vector2(0, -96)
