@@ -16,6 +16,9 @@ func _ready() -> void:
 
     fade.modulate.a = 0.0
     _refresh_artwork()
+    # Browser preloader จางออกมาหาดำของ SceneChanger แล้วค่อยเปิดภาพ Splash
+    await get_tree().process_frame
+    SceneChanger.reveal_scene(1.20)
     get_viewport().size_changed.connect(_refresh_artwork)
 
     await get_tree().create_timer(minimum_wait).timeout
@@ -47,7 +50,5 @@ func _start_game() -> void:
     _starting = true
     _ready_to_start = false
 
-    var outro := create_tween()
-    outro.tween_property(fade, "modulate:a", 0.42, 0.20)
-    await outro.finished
-    get_tree().change_scene_to_file(next_scene)
+    # ใช้แผ่นดำกลางร่วมกันแทนการตัด Scene ตรง ๆ เพื่อไม่เกิดเฟรมกระพริบ
+    await SceneChanger.change_scene(next_scene, 0.55, 1.50)
