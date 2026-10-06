@@ -22,6 +22,18 @@ var create_button: DigimonTouchButton
 var join_button: DigimonTouchButton
 var leave_button: DigimonTouchButton
 var send_button: DigimonTouchButton
+
+var invite_root: Control
+var invite_panel: PanelContainer
+var invite_title: Label
+var invite_detail: Label
+var invite_accept_button: DigimonTouchButton
+var invite_decline_button: DigimonTouchButton
+var _pending_invite: Dictionary = {}
+var _invite_revision: int = 0
+var _invite_owns_pause: bool = false
+var _invite_previous_back_quit: bool = true
+
 var _owns_pause: bool = false
 var _previous_back_quit: bool = true
 
@@ -29,10 +41,13 @@ func _ready() -> void:
     process_mode = Node.PROCESS_MODE_ALWAYS
     layer = 89
     _build()
+    _build_invite_popup()
     root.hide()
+    invite_root.hide()
     OnlineManager.guild_changed.connect(_on_guild_changed)
     OnlineManager.guild_feedback.connect(_on_guild_feedback)
     OnlineManager.guild_chat.connect(_on_guild_chat)
+    OnlineManager.guild_invite_received.connect(_on_guild_invite_received)
     OnlineManager.connection_changed.connect(_on_connection_changed)
     GameChat.messages_changed.connect(_refresh_chat)
     get_viewport().size_changed.connect(_layout)
@@ -75,17 +90,24 @@ func _restore_pause() -> void:
     _owns_pause = false
 
 func _exit_tree() -> void:
+    _restore_invite_pause()
     _restore_pause()
 
 func _notification(what: int) -> void:
-    if what == NOTIFICATION_WM_GO_BACK_REQUEST and is_open:
+    if what != NOTIFICATION_WM_GO_BACK_REQUEST:
+        return
+    if is_instance_valid(invite_root) and invite_root.visible:
+        _respond_invite(false)
+    elif is_open:
         close_screen()
 
 func _layout() -> void:
-    if not is_instance_valid(panel):
-        return
-    panel.custom_minimum_size = Vector2(940, 590)
-    ResponsiveUI.fit_centered(panel, get_viewport(), 12.0)
+    if is_instance_valid(panel):
+        panel.custom_minimum_size = Vector2(940, 590)
+        ResponsiveUI.fit_centered(panel, get_viewport(), 12.0)
+    if is_instance_valid(invite_panel):
+        invite_panel.custom_minimum_size = Vector2(520, 260)
+        ResponsiveUI.fit_centered(invite_panel, get_viewport(), 16.0)
 
 func _build() -> void:
     root = Control.new()
@@ -257,6 +279,61 @@ func _build() -> void:
     send_button.pressed.connect(_send_guild_chat)
     chat_row.add_child(send_button)
 
+func _build_invite_popup() -> void:
+    invite_root = Control.new()
+    invite_root.name = "GuildInvitePopup"
+    invite_root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+    invite_root.theme = ServiceUIStyle.make_theme()
+    invite_root.z_index = 200
+    add_child(invite_root)
+
+    var shade := ColorRect.new()
+    shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+    shade.color = Color(0.004, 0.01, 0.02, 0.72)
+    shade.mouse_filter = Control.MOUSE_FILTER_STOP
+    invite_root.add_child(shade)
+
+    var center := CenterContainer.new()
+    center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+    center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    invite_root.add_child(center)
+
+    invite_panel = PanelContainer.new()
+    invite_panel.add_theme_stylebox_override("panel", ServiceUIStyle.panel(Color("c59cff")))
+    center.add_child(invite_panel)
+
+    var margin := MarginContainer.new()
+    for side: String in ["left", "right", "top", "bottom"]:
+        margin.add_theme_constant_override("margin_" + side, 20)
+    invite_panel.add_child(margin)
+
+    var stack := VBoxContainer.new()
+    stack.add_theme_constant_override("separation", 14)
+    margin.add_child(stack)
+
+    invite_title = ServiceUIStyle.label("คำเชิญเข้ากิลด์", 24, Color("c59cff"))
+    invite_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    stack.add_child(invite_title)
+
+    invite_detail = ServiceUIStyle.label("", 17, ServiceUIStyle.TEXT)
+    invite_detail.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    invite_detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    stack.add_child(invite_detail)
+
+    var actions := HBoxContainer.new()
+    actions.alignment = BoxContainer.ALIGNMENT_CENTER
+    actions.add_theme_constant_override("separation", 12)
+    stack.add_child(actions)
+
+    invite_decline_button = _button("ปฏิเสธ", Vector2(150, 54))
+    invite_decline_button.pressed.connect(_respond_invite.bind(false))
+    actions.add_child(invite_decline_button)
+
+    invite_accept_button = _button("ยอมรับ", Vector2(150, 54))
+    invite_accept_button.pressed.connect(_respond_invite.bind(true))
+    actions.add_child(invite_accept_button)
+
+
 func _button(caption: String, minimum: Vector2) -> DigimonTouchButton:
     var button := DigimonTouchButton.new()
     button.text = caption
@@ -303,6 +380,74 @@ func _on_guild_feedback(message: String, ok: bool) -> void:
 
 func _on_guild_chat(_peer_id: String, sender: String, text: String) -> void:
     GameChat.add_guild(sender, text)
+
+func _on_guild_invite_received(invite: Dictionary) -> void:
+    var invite_id: String = str(invite.get("invite_id", ""))
+    if invite_id.is_empty():
+        return
+    if not OnlineManager.guild.is_empty():
+        OnlineManager.respond_guild_invite(invite_id, false)
+        return
+
+    _invite_revision += 1
+    var revision: int = _invite_revision
+    _pending_invite = invite.duplicate(true)
+
+    var guild_name: String = str(invite.get("guild_name", "Guild"))
+    var from_name: String = str(invite.get("from_name", "ผู้เล่น"))
+    var seconds: int = clampi(int(invite.get("expires_in", 30)), 5, 60)
+    invite_title.text = "คำเชิญเข้ากิลด์"
+    invite_detail.text = "%s ชวนคุณเข้ากิลด์\n<%s>\n\nคำเชิญหมดอายุใน %d วินาที" % [
+        from_name, guild_name, seconds
+    ]
+
+    _invite_owns_pause = not get_tree().paused
+    if _invite_owns_pause:
+        _invite_previous_back_quit = get_tree().quit_on_go_back
+        get_tree().quit_on_go_back = false
+        get_tree().paused = true
+
+    invite_root.show()
+    _layout()
+    _expire_invite_after(seconds, revision)
+
+
+func _expire_invite_after(seconds: int, revision: int) -> void:
+    await get_tree().create_timer(float(seconds), true).timeout
+    if revision != _invite_revision or _pending_invite.is_empty():
+        return
+    _hide_invite_popup()
+    if is_instance_valid(hud):
+        hud._show_message("คำเชิญกิลด์หมดอายุแล้ว")
+
+
+func _respond_invite(accept: bool) -> void:
+    if _pending_invite.is_empty():
+        _hide_invite_popup()
+        return
+    var invite_id: String = str(_pending_invite.get("invite_id", ""))
+    _pending_invite.clear()
+    _invite_revision += 1
+    _hide_invite_popup()
+    OnlineManager.respond_guild_invite(invite_id, accept)
+
+
+func _hide_invite_popup() -> void:
+    if is_instance_valid(invite_accept_button):
+        invite_accept_button.release_input()
+    if is_instance_valid(invite_decline_button):
+        invite_decline_button.release_input()
+    if is_instance_valid(invite_root):
+        invite_root.hide()
+    _restore_invite_pause()
+
+
+func _restore_invite_pause() -> void:
+    if _invite_owns_pause and is_inside_tree():
+        get_tree().paused = false
+        get_tree().quit_on_go_back = _invite_previous_back_quit
+    _invite_owns_pause = false
+
 
 func _on_connection_changed(connected: bool, _message: String) -> void:
     if not connected:
@@ -373,6 +518,8 @@ func _point_in(control: Control, point: Vector2) -> bool:
     return Rect2(Vector2.ZERO, control.size).has_point(local)
 
 func _input(event: InputEvent) -> void:
+    if is_instance_valid(invite_root) and invite_root.visible:
+        return
     if not is_open:
         return
     if event is InputEventScreenTouch and event.pressed and not event.canceled:
@@ -384,6 +531,11 @@ func _input(event: InputEvent) -> void:
                 return
 
 func _unhandled_input(event: InputEvent) -> void:
+    if is_instance_valid(invite_root) and invite_root.visible:
+        if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+            _respond_invite(false)
+        get_viewport().set_input_as_handled()
+        return
     if not is_open:
         return
     if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
