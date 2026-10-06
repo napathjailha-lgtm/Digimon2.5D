@@ -25,6 +25,7 @@ boot_splash/show_image=false
 
 QuestManager="*res://scripts/quest_manager.gd"
 GameChat="*res://scripts/game_chat.gd"
+OnlineManager="*res://scripts/online/online_manager.gd"
 GameManager="*res://scripts/GameManager.gd"
 InventoryManager="*res://scripts/InventoryManager.gd"
 VisualDirector="*res://scripts/visual/visual_director.gd"
@@ -62,3 +63,9 @@ common/physics_interpolation=true
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true
+
+[online]
+
+auto_connect=false
+send_interval=0.1
+server_url=""
