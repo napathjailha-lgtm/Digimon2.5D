@@ -176,12 +176,8 @@ func _build_extras() -> void:
 func _build_online_badge() -> void:
     online_badge = PanelContainer.new()
     online_badge.name = "OnlineCountBadge"
-    online_badge.anchor_left = 1.0
-    online_badge.anchor_right = 1.0
-    online_badge.offset_left = -252.0
-    online_badge.offset_right = -72.0
-    online_badge.offset_top = 10.0
-    online_badge.offset_bottom = 46.0
+    online_badge.custom_minimum_size = Vector2(96, 64)
+    online_badge.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
     online_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
     online_badge.z_index = 40
 
@@ -190,18 +186,21 @@ func _build_online_badge() -> void:
     style.border_color = Color(0.20, 0.75, 0.52, 0.88)
     style.set_border_width_all(1)
     style.set_corner_radius_all(10)
-    style.content_margin_left = 10
-    style.content_margin_right = 10
+    style.content_margin_left = 8
+    style.content_margin_right = 8
     style.content_margin_top = 5
     style.content_margin_bottom = 5
     online_badge.add_theme_stylebox_override("panel", style)
-    $Root/Safe/Layout.add_child(online_badge)
+
+    # วางต่อจากกลุ่ม Inventory/Settings ใน MapRow จึงชิดด้านข้างกระเป๋า
+    # และไม่ลอยทับมุมขวาบนของหน้าจออีก
+    $Root/Safe/Layout/TopLeft/MapRow.add_child(online_badge)
 
     online_count_label = Label.new()
     online_count_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     online_count_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
     online_count_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    online_count_label.add_theme_font_size_override("font_size", 13)
+    online_count_label.add_theme_font_size_override("font_size", 12)
     online_count_label.add_theme_color_override("font_color", Color("a9f0c8"))
     online_badge.add_child(online_count_label)
 
@@ -230,10 +229,7 @@ func _refresh_online_badge() -> void:
         return
 
     online_count_label.add_theme_color_override("font_color", Color("a9f0c8"))
-    if _online_compact:
-        online_count_label.text = "● ONLINE %d" % OnlineManager.total_online
-    else:
-        online_count_label.text = "● ออนไลน์ %d  •  แมพ %d" % [OnlineManager.total_online, OnlineManager.zone_online]
+    online_count_label.text = "● ONLINE\n%d" % OnlineManager.total_online
     online_badge.tooltip_text = "ผู้เล่นออนไลน์ทั้งหมด %d • อยู่ในแมพเดียวกัน %d" % [OnlineManager.total_online, OnlineManager.zone_online]
 
 
@@ -338,12 +334,9 @@ func _layout() -> void:
     var compact_touch: bool = touch_mode and (safe_width < 1050.0 or safe_height < 620.0)
 
     if is_instance_valid(online_badge):
-        _online_compact = touch_mode and safe_width < 920.0
-        online_badge.offset_left = -202.0 if _online_compact else -252.0
-        online_badge.offset_right = -72.0
-        online_badge.offset_top = 8.0
-        online_badge.offset_bottom = 42.0
-        online_count_label.add_theme_font_size_override("font_size", 12 if _online_compact else 13)
+        _online_compact = true
+        online_badge.custom_minimum_size = Vector2(82, 58) if compact_touch else Vector2(96, 64)
+        online_count_label.add_theme_font_size_override("font_size", 11 if compact_touch else 12)
         _refresh_online_badge()
 
     # วงสกิลเดิมมีฐาน 374x330; จอมือถือเว็บขนาดเล็กย่อทั้งกลุ่มโดยไม่เปลี่ยน hitbox ภายใน
