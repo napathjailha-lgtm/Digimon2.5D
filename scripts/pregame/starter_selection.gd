@@ -11,24 +11,25 @@ var card_buttons: Array[Button] = []
 
 func _ready() -> void:
     super._ready()
-    # ตัวละครเก่าเข้า World จากหน้า Character โดยตรง ไม่ผ่านหน้านี้
+    # ระบบใหม่ยกเลิกการเลือกคู่หู: สุ่มหนึ่งสายให้ตัวละครใหม่และล็อกผลไว้กับ draft
     if GameManager.account_key.is_empty() or GameManager.pending_character.is_empty():
         GameManager.go_to(GameManager.LOGIN_SCENE if GameManager.account_key.is_empty() else GameManager.CHARACTER_SCENE)
         return
-    for data: StarterPartnerData in GameManager.catalog.starters:
-        var card: Button = make_card(cards_grid, data.display_name, data.element_name, data.portrait, select_partner.bind(data.id), Vector2(126, 198))
-        card_buttons.append(card)
+
+    cards_grid.hide()
     confirm_button.pressed.connect(confirm)
     $Margin/Column/Header/Back.pressed.connect(back)
-    $Margin/Column/Header/Subtitle.text = "คู่หูตัวแรกของ " + GameManager.tamer_name
-    var preferred: Dictionary = {
-        &"hikari": &"tailmon",
-        &"takeru": &"patamon",
-        &"joe": &"gomamon"
-    }
-    partner_selected = preferred.get(GameManager.tamer_selected, partner_selected)
-    select_partner(partner_selected)
+    $Margin/Column/Header/Subtitle.text = "ระบบกำลังสุ่มคู่หูให้ " + GameManager.tamer_name
 
+    partner_selected = GameManager.random_starter_id()
+    if partner_selected == &"":
+        description_label.text = "ไม่พบข้อมูลคู่หูใน Catalog"
+        confirm_button.disabled = true
+        return
+
+    select_partner(partner_selected)
+    confirm_button.text = "รับคู่หูที่สุ่มได้ และเริ่มการผจญภัย"
+    path_label.text = "ร่างถัดไปทั้งหมดถูกล็อก • หา Evolution Core จากมอนสเตอร์เพื่อปลดล็อก"
 func select_partner(partner_id: StringName) -> void:
     # อัปเดตภาพ/ชื่อ/สายพัฒนา/สเตตัสจาก Resource เดียวกับที่ Partner ใช้ในสนาม
     var data: StarterPartnerData = GameManager.catalog.starter_by_id(partner_id)
@@ -44,9 +45,8 @@ func select_partner(partner_id: StringName) -> void:
     var unlocks: PackedStringArray = []
     for index: int in range(1, data.forms.size()):
         unlocks.append("%s Lv.%d" % [data.forms[index].monster_name, EvolutionRules.minimum_level_for_form_index(index, data.forms[index])])
-    description_label.text = data.description + "\n\n" + " • ".join(unlocks) + "\nใช้ MP ของ Tamer ในการเปลี่ยนร่าง"
-    for i: int in range(card_buttons.size()):
-        card_buttons[i].set_pressed_no_signal(GameManager.catalog.starters[i].id == partner_id)
+    description_label.text = data.description + "\n\n" + " • ".join(unlocks) + "\nร่างถัดไปต้องมี Evolution Core เพื่อปลดล็อกถาวรก่อนใช้งาน"
+    # ไม่มีการเลือกการ์ดแล้ว คู่หูถูกสุ่มจาก GameManager และล็อกผลไว้กับ draft
 
 func confirm() -> void:
     AudioManager.unlock_audio()
