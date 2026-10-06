@@ -894,14 +894,35 @@ func recover() -> bool:
     return true
 
 func _effective_stats() -> Dictionary:
-    # คำนวณร่าง + เลเวล + โบนัส Digivice ใหม่เสมอ ไม่แก้ MonsterData
+    # คำนวณร่าง + เลเวล + โบนัส Digivice + Enhancement ใหม่เสมอ ไม่แก้ MonsterData
     var stats: Dictionary = progress.get_effective_stats()
     if is_instance_valid(tamer):
         var bonus: Dictionary = tamer.equipment.total_bonuses()
         stats.max_hp += int(bonus.partner_hp)
         stats.attack += int(bonus.partner_attack)
         stats.speed += float(bonus.partner_speed)
+
+        if is_instance_valid(tamer.party_roster):
+            var enhance_level: int = tamer.party_roster.current_enhancement_level()
+            stats.max_hp = roundi(float(stats.max_hp) * (1.0 + PartnerRoster.ENHANCEMENT_HP_PER_LEVEL * enhance_level))
+            stats.attack = roundi(float(stats.attack) * (1.0 + PartnerRoster.ENHANCEMENT_ATTACK_PER_LEVEL * enhance_level))
+            stats.speed = float(stats.speed) * (1.0 + PartnerRoster.ENHANCEMENT_SPEED_PER_LEVEL * enhance_level)
     return stats
+
+func refresh_enhancement_stats() -> void:
+    # เพิ่มโบนัสของตัวที่ active ทันทีโดยรักษา HP เดิมและเติมเฉพาะส่วน Max HP ที่เพิ่ม
+    if current_form == null:
+        return
+    var previous_max: int = max_hp
+    var stats: Dictionary = _effective_stats()
+    max_hp = int(stats.max_hp)
+    attack_power = int(stats.attack)
+    if is_alive():
+        hp = clampi(hp + maxi(0, max_hp - previous_max), 1, max_hp)
+        move_speed = float(stats.speed)
+        agent.max_speed = move_speed
+    hp_changed.emit(hp, max_hp)
+
 
 func refresh_equipment_stats() -> void:
     # สวมของขณะเป็นไข่ยังไม่ชุบ HP / เปิดการโจมตี
