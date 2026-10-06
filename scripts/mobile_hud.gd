@@ -688,8 +688,21 @@ func _refresh_combat_controls() -> void:
     auto_button.set_caption("Auto ON" if partner.auto_battle else "Auto OFF")
     var next_index: int = partner.form_index + 1
     evolve_button.locked = blocked or partner.evolution_busy or not partner.is_alive() or not tamer.can_battle() or next_index < 0 or next_index >= partner.forms.size()
-    if not evolve_button.locked:
-        evolve_button.locked = not EvolutionRules.can_use_form(partner.progress.level, next_index, partner.forms[next_index]) or not QuestManager.has_flag(partner.forms[next_index].required_story_flag)
+    if next_index >= 0 and next_index < partner.forms.size():
+        var next_form: MonsterData = partner.forms[next_index]
+        var required_level: int = EvolutionRules.minimum_level_for_form_index(next_index, next_form)
+        var level_locked: bool = not EvolutionRules.can_use_form(partner.progress.level, next_index, next_form)
+        var story_locked: bool = not QuestManager.has_flag(next_form.required_story_flag)
+        if not evolve_button.locked:
+            evolve_button.locked = level_locked or story_locked
+        if level_locked:
+            evolve_button.set_caption("Evolve Lv%d" % required_level)
+        elif story_locked:
+            evolve_button.set_caption("Evolve 🔒")
+        else:
+            evolve_button.set_caption("Evolve")
+    else:
+        evolve_button.set_caption("MAX")
     # ปุ่ม Cycle ใช้เป็น Fusion; แสดงได้ตลอดแต่ล็อกจน Emberclaw/Frostfang Lv90 ทั้งคู่
     cycle_button.set_caption("Prismforge" if is_instance_valid(fusion_manager) and fusion_manager.active else "Fusion [J]")
     cycle_button.locked = blocked or not is_instance_valid(fusion_manager) or not fusion_manager.can_fusion() or fusion_manager.active
