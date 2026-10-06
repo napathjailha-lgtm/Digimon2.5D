@@ -406,6 +406,8 @@ func _status_text() -> String:
 func _refresh_quest(_id: StringName) -> void:
     var quest: StoryQuest = QuestManager.get_current_quest()
     quest_button.set_caption("เควสต์ครบแล้ว" if quest == null else "เควสต์ • " + quest.title)
+    if is_instance_valid(menu):
+        menu.set_badge(&"quest", 0 if quest == null else 1)
     if not skill_panel.pages.is_empty():
         page_label.text = skill_panel._page_title()
 
@@ -418,6 +420,9 @@ func _menu_action(action: StringName) -> void:
         &"inventory": inventory_screen.open_screen()
         &"equipment": equipment_screen.open_screen()
         &"digimon": _toggle_stats()
+        &"skills":
+            _toggle_stats()
+            _show_message("ดูสกิลของร่างปัจจุบันได้ในหน้า Digimon")
         &"quest":
             var quest: StoryQuest = QuestManager.get_current_quest()
             var detail: String = "ผ่านเควสต์หลักครบแล้ว"
@@ -433,6 +438,8 @@ func _menu_action(action: StringName) -> void:
             _save_preferences()
         &"chat": chat_panel.toggle_collapsed()
         &"character": _return_to_characters()
+        &"mail", &"rewards", &"community", &"wiki", &"help", &"updates", &"explorer", &"ranking", &"event", &"world_boss", &"pvp", &"cards", &"party", &"guild", &"friends":
+            _show_message("เมนู %s กำลังเตรียมระบบ" % String(action).replace("_", " ").capitalize())
 
 func _toggle_stats() -> void:
     # เก็บชื่อเมธอดเดิมไว้สำหรับผู้เรียกเก่า แต่ใช้หน้าดิจิมอนใหม่ทั้งหมด
