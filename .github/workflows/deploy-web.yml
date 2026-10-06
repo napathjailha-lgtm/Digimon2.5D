@@ -31,6 +31,12 @@ jobs:
       - name: Verify project
         run: python3 tools/check_godot.py --headless --path . --editor --quit
 
+      - name: Validate Android online permission
+        run: |
+          grep -q 'name="Android Test"' export_presets.cfg
+          grep -q 'permissions/internet=true' export_presets.cfg
+          grep -q 'server_url="wss://online-server-production-aa88.up.railway.app"' project.godot
+
       - name: Validate every shipped script and resource
         run: python3 tools/check_godot.py --headless --path . --script res://tests/project_integrity.gd
 
