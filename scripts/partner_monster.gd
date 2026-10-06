@@ -462,8 +462,50 @@ func get_next_form() -> MonsterData:
     var index: int = form_index + 1
     return forms[index] if form_index >= 0 and index < forms.size() else null
 
+func _evolution_unlock_item_id(data: MonsterData) -> String:
+    if data == null:
+        return ""
+    match data.evolution_stage:
+        MonsterData.EvolutionStage.CHAMPION: return "evolution_unlock_champion"
+        MonsterData.EvolutionStage.ULTIMATE: return "evolution_unlock_ultimate"
+        MonsterData.EvolutionStage.MEGA: return "evolution_unlock_mega"
+        _: return ""
+
+func _evolution_unlock_item_name(data: MonsterData) -> String:
+    match data.evolution_stage if data != null else -1:
+        MonsterData.EvolutionStage.CHAMPION: return "Champion Evolution Core"
+        MonsterData.EvolutionStage.ULTIMATE: return "Ultimate Evolution Core"
+        MonsterData.EvolutionStage.MEGA: return "Mega Evolution Core"
+        _: return "Evolution Core"
+
+func _item_unlock_ready(data: MonsterData) -> bool:
+    if data == null or forms.find(data) <= 0:
+        return true
+    # Test/Editor ที่ไม่ได้อยู่ใน gameplay จริงยังใช้ regression เดิมได้
+    if not GameManager.gameplay_active:
+        return true
+    return is_instance_valid(tamer) and is_instance_valid(tamer.party_roster) and tamer.party_roster.is_active_form_unlocked(data.id)
+
+func _consume_unlock_item_for(data: MonsterData) -> bool:
+    if _item_unlock_ready(data):
+        return true
+    var item_id: String = _evolution_unlock_item_id(data)
+    if item_id.is_empty() or InventoryManager.count(item_id) <= 0:
+        feedback.emit("ร่าง %s ถูกล็อก • ต้องหา %s จากมอนสเตอร์ก่อน" % [data.monster_name, _evolution_unlock_item_name(data)])
+        return false
+    if not InventoryManager.remove_item(item_id, 1):
+        return false
+    if not tamer.party_roster.unlock_active_form(data.id):
+        # ป้องกันเสียของถ้า Roster ผิดสถานะ
+        var item: ItemData = InventoryManager.catalog.find_item(item_id)
+        if item != null:
+            InventoryManager.add_item(item, 1)
+        return false
+    feedback.emit("ปลดล็อกร่างถาวร: %s" % data.monster_name)
+    return true
+
 func prepare_digivolve() -> MonsterData:
-    # ปลดล็อกร่างตามเลเวล: Champion 11 / Ultimate 25 / Mega 41
+    # ต้องผ่าน Level + Story + Evolution Core; ร่างที่ใช้ Core แล้วปลดล็อกถาวรต่อคู่หูตัวนั้น
     if evolution_busy or not is_alive() or not is_instance_valid(tamer) or not tamer.can_battle():
         return null
     var next_data: MonsterData = get_next_form()
@@ -476,6 +518,8 @@ func prepare_digivolve() -> MonsterData:
         return null
     if not QuestManager.has_flag(next_data.required_story_flag):
         feedback.emit("ร่างนี้ยังต้องปลดล็อกเงื่อนไขเนื้อเรื่อง")
+        return null
+    if not _consume_unlock_item_for(next_data):
         return null
     var error: String = next_data.validation_error()
     if not error.is_empty():
@@ -834,7 +878,7 @@ func _on_level_up(new_level: int) -> void:
     # โบนัสสเตตัสเป็นค่าคำนวณใหม่ ร่างไข่จะยัง HP 0 ไม่ชุบด้วย Level Up
     for index: int in range(form_index + 1, forms.size()):
         if new_level == EvolutionRules.minimum_level_for_form_index(index, forms[index]):
-            feedback.emit("ปลดล็อกร่าง: %s" % forms[index].monster_name)
+            feedback.emit("เลเวลถึงเงื่อนไข %s แล้ว • ยังต้องหา %s เพื่อปลดล็อก" % [forms[index].monster_name, _evolution_unlock_item_name(forms[index])])
     var previous_max: int = max_hp
     var stats: Dictionary = _effective_stats()
     max_hp = int(stats.max_hp)
@@ -873,7 +917,7 @@ func _form_unlocked(data: MonsterData) -> bool:
     # มิฉะนั้นจะเกิดอาการ "คัตซีนขึ้น แต่จบแล้วกลับร่างเดิม"
     if index == 0:
         return true
-    return index > 0 and EvolutionRules.can_use_form(progress.level, index, data) and QuestManager.has_flag(data.required_story_flag)
+    return index > 0 and EvolutionRules.can_use_form(progress.level, index, data) and QuestManager.has_flag(data.required_story_flag) and _item_unlock_ready(data)
 
 func _start_basic_attack() -> bool:
     if not can_battle():
