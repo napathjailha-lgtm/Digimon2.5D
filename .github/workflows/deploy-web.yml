@@ -46,6 +46,7 @@ jobs:
         run: |
           cp assets/ui/splash/prism_tamer_wide.jpg build/web/prism_tamer_wide.jpg
           cp assets/ui/splash/prism_tamer_portrait.jpg build/web/prism_tamer_portrait.jpg
+          cp assets/ui/splash/prism_tamer_frontier.svg build/web/prism_tamer_frontier.svg
           python3 tools/patch_web_loader.py build/web/index.html
           grep -q 'id="prism-preloader"' build/web/index.html
 
