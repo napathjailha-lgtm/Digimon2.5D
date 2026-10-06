@@ -1,6 +1,8 @@
 class_name RemoteTamer
 extends Node2D
 
+signal interaction_requested(peer_id: String, display_name: String, guild_name: String)
+
 @export var interpolation_speed: float = 12.0
 @export var partner_interpolation_speed: float = 11.0
 
@@ -17,6 +19,7 @@ var target_position: Vector2
 var target_velocity: Vector2
 var facing: String = "down"
 var display_name: String = "Tamer"
+var guild_name: String = ""
 var initialized := false
 
 var target_partner_position: Vector2
@@ -27,6 +30,22 @@ var partner_facing: String = "down"
 var partner_initialized := false
 var partner_visible := false
 var _tamer_model_id: StringName = &""
+
+func _ready() -> void:
+    var hitbox := get_node_or_null("PlayerHitbox") as Area2D
+    if hitbox != null:
+        hitbox.input_event.connect(_on_player_hitbox_input)
+
+func _on_player_hitbox_input(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
+    var activate := false
+    if event is InputEventScreenTouch:
+        activate = event.pressed and not event.canceled
+    elif event is InputEventMouseButton:
+        activate = event.pressed and event.button_index == MOUSE_BUTTON_LEFT
+    if not activate:
+        return
+    interaction_requested.emit(peer_id, display_name, guild_name)
+    get_viewport().set_input_as_handled()
 
 func show_chat(message: String) -> void:
     if is_instance_valid(chat_bubble):
@@ -39,7 +58,7 @@ func setup(id: String, payload: Dictionary) -> void:
 func apply_state(payload: Dictionary, snap: bool = false) -> void:
     display_name = str(payload.get("name", display_name)).substr(0, 24)
     name_label.text = display_name
-    var guild_name: String = str(payload.get("guild_name", "")).strip_edges().substr(0, 20)
+    guild_name = str(payload.get("guild_name", "")).strip_edges().substr(0, 20)
     guild_label.visible = not guild_name.is_empty()
     guild_label.text = "<%s>" % guild_name if not guild_name.is_empty() else ""
 
