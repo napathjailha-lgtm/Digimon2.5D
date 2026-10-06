@@ -178,20 +178,28 @@ func random_starter_id() -> StringName:
     ensure_catalog()
     if catalog == null or catalog.starters.is_empty():
         return &""
+    var candidates: Array[StarterPartnerData] = []
+    for data: StarterPartnerData in catalog.starters:
+        if data != null and data.starter_available and not data.forms.is_empty():
+            candidates.append(data)
+    if candidates.is_empty():
+        return &""
     # ผูกผลสุ่มไว้กับ draft เดิม ป้องกัน Back/เข้าใหม่เพื่อ reroll คู่หู
     var cached: StringName = StringName(str(pending_character.get("random_starter", "")))
-    if cached != &"" and catalog.starter_by_id(cached) != null:
+    var cached_data: StarterPartnerData = catalog.starter_by_id(cached)
+    if cached != &"" and cached_data != null and cached_data.starter_available:
         return cached
     var rng := RandomNumberGenerator.new()
     rng.randomize()
-    var selected: StarterPartnerData = catalog.starters[rng.randi_range(0, catalog.starters.size() - 1)]
+    var selected: StarterPartnerData = candidates[rng.randi_range(0, candidates.size() - 1)]
     pending_character["random_starter"] = String(selected.id)
     return selected.id
 
 func confirm_starter(starter_id: StringName) -> bool:
     # ตรวจ draft อีกครั้งและ commit ครั้งเดียว กันกดยืนยันรัวสร้างหลายตัว
-    if account_key.is_empty() or pending_character.is_empty() or catalog.starter_by_id(starter_id) == null:
-        return _fail("ไม่มีตัวละครใหม่ที่รอเลือกคู่หู")
+    var starter_data: StarterPartnerData = catalog.starter_by_id(starter_id)
+    if account_key.is_empty() or pending_character.is_empty() or starter_data == null or not starter_data.starter_available:
+        return _fail("คู่หูนี้ไม่สามารถเลือกเป็น Starter ได้")
     var slot_index: int = int(pending_character.get("slot", -1))
     if slot_index < 0 or slot_index >= SLOT_COUNT or not characters[slot_index].is_empty():
         return _fail("ช่องนี้มีตัวละครแล้ว")
