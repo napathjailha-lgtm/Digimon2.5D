@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="PackedScene" path="res://scenes/forest_byte.tscn" id="1"]
+[ext_resource type="Resource" path="res://data/items/crimson_byte_loot.tres" id="2"]
+[node name="CrimsonByte" instance=ExtResource("1")]
+monster_id = &"crimson_byte"
+monster_name = "Crimson Byte"
+monster_level = 18
+exp_reward = 420
+drop_table = ExtResource("2")
+max_hp = 360
+move_speed = 112.0
+attack_damage = 20
+attack_range = 64.0
+wander_radius = 100.0
+[node name="Sprite2D" parent="."]
+modulate = Color(1, 0.52, 0.48, 1)
