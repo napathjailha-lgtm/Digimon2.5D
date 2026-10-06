@@ -66,6 +66,6 @@ textures/vram_compression/import_etc2_astc=true
 
 [online]
 
-auto_connect=false
+auto_connect=true
 send_interval=0.1
-server_url=""
+server_url="wss://online-server-production-aa88.up.railway.app"
