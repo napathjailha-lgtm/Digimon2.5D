@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3]
+[ext_resource type="PackedScene" path="res://scenes/wild_monster.tscn" id="1"]
+[ext_resource type="Texture2D" path="res://assets/monsters/elites/verdant_bulwark.webp" id="2"]
+[ext_resource type="Resource" path="res://data/items/verdant_bulwark_loot.tres" id="3"]
+
+[node name="VerdantBulwark" instance=ExtResource("1")]
+monster_id = &"verdant_bulwark"
+monster_name = "Verdant Bulwark"
+nameplate_color = Color(0.62, 1, 0.45, 1)
+monster_level = 35
+exp_reward = 1200
+drop_table = ExtResource("3")
+max_hp = 1150
+move_speed = 92.0
+attack_damage = 34
+attack_range = 78.0
+wander_radius = 88.0
+leash_distance = 370.0
+
+[node name="Sprite2D" parent="."]
+texture = ExtResource("2")
+scale = Vector2(0.24, 0.24)
+offset = Vector2(0, -220)
+
+[node name="DamageOrigin" parent="."]
+position = Vector2(0, -112)
