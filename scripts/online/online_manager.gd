@@ -41,12 +41,7 @@ func bind_world(player: Tamer, next_zone: StringName) -> void:
     local_player = player
     zone_id = next_zone
     if connected:
-        _send_json({
-            "type": "hello",
-            "name": _display_name(),
-            "zone": String(zone_id),
-            "position": _vec2(local_player.global_position)
-        })
+        _send_json(_presence_payload("hello"))
 
 func unbind_world(player: Tamer) -> void:
     if local_player == player:
@@ -86,12 +81,7 @@ func _process(delta: float) -> void:
             connecting = false
             _reconnect_left = 0.0
             connection_changed.emit(true, "Online")
-            _send_json({
-                "type": "hello",
-                "name": _display_name(),
-                "zone": String(zone_id),
-                "position": _vec2(local_player.global_position) if is_instance_valid(local_player) else {"x": 0.0, "y": 0.0}
-            })
+            _send_json(_presence_payload("hello"))
         while socket.get_available_packet_count() > 0:
             _handle_packet(socket.get_packet().get_string_from_utf8())
 
@@ -121,14 +111,51 @@ func _send_player_state() -> void:
             _last_facing = "right" if velocity.x > 0.0 else "left"
         else:
             _last_facing = "down" if velocity.y > 0.0 else "up"
-    _send_json({
-        "type": "state",
+    var payload: Dictionary = _presence_payload("state")
+    payload["velocity"] = _vec2(velocity)
+    payload["facing"] = _last_facing
+    _send_json(payload)
+
+func _presence_payload(packet_type: String) -> Dictionary:
+    var position := Vector2.ZERO
+    var tamer_scale := Vector2(0.24, 0.24)
+    var tamer_offset := Vector2(0.0, -256.0)
+    if is_instance_valid(local_player):
+        position = local_player.global_position
+        if is_instance_valid(local_player.sprite):
+            tamer_scale = local_player.sprite.scale
+            tamer_offset = local_player.sprite.offset
+    return {
+        "type": packet_type,
         "zone": String(zone_id),
         "name": _display_name(),
-        "position": _vec2(local_player.global_position),
-        "velocity": _vec2(velocity),
-        "facing": _last_facing
-    })
+        "position": _vec2(position),
+        "tamer_model": String(GameManager.tamer_selected),
+        "tamer_scale": _vec2(tamer_scale),
+        "tamer_offset": _vec2(tamer_offset),
+        "partner": _partner_payload()
+    }
+
+func _partner_payload() -> Dictionary:
+    if not is_instance_valid(local_player) or not is_instance_valid(local_player.partner):
+        return {}
+    var partner: PartnerMonster = local_player.partner
+    if partner.current_form == null or not is_instance_valid(partner.sprite):
+        return {}
+    var partner_facing := "down"
+    if is_instance_valid(partner.animator):
+        partner_facing = String(partner.animator.facing)
+    return {
+        "form_id": String(partner.current_form.id),
+        "name": partner.current_form.monster_name,
+        "position": _vec2(partner.global_position),
+        "velocity": _vec2(partner.get_real_velocity()),
+        "facing": partner_facing,
+        "animation": String(partner.sprite.animation),
+        "scale": _vec2(partner.sprite.scale),
+        "offset": _vec2(partner.sprite.offset),
+        "visible": partner.sprite.visible and partner.state not in [PartnerMonster.State.FAINTED, PartnerMonster.State.EGG]
+    }
 
 func send_chat(text: String) -> bool:
     if not connected:
