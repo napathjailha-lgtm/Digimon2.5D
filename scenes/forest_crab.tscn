@@ -1,6 +1,8 @@
 [gd_scene load_steps=2 format=3]
 [ext_resource type="PackedScene" path="res://scenes/wild_monster_crab.tscn" id="1"]
 [node name="ForestCrab" instance=ExtResource("1")]
+monster_name = "Forest Crab"
+monster_level = 9
 monster_id = &"forest_crab"
 exp_reward = 145
 max_hp = 220
