@@ -34,6 +34,8 @@ item = ExtResource("new_item_4")
 chance = 0.07
 
 [node name="Boss" instance=ExtResource("1")]
+monster_name = "Piedmon"
+monster_level = 45
 equipment_drops = Array[ExtResource("drop_script")]([SubResource("new_drop_0"), SubResource("new_drop_1"), SubResource("new_drop_2"), SubResource("new_drop_3"), SubResource("new_drop_4")])
 monster_id = &"piedmon"
 max_hp = 650
