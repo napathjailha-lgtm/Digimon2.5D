@@ -26,6 +26,15 @@ var hatch_flash: ColorRect
 var _owns_pause: bool = false
 var _previous_back_quit: bool = true
 
+const EGG_DRAG_THRESHOLD := 8.0
+const EGG_WHEEL_STEP := 72
+var _egg_touch_finger: int = -1
+var _egg_touch_start := Vector2.ZERO
+var _egg_touch_dragging: bool = false
+var _egg_mouse_pressed: bool = false
+var _egg_mouse_start := Vector2.ZERO
+var _egg_mouse_dragging: bool = false
+
 func _ready() -> void:
     process_mode = Node.PROCESS_MODE_ALWAYS
     layer = 96
@@ -85,6 +94,7 @@ func close_screen() -> void:
     if not is_open:
         return
     visual_fx.reset()
+    _reset_egg_drag()
     _release_buttons()
     root.hide()
     is_open = false
@@ -92,6 +102,12 @@ func close_screen() -> void:
     if is_instance_valid(tamer):
         tamer.save_party_progress()
     closed.emit()
+
+func _reset_egg_drag() -> void:
+    _egg_touch_finger = -1
+    _egg_touch_dragging = false
+    _egg_mouse_pressed = false
+    _egg_mouse_dragging = false
 
 func _restore_pause() -> void:
     if _owns_pause and is_inside_tree():
@@ -105,6 +121,76 @@ func _exit_tree() -> void:
 func _notification(what: int) -> void:
     if what == NOTIFICATION_WM_GO_BACK_REQUEST and is_open:
         close_screen()
+
+func _input(event: InputEvent) -> void:
+    if not is_open or not is_instance_valid(egg_scroll) or not egg_scroll.is_visible_in_tree():
+        return
+
+    if event is InputEventScreenTouch:
+        if event.pressed and not event.canceled:
+            if _point_in_egg_scroll(event.position) and _egg_touch_finger == -1:
+                _egg_touch_finger = event.index
+                _egg_touch_start = event.position
+                _egg_touch_dragging = false
+        elif event.index == _egg_touch_finger:
+            if _egg_touch_dragging:
+                get_viewport().set_input_as_handled()
+            _egg_touch_finger = -1
+            _egg_touch_dragging = false
+
+    elif event is InputEventScreenDrag and event.index == _egg_touch_finger:
+        if not _egg_touch_dragging and event.position.distance_to(_egg_touch_start) >= EGG_DRAG_THRESHOLD:
+            _egg_touch_dragging = true
+            _release_buttons()
+        if _egg_touch_dragging:
+            _scroll_eggs_by(-event.relative.y)
+            get_viewport().set_input_as_handled()
+
+    elif event is InputEventMouseButton:
+        if event.button_index == MOUSE_BUTTON_LEFT:
+            if event.pressed and _point_in_egg_scroll(event.position):
+                _egg_mouse_pressed = true
+                _egg_mouse_start = event.position
+                _egg_mouse_dragging = false
+            elif not event.pressed and _egg_mouse_pressed:
+                if _egg_mouse_dragging:
+                    get_viewport().set_input_as_handled()
+                _egg_mouse_pressed = false
+                _egg_mouse_dragging = false
+        elif event.pressed and _point_in_egg_scroll(event.position):
+            if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+                _scroll_eggs_by(-EGG_WHEEL_STEP)
+                get_viewport().set_input_as_handled()
+            elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+                _scroll_eggs_by(EGG_WHEEL_STEP)
+                get_viewport().set_input_as_handled()
+
+    elif event is InputEventMouseMotion and _egg_mouse_pressed:
+        if not _egg_mouse_dragging and event.position.distance_to(_egg_mouse_start) >= EGG_DRAG_THRESHOLD:
+            _egg_mouse_dragging = true
+            _release_buttons()
+        if _egg_mouse_dragging:
+            _scroll_eggs_by(-event.relative.y)
+            get_viewport().set_input_as_handled()
+
+
+func _point_in_egg_scroll(point: Vector2) -> bool:
+    if not is_instance_valid(egg_scroll):
+        return false
+    var local: Vector2 = egg_scroll.get_global_transform_with_canvas().affine_inverse() * point
+    return Rect2(Vector2.ZERO, egg_scroll.size).has_point(local)
+
+
+func _scroll_eggs_by(delta_y: float) -> void:
+    if not is_instance_valid(egg_scroll):
+        return
+    var bar := egg_scroll.get_v_scroll_bar()
+    var maximum: float = maxf(0.0, bar.max_value - bar.page)
+    egg_scroll.scroll_vertical = clampi(
+        egg_scroll.scroll_vertical + roundi(delta_y),
+        0,
+        ceili(maximum)
+    )
 
 func _unhandled_input(event: InputEvent) -> void:
     if not is_open:
