@@ -160,13 +160,43 @@ func load_progress() -> bool:
     _clear_progress()
     # รับเฉพาะ prefix ที่เรียงตามเนื้อเรื่อง ป้องกัน save ข้าม prerequisites
     var raw_completed: Array = parsed.get("completed", [])
-    # Migration: เซฟก่อน EP1 ใช้ q03_devimon เป็นบอสแรก
-    # ผู้เล่นที่เคยผ่านแล้วไม่ถูกบังคับให้ย้อนทำ Forest Hunt/Mini Boss ซ้ำ
-    if "q03_devimon" in raw_completed:
+    # Migration สายเควสต์: เติมเฉพาะขั้นใหม่ที่อยู่ก่อนจุดที่ผู้เล่นเคยผ่านแล้ว
+    # เพื่อไม่ให้เซฟเก่าถูกย้อนกลับไปทำ tutorial/เควสต์กลางทางซ้ำ
+    var passed_after_village: bool = (
+        "q02_friends" in raw_completed or "q03_green_hunt" in raw_completed or
+        "q04_forest_guardian" in raw_completed or "q04_gennai" in raw_completed or
+        "q05_etemon" in raw_completed or "q06_eighth" in raw_completed or
+        "q07_myotismon" in raw_completed or "q08_piedmon" in raw_completed or
+        "q03_devimon" in raw_completed
+    )
+    if passed_after_village and "q02_emberclaw" not in raw_completed:
+        raw_completed.append("q02_emberclaw")
+
+    var passed_after_forest: bool = (
+        "q04_forest_guardian" in raw_completed or "q04_gennai" in raw_completed or
+        "q05_etemon" in raw_completed or "q06_eighth" in raw_completed or
+        "q07_myotismon" in raw_completed or "q08_piedmon" in raw_completed or
+        "q03_devimon" in raw_completed
+    )
+    if passed_after_forest:
         if "q03_green_hunt" not in raw_completed:
             raw_completed.append("q03_green_hunt")
+        if "q04_forest_crab" not in raw_completed:
+            raw_completed.append("q04_forest_crab")
         if "q04_forest_guardian" not in raw_completed:
             raw_completed.append("q04_forest_guardian")
+
+    # q03_devimon คือ ID จากสายเนื้อเรื่องเก่า; ย้ายความสำเร็จไป ID ใหม่
+    if "q03_devimon" in raw_completed and "q06_devimon" not in raw_completed:
+        raw_completed.append("q06_devimon")
+
+    # ผู้เล่นที่เคยผ่าน Gennai หรือบทหลังจากนั้นถือว่าผ่าน Devimon ในสายใหม่แล้ว
+    if (
+        "q04_gennai" in raw_completed or "q05_etemon" in raw_completed or
+        "q06_eighth" in raw_completed or "q07_myotismon" in raw_completed or
+        "q08_piedmon" in raw_completed
+    ) and "q06_devimon" not in raw_completed:
+        raw_completed.append("q06_devimon")
     for quest: StoryQuest in catalog.quests:
         if String(quest.id) not in raw_completed:
             break
