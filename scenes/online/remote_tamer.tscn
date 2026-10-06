@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/online/remote_tamer.gd" id="1"]
 [ext_resource type="SpriteFrames" path="res://data/tamer_frames.tres" id="2"]
+[ext_resource type="Script" path="res://scripts/online/world_chat_bubble.gd" id="chat_bubble"]
 
 [sub_resource type="StyleBoxFlat" id="name_bg"]
 bg_color = Color(0.02, 0.06, 0.12, 0.75)
@@ -59,3 +60,11 @@ horizontal_alignment = 1
 theme_override_font_sizes/font_size = 13
 theme_override_styles/normal = SubResource("name_bg")
 mouse_filter = 2
+
+
+[node name="ChatBubble" type="Label" parent="."]
+offset_left = -120.0
+offset_top = -198.0
+offset_right = 120.0
+offset_bottom = -142.0
+script = ExtResource("chat_bubble")
