@@ -209,7 +209,10 @@ func refresh() -> void:
         return
     level_label.text = "Lv.%d" % partner.progress.level
     title_name.text = form.monster_name
-    stage_label.text = MonsterData.EvolutionStage.keys()[form.evolution_stage]
+    var enhancement: int = 0
+    if is_instance_valid(hud.party_roster):
+        enhancement = hud.party_roster.current_enhancement_level()
+    stage_label.text = "%s  •  ENH +%d" % [MonsterData.EvolutionStage.keys()[form.evolution_stage], enhancement]
     exp_bar.max_value = partner.progress.max_exp
     exp_bar.value = partner.progress.current_exp
     exp_label.text = "EXP  %d / %d    •    %s" % [partner.progress.current_exp, partner.progress.max_exp, "พร้อมต่อสู้" if partner.can_battle() else "พักฟื้น / ต่อสู้ไม่ได้"]
@@ -228,6 +231,8 @@ func refresh() -> void:
     values.EV.text = "%.1f%%" % form.evasion_chance
     values.MS.text = "%.0f" % partner.move_speed
     attribute_label.text = "DIGITAL PARTNER"
+    if is_instance_valid(hud.party_roster):
+        attribute_label.text += "  •  " + hud.party_roster.enhancement_bonus_text(enhancement)
     var roster: PartnerRoster = hud.party_roster
     if roster.initialized and not roster.members.is_empty():
         var family: StarterPartnerData = roster.family(StringName(roster.members[roster.active_index].id))
