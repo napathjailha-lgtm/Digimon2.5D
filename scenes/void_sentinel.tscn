@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="PackedScene" path="res://scenes/wild_monster.tscn" id="1"]
+[ext_resource type="Resource" path="res://data/items/void_sentinel_loot.tres" id="2"]
+[node name="VoidSentinel" instance=ExtResource("1")]
+monster_id = &"void_sentinel"
+monster_name = "Void Sentinel"
+monster_level = 42
+exp_reward = 1100
+drop_table = ExtResource("2")
+max_hp = 920
+move_speed = 118.0
+attack_damage = 44
+attack_range = 72.0
+wander_radius = 85.0
+leash_distance = 340.0
+[node name="Sprite2D" parent="."]
+modulate = Color(0.62, 0.4, 0.9, 1)
