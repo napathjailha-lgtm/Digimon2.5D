@@ -110,8 +110,14 @@ func _ensure_remote(peer_id: String, payload: Dictionary) -> RemoteTamer:
     remote.name = "Online_" + peer_id.left(8)
     get_node(actors_path).add_child(remote)
     remote.setup(peer_id, payload)
+    if not remote.interaction_requested.is_connected(_on_remote_interaction_requested):
+        remote.interaction_requested.connect(_on_remote_interaction_requested)
     remotes[peer_id] = remote
     return remote
+
+func _on_remote_interaction_requested(peer_id: String, display_name: String, guild_name: String) -> void:
+    OnlineManager.request_remote_interaction(peer_id, display_name, guild_name)
+
 
 func _remove_remote(peer_id: String) -> void:
     if not remotes.has(peer_id):
