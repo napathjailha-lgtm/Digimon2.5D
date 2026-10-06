@@ -5,11 +5,11 @@ const MAX_LEVEL: int = 90
 
 static func max_form_index_for_level(level: int) -> int:
     var safe_level := clampi(level, 1, MAX_LEVEL)
-    if safe_level >= 90:
+    if safe_level >= 41:
         return 3 # Mega
-    if safe_level >= 60:
+    if safe_level >= 25:
         return 2 # Ultimate
-    if safe_level >= 15:
+    if safe_level >= 11:
         return 1 # Champion
     return 0 # Rookie
 
@@ -23,9 +23,9 @@ static func minimum_level_for_form_index(index: int, form: MonsterData = null) -
     var stage: int = int(form.evolution_stage) if form != null else index
     match stage:
         0: return 1
-        1: return 15
-        2: return 60
-        3: return 90
+        1: return 11
+        2: return 25
+        3: return 41
         _: return 999
 
 static func can_use_form(level: int, form_index: int, form: MonsterData = null) -> bool:
