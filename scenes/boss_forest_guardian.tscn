@@ -3,6 +3,8 @@
 [ext_resource type="Script" path="res://scripts/quest_target.gd" id="2"]
 [ext_resource type="Texture2D" path="res://assets/art/wild_leaf.tres" id="3"]
 [node name="ForestGuardian" instance=ExtResource("1")]
+monster_name = "Forest Guardian"
+monster_level = 12
 monster_id = &"forest_guardian"
 exp_reward = 650
 max_hp = 950
