@@ -7,31 +7,37 @@ html = path.read_text(encoding="utf-8")
 
 style = r"""
 <style id="prism-loader-style">
-html, body { margin:0!important; width:100%; height:100%; overflow:hidden; background:#06162d!important; }
-body { overscroll-behavior:none; }
-#canvas { opacity:0; background:transparent!important; transition:opacity .38s ease; }
-#prism-preloader { position:fixed; inset:0; z-index:99990; overflow:hidden; background:#06162d; opacity:1; transition:opacity .42s ease,visibility .42s ease; }
-#prism-preloader.prism-done { opacity:0; visibility:hidden; pointer-events:none; }
-#prism-preloader picture,#prism-preloader img { position:absolute; inset:0; width:100%; height:100%; }
-#prism-preloader img { object-fit:cover; object-position:center; user-select:none; -webkit-user-drag:none; }
-#prism-loader-shade { position:absolute; inset:0; background:linear-gradient(180deg,rgba(3,10,24,.05) 35%,rgba(2,10,23,.42) 100%); }
-#prism-loader-card { position:absolute; left:50%; bottom:max(24px,env(safe-area-inset-bottom)); transform:translateX(-50%); min-width:min(360px,76vw); padding:11px 18px 12px; border:1px solid rgba(122,224,255,.66); border-radius:14px; color:#effcff; background:rgba(4,18,38,.52); box-shadow:0 8px 32px rgba(0,0,0,.32),inset 0 0 24px rgba(85,205,255,.08); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); text-align:center; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
-#prism-loader-title { font-weight:750; letter-spacing:.13em; font-size:14px; }
-#prism-loader-text { margin-top:5px; font-size:12px; color:#aeeeff; letter-spacing:.04em; }
-#prism-loader-bar { height:3px; margin-top:9px; border-radius:99px; background:rgba(195,245,255,.17); overflow:hidden; }
-#prism-loader-fill { height:100%; width:8%; border-radius:inherit; background:linear-gradient(90deg,#59dfff,#c38cff,#69ecff); transition:width .18s ease; box-shadow:0 0 12px rgba(92,228,255,.7); }
-#status { z-index:99995!important; }
-@media (orientation:portrait) { #prism-loader-card { bottom:max(18px,env(safe-area-inset-bottom)); } }
+html,body{margin:0!important;width:100%;height:100%;overflow:hidden;background:#000!important;overscroll-behavior:none;}
+body{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}
+#canvas{display:block;width:100%;height:100%;background:#000!important;outline:none;opacity:1;}
+#prism-preloader{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#000;opacity:1;transition:opacity .9s cubic-bezier(.22,1,.36,1);will-change:opacity;}
+#prism-preloader.prism-done{opacity:0;pointer-events:none;}
+#prism-loader-art{position:absolute;inset:0;opacity:0;transform:scale(.992);transition:opacity 1.1s cubic-bezier(.22,1,.36,1),transform 1.1s cubic-bezier(.22,1,.36,1);will-change:opacity,transform;}
+#prism-preloader.prism-visible #prism-loader-art{opacity:1;transform:scale(1);}
+#prism-loader-art picture,#prism-loader-art img{position:absolute;inset:0;width:100%;height:100%;}
+#prism-loader-art img{object-fit:cover;object-position:center;-webkit-user-drag:none;}
+#prism-loader-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08) 35%,rgba(0,0,0,.54) 100%);}
+#prism-loader-card{position:absolute;left:50%;bottom:max(28px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(360px,74vw);color:#fff;text-align:center;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;opacity:0;transition:opacity 1s ease .18s;}
+#prism-preloader.prism-visible #prism-loader-card{opacity:1;}
+#prism-loader-title{font-weight:650;letter-spacing:.16em;font-size:13px;text-shadow:0 2px 10px rgba(0,0,0,.7);}
+#prism-loader-text{margin-top:8px;font-size:12px;color:rgba(255,255,255,.76);letter-spacing:.03em;text-shadow:0 2px 10px rgba(0,0,0,.7);}
+#prism-loader-bar{height:2px;margin-top:14px;border-radius:99px;background:rgba(255,255,255,.15);overflow:hidden;}
+#prism-loader-fill{height:100%;width:0%;border-radius:inherit;background:rgba(255,255,255,.9);transition:width .18s ease-out;}
+#status{z-index:999995!important;}
+@media(max-height:560px){#prism-loader-card{bottom:max(16px,env(safe-area-inset-bottom));width:min(320px,58vw);}}
+@media(prefers-reduced-motion:reduce){#prism-preloader,#prism-loader-art,#prism-loader-card,#prism-loader-fill{transition-duration:1ms!important;transition-delay:0ms!important;}}
 </style>
 """
 
 loader = r"""
 <div id="prism-preloader" aria-label="Loading Prism Tamer Frontier">
-  <picture>
-    <source media="(orientation: portrait)" srcset="prism_tamer_portrait.jpg">
-    <img src="prism_tamer_wide.jpg" alt="">
-  </picture>
-  <div id="prism-loader-shade"></div>
+  <div id="prism-loader-art">
+    <picture>
+      <source media="(orientation: portrait)" srcset="prism_tamer_portrait.jpg">
+      <img src="prism_tamer_wide.jpg" alt="">
+    </picture>
+    <div id="prism-loader-shade"></div>
+  </div>
   <div id="prism-loader-card">
     <div id="prism-loader-title">PRISM TAMER: FRONTIER</div>
     <div id="prism-loader-text">Preparing the Digital Frontier...</div>
@@ -44,23 +50,25 @@ script = r"""
 <script id="prism-loader-script">
 (() => {
   const loader = document.getElementById('prism-preloader');
-  const canvas = document.getElementById('canvas') || document.querySelector('canvas');
   const fill = document.getElementById('prism-loader-fill');
   const text = document.getElementById('prism-loader-text');
   const started = performance.now();
   let sawGodotStatus = false;
   let revealed = false;
 
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => loader?.classList.add('prism-visible'));
+  });
+
   function revealGame() {
     if (revealed) return;
     revealed = true;
     if (fill) fill.style.width = '100%';
     if (text) text.textContent = 'Entering the Digital Frontier...';
-    setTimeout(() => {
-      if (canvas) canvas.style.opacity = '1';
-      if (loader) loader.classList.add('prism-done');
-    }, 180);
-    setTimeout(() => loader?.remove(), 750);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => loader?.classList.add('prism-done'));
+    });
+    setTimeout(() => loader?.remove(), 980);
   }
 
   function update() {
@@ -76,9 +84,9 @@ script = r"""
         const max = Number(progress.max || 1);
         const value = Number(progress.value || 0);
         if (max > 0 && value >= 0) {
-          const pct = Math.max(8, Math.min(96, (value / max) * 100));
+          const pct = Math.max(0, Math.min(96, (value / max) * 100));
           fill.style.width = pct.toFixed(1) + '%';
-          if (text && pct > 12) text.textContent = 'Loading game data... ' + Math.round(pct) + '%';
+          if (text && pct > 3) text.textContent = 'Loading game data... ' + Math.round(pct) + '%';
         }
       }
 
@@ -108,4 +116,4 @@ if 'id="prism-loader-script"' not in html:
     html = html.replace("</body>", script + "\n</body>")
 
 path.write_text(html, encoding="utf-8")
-print(f"Patched Prism loader into {path}")
+print(f"Patched premium black Prism loader into {path}")
