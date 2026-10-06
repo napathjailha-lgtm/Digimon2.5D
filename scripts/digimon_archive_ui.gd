@@ -144,7 +144,7 @@ func _build() -> void:
     title_stack.add_theme_constant_override("separation", 0)
     header.add_child(title_stack)
     title_stack.add_child(ServiceUIStyle.label("DIGIMON ARCHIVE", 26, ServiceUIStyle.TEXT))
-    title_stack.add_child(ServiceUIStyle.label("จัดทีมและฝาก Digimon ได้เฉพาะที่ NPC นี้", 13, ServiceUIStyle.MUTED))
+    title_stack.add_child(ServiceUIStyle.label("จัดทีม • ฝาก Digimon • Enhancement +1 ถึง +5", 13, ServiceUIStyle.MUTED))
 
     var close := _button("ปิด ×", Vector2(94, 48), close_screen, ServiceUIStyle.GOLD)
     header.add_child(close)
@@ -185,7 +185,7 @@ func _build() -> void:
     columns.add_child(storage_panel)
     storage_list = storage_panel.get_meta("list") as VBoxContainer
 
-    notice = ServiceUIStyle.label("แตะปุ่มด้านขวาของแต่ละการ์ดเพื่อย้าย Digimon", 14, ServiceUIStyle.MUTED)
+    notice = ServiceUIStyle.label("Enhancement ใช้ Digitama สายเดียวกัน 5 ใบต่อครั้ง • ล้มเหลวไม่ลดระดับ", 14, ServiceUIStyle.MUTED)
     notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     notice.custom_minimum_size.y = 28
     stack.add_child(notice)
@@ -272,7 +272,8 @@ func _member_card(entry: Dictionary, index: int, in_party: bool) -> PanelContain
     info.add_theme_constant_override("separation", 1)
     row.add_child(info)
     var display: String = data.display_name if data != null else str(entry.get("id", "Unknown"))
-    var name := ServiceUIStyle.label(display, 17, ServiceUIStyle.TEXT)
+    var enhance_level: int = roster.enhancement_level(entry)
+    var name := ServiceUIStyle.label("%s  +%d" % [display, enhance_level], 17, ServiceUIStyle.TEXT)
     info.add_child(name)
     var progress_data: Dictionary = entry.get("progress", {"level":1, "exp":0}) as Dictionary
     var level: int = clampi(int(progress_data.get("level", 1)), 1, EvolutionRules.MAX_LEVEL)
@@ -280,6 +281,23 @@ func _member_card(entry: Dictionary, index: int, in_party: bool) -> PanelContain
     var hp: int = int(entry.get("hp", 0))
     var max_hp: int = maxi(1, int(entry.get("max_hp", hp)))
     info.add_child(ServiceUIStyle.label("Lv.%d  •  EXP %d  •  HP %d/%d" % [level, exp, hp, max_hp], 13, ServiceUIStyle.MUTED))
+    info.add_child(ServiceUIStyle.label(roster.enhancement_bonus_text(enhance_level), 12, Color("8fd37d")))
+
+    var family_id := StringName(str(entry.get("id", "")))
+    var egg_id: String = roster.enhancement_egg_item_id(family_id)
+    var egg_owned: int = InventoryManager.count(egg_id) if not egg_id.is_empty() else 0
+    if enhance_level < PartnerRoster.MAX_ENHANCEMENT and not egg_id.is_empty():
+        var chance: float = roster.enhancement_success_chance(enhance_level) * 100.0
+        info.add_child(ServiceUIStyle.label(
+            "Digitama %d/%d  •  โอกาส +%d = %.0f%%" % [
+                egg_owned, PartnerRoster.ENHANCEMENT_EGG_COST, enhance_level + 1, chance
+            ],
+            12,
+            ServiceUIStyle.GOLD if egg_owned >= PartnerRoster.ENHANCEMENT_EGG_COST else ServiceUIStyle.MUTED
+        ))
+    elif enhance_level >= PartnerRoster.MAX_ENHANCEMENT:
+        info.add_child(ServiceUIStyle.label("MAX ENHANCEMENT +5", 12, ServiceUIStyle.GOLD))
+
     if active:
         info.add_child(ServiceUIStyle.label("● ACTIVE PARTNER", 12, ServiceUIStyle.GOLD))
     elif in_party:
@@ -287,13 +305,22 @@ func _member_card(entry: Dictionary, index: int, in_party: bool) -> PanelContain
     else:
         info.add_child(ServiceUIStyle.label("เก็บอยู่ใน Archive", 12, ServiceUIStyle.PURPLE))
 
+    var actions := VBoxContainer.new()
+    actions.add_theme_constant_override("separation", 6)
+    row.add_child(actions)
+
+    var enhance_text: String = "MAX +5" if enhance_level >= PartnerRoster.MAX_ENHANCEMENT else "ยกระดับ +%d" % (enhance_level + 1)
+    var enhance := _button(enhance_text, Vector2(118, 42), _enhance.bind(index, in_party), ServiceUIStyle.GOLD)
+    enhance.disabled = enhance_level >= PartnerRoster.MAX_ENHANCEMENT or egg_id.is_empty() or egg_owned < PartnerRoster.ENHANCEMENT_EGG_COST
+    actions.add_child(enhance)
+
     var action_text: String = "ฝากคลัง" if in_party else "เข้าปาร์ตี้"
-    var action := _button(action_text, Vector2(106, 44), _move_party.bind(index) if in_party else _move_storage.bind(index), accent)
+    var action := _button(action_text, Vector2(118, 42), _move_party.bind(index) if in_party else _move_storage.bind(index), accent)
     if in_party:
         action.disabled = roster.members.size() <= 1
     else:
         action.disabled = roster.members.size() >= PartnerRoster.CAPACITY
-    row.add_child(action)
+    actions.add_child(action)
     return card
 
 func _empty_state(title: String, subtitle: String) -> PanelContainer:
@@ -317,6 +344,11 @@ func _button(text: String, minimum: Vector2, callback: Callable, accent: Color) 
     ServiceUIStyle.button(button, accent)
     button.pressed.connect(callback)
     return button
+
+func _enhance(index: int, in_party: bool) -> void:
+    roster.enhance_member(index, in_party)
+    _deferred_refresh()
+
 
 func _move_party(index: int) -> void:
     roster.move_party_to_storage(index)
