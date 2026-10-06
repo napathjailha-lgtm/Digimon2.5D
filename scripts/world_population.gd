@@ -54,6 +54,7 @@ func _ready() -> void:
     _add_boss("etemon", Vector2(6200, 1600))
     _add_boss("myotismon", Vector2(8700, 3250))
     _add_boss("piedmon", Vector2(9250, 5450))
+    _add_story_point("res://scenes/npc_emberclaw.tscn", Vector2(1500, 1060))
     _add_story_point("res://scenes/npc_gennai.tscn", Vector2(5600, 2650))
     _add_story_point("res://scenes/reach_odaiba_clue.tscn", Vector2(8000, 4000))
 
