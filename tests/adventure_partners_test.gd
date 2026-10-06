@@ -137,6 +137,10 @@ func run() -> void:
                 check(partner.prepare_digivolve() == null and player.ds == before, "Locked form spends no MP")
                 check(not partner.load_monster_data(form), "Direct load cannot bypass level lock")
                 set_level(required)
+                player.ds = player.max_ds
+                var item_locked_before: float = player.ds
+                check(partner.prepare_digivolve() == null and player.ds == item_locked_before, "Evolution Core lock blocks " + form.monster_name)
+                check(roster.unlock_active_form(form.id), "Test unlock persists " + form.monster_name)
                 check(partner.prepare_digivolve() == form, "Reserve " + form.monster_name)
                 check(partner.finish_digivolve(), "Finish evolution " + form.monster_name)
                 check(partner.current_form == form, "Correct evolved form")
