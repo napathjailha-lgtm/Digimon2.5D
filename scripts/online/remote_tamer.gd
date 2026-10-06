@@ -9,6 +9,7 @@ extends Node2D
 @onready var partner_visual: Node2D = $PartnerVisual
 @onready var partner_sprite: AnimatedSprite2D = $PartnerVisual/AnimatedSprite2D
 @onready var partner_name: Label = $PartnerVisual/NameLabel
+@onready var chat_bubble: WorldChatBubble = $ChatBubble
 
 var peer_id: String = ""
 var target_position: Vector2
@@ -25,6 +26,10 @@ var partner_facing: String = "down"
 var partner_initialized := false
 var partner_visible := false
 var _tamer_model_id: StringName = &""
+
+func show_chat(message: String) -> void:
+    if is_instance_valid(chat_bubble):
+        chat_bubble.show_message(message)
 
 func setup(id: String, payload: Dictionary) -> void:
     peer_id = id
