@@ -48,6 +48,7 @@ func _ready() -> void:
         lighting.player = actors.get_node("Tamer") as Node2D
     _build_terrain()
     _build_village()
+    _build_midgame_city()
     _build_outposts()
     _scatter_nature()
     _build_boundaries()
@@ -163,9 +164,27 @@ func _build_village() -> void:
         _add_prop("lantern", point, 130, false)
         lighting.add_lantern(point)
 
+func _build_midgame_city() -> void:
+    # Data Harbor: เมืองกลางเกมใกล้ Gennai ใช้เป็นจุดพัก/ซื้อของก่อนเข้าโซน Lv18+
+    var center := Vector2(5600, 2600)
+    _surface(_ellipse(center, Vector2(560, 390)), _terrain_material(Vector2(0, 1)), Color("d7d0a7"))
+    _add_prop("inn", center + Vector2(-300, -210), 285)
+    _add_prop("cottage", center + Vector2(300, -205), 240)
+    _add_prop("cottage", center + Vector2(-360, 210), 235)
+    _add_prop("inn", center + Vector2(350, 220), 275)
+    _add_prop("well", center + Vector2(0, 30), 100)
+    _add_prop("arch", center + Vector2(0, -390), 225, false)
+    for offset: Vector2 in [
+        Vector2(-260, -25), Vector2(260, -25),
+        Vector2(-250, 205), Vector2(250, 205),
+        Vector2(-60, -285), Vector2(60, -285)
+    ]:
+        _add_prop("lantern", center + offset, 132, false)
+        lighting.add_lantern(center + offset)
+
 func _build_outposts() -> void:
     # จุดสังเกตบนแมพเดียว ไม่มีการโหลดฉากหรือวาร์ป
-    for center: Vector2 in [Vector2(5600, 2600), Vector2(7100, 4000), Vector2(1600, 5000)]:
+    for center: Vector2 in [Vector2(7100, 4000), Vector2(1600, 5000)]:
         _surface(_ellipse(center, Vector2(190, 130)), _terrain_material(Vector2(0, 1)))
         _add_prop("cottage", center + Vector2(-100, -80), 220)
         _add_prop("well", center + Vector2(100, 10), 85)
@@ -189,7 +208,7 @@ func _scatter_nature() -> void:
     # ใช้ seed คงที่: Web Mobile ยังเลือกตำแหน่งชุดแรกจาก seed เดิม เพียงหยุดสร้างเร็วขึ้น
     for attempt: int in range(attempt_limit):
         var point := Vector2(random.randf_range(90, layout.extent.x - 90), random.randf_range(120, layout.extent.y - 80))
-        if point.distance_to(layout.village_center) < 650 or absf(point.x - layout.river_x) < 235:
+        if point.distance_to(layout.village_center) < 650 or point.distance_to(Vector2(5600, 2600)) < 720 or absf(point.x - layout.river_x) < 235:
             continue
         if layout.distance_to_roads(point) < 140:
             continue
@@ -212,7 +231,7 @@ func _scatter_nature() -> void:
     # Web Mobile ลด detail prop เพื่อลด node count / draw calls / collision checks
     for i: int in range(detail_limit):
         var point := Vector2(random.randf_range(100, layout.extent.x - 100), random.randf_range(130, layout.extent.y - 100))
-        if absf(point.x - layout.river_x) < 205 or point.distance_to(layout.village_center) < 500:
+        if absf(point.x - layout.river_x) < 205 or point.distance_to(layout.village_center) < 500 or point.distance_to(Vector2(5600, 2600)) < 650:
             continue
         if layout.distance_to_roads(point) < 105:
             continue
@@ -335,6 +354,8 @@ func can_spawn_at(point: Vector2, radius: float = 28.0) -> bool:
     if not Rect2(Vector2(40, 40), layout.extent - Vector2(80, 80)).has_point(point):
         return false
     if point.distance_to(layout.village_center) < 530:
+        return false
+    if point.distance_to(Vector2(5600, 2600)) < 610:
         return false
     for rect: Rect2 in obstruction_rects:
         if rect.grow(radius).has_point(point):
