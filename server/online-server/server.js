@@ -15,11 +15,13 @@ const MAX_PACKET = 8192;
 const MAX_CHAT = 160;
 const MAX_GUILD_NAME = 20;
 const MAX_GUILD_MEMBERS = 50;
+const GUILD_INVITE_TTL_MS = 30_000;
 const GUILD_DATA_PATH =
   process.env.GUILD_DATA_PATH ||
   (existsSync("/data") ? "/data/guilds.json" : "./data/guilds.json");
 
 const clients = new Map();
+const guildInvites = new Map();
 let guildStore = loadGuildStore();
 
 function emptyGuildStore() {
@@ -204,6 +206,19 @@ function broadcastOnlineCounts() {
       zone_count: zones.get(client.zone) ?? 0,
     });
   }
+}
+
+function onlineClientForPeer(peerId) {
+  for (const [ws, client] of clients) {
+    if (
+      client.ready &&
+      client.id === peerId &&
+      ws.readyState === WebSocket.OPEN
+    ) {
+      return { ws, client };
+    }
+  }
+  return null;
 }
 
 function onlineClientForCharacter(characterKey) {
@@ -399,6 +414,141 @@ function joinGuild(ws, client, code) {
   }
 
   sendGuildFeedback(ws, `เข้ากิลด์ ${guild.name} แล้ว`, true);
+  broadcastGuildSnapshot(guild.id);
+  broadcastClientPresence(client, ws);
+}
+
+function inviteToGuild(ws, client, targetPeerId) {
+  const guild = guildForClient(client);
+  if (!guild) {
+    sendGuildFeedback(ws, "ต้องอยู่ในกิลด์ก่อนจึงจะเชิญผู้เล่นได้");
+    return;
+  }
+  if (Object.keys(guild.members).length >= MAX_GUILD_MEMBERS) {
+    sendGuildFeedback(ws, "กิลด์สมาชิกเต็ม 50 คนแล้ว");
+    return;
+  }
+
+  const target = onlineClientForPeer(cleanText(targetPeerId, 80));
+  if (!target || target.client.id === client.id) {
+    sendGuildFeedback(ws, "ไม่พบผู้เล่นที่ต้องการเชิญ");
+    return;
+  }
+  if (target.client.zone !== client.zone) {
+    sendGuildFeedback(ws, "ผู้เล่นไม่ได้อยู่ในแมพเดียวกันแล้ว");
+    return;
+  }
+  if (guildForClient(target.client)) {
+    sendGuildFeedback(ws, "ผู้เล่นนี้มีกิลด์อยู่แล้ว");
+    return;
+  }
+
+  const now = Date.now();
+  for (const [inviteId, invite] of guildInvites) {
+    if (invite.expiresAt <= now) {
+      guildInvites.delete(inviteId);
+      continue;
+    }
+    if (
+      invite.targetPeerId === target.client.id &&
+      invite.guildId === guild.id
+    ) {
+      sendGuildFeedback(ws, "ส่งคำเชิญให้ผู้เล่นนี้ไปแล้ว กรุณารอการตอบรับ");
+      return;
+    }
+  }
+
+  const inviteId = crypto.randomUUID();
+  guildInvites.set(inviteId, {
+    id: inviteId,
+    guildId: guild.id,
+    fromPeerId: client.id,
+    fromName: client.name,
+    targetPeerId: target.client.id,
+    expiresAt: now + GUILD_INVITE_TTL_MS,
+  });
+
+  send(target.ws, {
+    type: "guild_invite",
+    invite_id: inviteId,
+    guild_id: guild.id,
+    guild_name: guild.name,
+    from_id: client.id,
+    from_name: client.name,
+    expires_in: Math.floor(GUILD_INVITE_TTL_MS / 1000),
+  });
+  sendGuildFeedback(
+    ws,
+    `ส่งคำเชิญกิลด์ให้ ${target.client.name} แล้ว`,
+    true,
+  );
+}
+
+function respondGuildInvite(ws, client, inviteId, accepted) {
+  const id = cleanText(inviteId, 80);
+  const invite = guildInvites.get(id);
+  if (!invite || invite.targetPeerId !== client.id) {
+    sendGuildFeedback(ws, "คำเชิญกิลด์หมดอายุหรือไม่ถูกต้อง");
+    return;
+  }
+  guildInvites.delete(id);
+
+  const inviter = onlineClientForPeer(invite.fromPeerId);
+  if (invite.expiresAt <= Date.now()) {
+    sendGuildFeedback(ws, "คำเชิญกิลด์หมดอายุแล้ว");
+    if (inviter) {
+      sendGuildFeedback(inviter.ws, `${client.name} ไม่ได้ตอบรับคำเชิญทันเวลา`);
+    }
+    return;
+  }
+
+  const guild = guildStore.guilds[invite.guildId];
+  if (!guild) {
+    sendGuildFeedback(ws, "กิลด์นี้ไม่มีอยู่แล้ว");
+    return;
+  }
+  if (!accepted) {
+    sendGuildFeedback(ws, `ปฏิเสธคำเชิญจากกิลด์ ${guild.name} แล้ว`, true);
+    if (inviter) {
+      sendGuildFeedback(inviter.ws, `${client.name} ปฏิเสธคำเชิญเข้ากิลด์`);
+    }
+    return;
+  }
+  if (guildForClient(client)) {
+    sendGuildFeedback(ws, "คุณมีกิลด์อยู่แล้ว");
+    return;
+  }
+  if (Object.keys(guild.members).length >= MAX_GUILD_MEMBERS) {
+    sendGuildFeedback(ws, "กิลด์สมาชิกเต็ม 50 คนแล้ว");
+    return;
+  }
+
+  guild.members[client.characterKey] = {
+    name: client.name,
+    role: "member",
+    joinedAt: Date.now(),
+  };
+  guildStore.memberships[client.characterKey] = guild.id;
+
+  if (!saveGuildStore()) {
+    delete guild.members[client.characterKey];
+    delete guildStore.memberships[client.characterKey];
+    sendGuildFeedback(ws, "บันทึกข้อมูลกิลด์ไม่สำเร็จ");
+    return;
+  }
+
+  for (const [pendingId, pending] of guildInvites) {
+    if (pending.targetPeerId === client.id) guildInvites.delete(pendingId);
+  }
+
+  sendGuildFeedback(ws, `เข้ากิลด์ ${guild.name} แล้ว`, true);
+  if (inviter) {
+    sendGuildFeedback(
+      inviter.ws,
+      `${client.name} ตอบรับและเข้ากิลด์ ${guild.name} แล้ว`,
+      true,
+    );
+  }
   broadcastGuildSnapshot(guild.id);
   broadcastClientPresence(client, ws);
 }
@@ -608,6 +758,16 @@ wss.on("connection", (ws) => {
       return;
     }
 
+    if (msg.type === "guild_invite") {
+      inviteToGuild(ws, client, msg.target_peer_id);
+      return;
+    }
+
+    if (msg.type === "guild_invite_response") {
+      respondGuildInvite(ws, client, msg.invite_id, msg.accept === true);
+      return;
+    }
+
     if (msg.type === "guild_request") {
       sendGuildSnapshot(ws, client);
       return;
@@ -628,6 +788,11 @@ wss.on("connection", (ws) => {
   ws.on("close", () => {
     const wasReady = client.ready;
     const guildId = guildIdForClient(client);
+    for (const [inviteId, invite] of guildInvites) {
+      if (invite.fromPeerId === client.id || invite.targetPeerId === client.id) {
+        guildInvites.delete(inviteId);
+      }
+    }
     clients.delete(ws);
     if (wasReady) {
       broadcast({ type: "leave", id: client.id }, null, client.zone);
