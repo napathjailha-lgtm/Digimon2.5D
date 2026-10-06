@@ -3,7 +3,7 @@ extends Resource
 ## ต้นแบบไอเทมเท่านั้น จำนวนจริงอยู่ใน InventoryManager
 
 enum ItemType { CONSUMABLE, QUEST_ITEM, EGG, MATERIAL, DATA_CHIP }
-enum EffectType { PARTNER_HP, TAMER_FOOD, PARTNER_MP, TAMER_HP }
+enum EffectType { PARTNER_HP, TAMER_FOOD, PARTNER_MP, TAMER_HP, TAMER_MP }
 
 @export var item_id: String = ""
 @export var item_name: String = ""
@@ -33,7 +33,7 @@ enum EffectType { PARTNER_HP, TAMER_FOOD, PARTNER_MP, TAMER_HP }
 func type_label() -> String:
     match item_type:
         ItemType.CONSUMABLE:
-            return ["ฟื้น HP คู่หู","อาหาร Tamer","ฟื้น MP คู่หู","ฟื้น HP Tamer"][clampi(effect_type,0,3)]
+            return ["ฟื้น HP คู่หู","อาหาร Tamer","ฟื้น MP คู่หู","ฟื้น HP Tamer","ฟื้น MP Tamer"][clampi(effect_type,0,4)]
         ItemType.QUEST_ITEM:
             return "ไอเทมเควสต์"
         ItemType.EGG:
