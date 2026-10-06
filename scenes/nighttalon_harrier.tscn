@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3]
+[ext_resource type="PackedScene" path="res://scenes/wild_monster.tscn" id="1"]
+[ext_resource type="Texture2D" path="res://assets/monsters/elites/nighttalon_harrier.webp" id="2"]
+[ext_resource type="Resource" path="res://data/items/nighttalon_harrier_loot.tres" id="3"]
+
+[node name="NighttalonHarrier" instance=ExtResource("1")]
+monster_id = &"nighttalon_harrier"
+monster_name = "Nighttalon Harrier"
+nameplate_color = Color(1, 0.38, 0.82, 1)
+monster_level = 40
+exp_reward = 1450
+drop_table = ExtResource("3")
+max_hp = 860
+move_speed = 146.0
+attack_damage = 42
+attack_range = 86.0
+wander_radius = 120.0
+leash_distance = 390.0
+
+[node name="Sprite2D" parent="."]
+texture = ExtResource("2")
+scale = Vector2(0.23, 0.23)
+offset = Vector2(0, -232)
+
+[node name="DamageOrigin" parent="."]
+position = Vector2(0, -112)
