@@ -6,6 +6,7 @@ extends Node2D
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var name_label: Label = $NameLabel
+@onready var guild_label: Label = $GuildLabel
 @onready var partner_visual: Node2D = $PartnerVisual
 @onready var partner_sprite: AnimatedSprite2D = $PartnerVisual/AnimatedSprite2D
 @onready var partner_name: Label = $PartnerVisual/NameLabel
@@ -38,6 +39,9 @@ func setup(id: String, payload: Dictionary) -> void:
 func apply_state(payload: Dictionary, snap: bool = false) -> void:
     display_name = str(payload.get("name", display_name)).substr(0, 24)
     name_label.text = display_name
+    var guild_name: String = str(payload.get("guild_name", "")).strip_edges().substr(0, 20)
+    guild_label.visible = not guild_name.is_empty()
+    guild_label.text = "<%s>" % guild_name if not guild_name.is_empty() else ""
 
     var model_id := StringName(str(payload.get("tamer_model", "")))
     if model_id != &"" and model_id != _tamer_model_id:
