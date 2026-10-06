@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/online/remote_tamer.gd" id="1"]
 [ext_resource type="SpriteFrames" path="res://data/tamer_frames.tres" id="2"]
@@ -12,9 +12,21 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
+[sub_resource type="RectangleShape2D" id="player_hitbox_shape"]
+size = Vector2(92, 124)
+
 [node name="RemoteTamer" type="Node2D"]
 script = ExtResource("1")
 y_sort_enabled = true
+
+[node name="PlayerHitbox" type="Area2D" parent="."]
+position = Vector2(0, -62)
+input_pickable = true
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerHitbox"]
+shape = SubResource("player_hitbox_shape")
 
 [node name="Shadow" type="Polygon2D" parent="."]
 polygon = PackedVector2Array(-18, 0, 18, 0, 13, 7, -13, 7)
