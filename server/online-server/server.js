@@ -7,10 +7,41 @@ const MAX_PACKET = 8192;
 const MAX_CHAT = 160;
 const clients = new Map();
 
+function readyPlayerCount() {
+  let total = 0;
+  for (const client of clients.values()) {
+    if (client.ready) total += 1;
+  }
+  return total;
+}
+
+function zonePlayerCounts() {
+  const counts = new Map();
+  for (const client of clients.values()) {
+    if (!client.ready) continue;
+    counts.set(client.zone, (counts.get(client.zone) ?? 0) + 1);
+  }
+  return counts;
+}
+
+function broadcastOnlineCounts() {
+  const total = readyPlayerCount();
+  const zones = zonePlayerCounts();
+  for (const [ws, client] of clients) {
+    if (!client.ready || ws.readyState !== WebSocket.OPEN) continue;
+    send(ws, {
+      type: "online_count",
+      total,
+      zone: client.zone,
+      zone_count: zones.get(client.zone) ?? 0
+    });
+  }
+}
+
 const server = http.createServer((req, res) => {
   if (req.url === "/health") {
     res.writeHead(200, { "content-type": "application/json" });
-    res.end(JSON.stringify({ ok: true, players: clients.size }));
+    res.end(JSON.stringify({ ok: true, players: readyPlayerCount(), sockets: clients.size }));
     return;
   }
   res.writeHead(200, { "content-type": "text/plain; charset=utf-8" });
@@ -84,14 +115,14 @@ function send(ws, payload) {
 }
 function broadcast(payload, except = null, zone = "") {
   for (const [ws, client] of clients) {
-    if (ws === except || ws.readyState !== WebSocket.OPEN) continue;
+    if (ws === except || ws.readyState !== WebSocket.OPEN || !client.ready) continue;
     if (zone && client.zone !== zone) continue;
     send(ws, payload);
   }
 }
 function emitExistingPlayers(ws, self) {
   for (const [otherWs, other] of clients) {
-    if (otherWs === ws || other.zone !== self.zone) continue;
+    if (otherWs === ws || !other.ready || other.zone !== self.zone) continue;
     send(ws, playerPayload("join", other));
   }
 }
@@ -99,6 +130,7 @@ function emitExistingPlayers(ws, self) {
 wss.on("connection", (ws) => {
   const client = {
     id: crypto.randomUUID(),
+    ready: false,
     name: "Tamer",
     zone: "file_island",
     position: { x: 0, y: 0 },
@@ -121,12 +153,22 @@ wss.on("connection", (ws) => {
     if (!msg || typeof msg !== "object") return;
 
     if (msg.type === "hello") {
+      const wasReady = client.ready;
+      const oldZone = client.zone;
       client.name = cleanText(msg.name) || "Tamer";
       client.zone = cleanText(msg.zone, 40) || "file_island";
       client.position = normalizeVector(msg.position, client.position);
       applyAppearance(client, msg);
-      emitExistingPlayers(ws, client);
-      broadcast(playerPayload("join", client), ws, client.zone);
+      client.ready = true;
+
+      if (!wasReady || oldZone !== client.zone) {
+        if (wasReady && oldZone !== client.zone) {
+          broadcast({ type: "leave", id: client.id }, ws, oldZone);
+        }
+        emitExistingPlayers(ws, client);
+        broadcast(playerPayload("join", client), ws, client.zone);
+      }
+      broadcastOnlineCounts();
       return;
     }
 
@@ -147,6 +189,7 @@ wss.on("connection", (ws) => {
         broadcast({ type: "leave", id: client.id }, ws, oldZone);
         emitExistingPlayers(ws, client);
         broadcast(playerPayload("join", client), ws, client.zone);
+        broadcastOnlineCounts();
       }
       broadcast(playerPayload("state", client), ws, client.zone);
       return;
@@ -163,8 +206,12 @@ wss.on("connection", (ws) => {
   });
 
   ws.on("close", () => {
+    const wasReady = client.ready;
     clients.delete(ws);
-    broadcast({ type: "leave", id: client.id }, null, client.zone);
+    if (wasReady) {
+      broadcast({ type: "leave", id: client.id }, null, client.zone);
+      broadcastOnlineCounts();
+    }
   });
   ws.on("error", () => {});
 });
