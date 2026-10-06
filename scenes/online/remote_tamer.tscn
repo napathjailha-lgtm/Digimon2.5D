@@ -35,3 +35,27 @@ horizontal_alignment = 1
 theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("name_bg")
 mouse_filter = 2
+
+
+[node name="PartnerVisual" type="Node2D" parent="."]
+visible = false
+y_sort_enabled = true
+
+[node name="Shadow" type="Polygon2D" parent="PartnerVisual"]
+polygon = PackedVector2Array(-20, 0, 20, 0, 14, 7, -14, 7)
+color = Color(0, 0, 0, 0.26)
+position = Vector2(0, -2)
+z_index = -1
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="PartnerVisual"]
+
+[node name="NameLabel" type="Label" parent="PartnerVisual"]
+offset_left = -72.0
+offset_top = -116.0
+offset_right = 72.0
+offset_bottom = -88.0
+text = "Partner"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("name_bg")
+mouse_filter = 2
