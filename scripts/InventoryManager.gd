@@ -104,6 +104,8 @@ func _use_error(item: ItemData, player: Node) -> String:
             if item.effect_value <= 0 or player.partner.digimon_mp >= player.partner.digimon_max_mp: return "MP เต็มแล้ว ไอเทมยังอยู่ในกระเป๋า"
         ItemData.EffectType.TAMER_HP:
             if item.effect_value <= 0 or player.hp >= player.max_hp: return "HP Tamer เต็มแล้ว ไอเทมยังอยู่ในกระเป๋า"
+        ItemData.EffectType.TAMER_MP:
+            if item.effect_value <= 0 or player.tamer_mp >= player.max_tamer_mp: return "MP Tamer เต็มแล้ว ไอเทมยังอยู่ในกระเป๋า"
         _: return "ไม่รู้จักผลของไอเทม"
     return ""
 
@@ -145,6 +147,12 @@ func use_item(item_index: int) -> bool:
             healed = maxi(0, int(player.hp) - previous_hp)
             applied = healed > 0
             message = "Tamer HP +%d" % healed
+        ItemData.EffectType.TAMER_MP:
+            var previous_mp: float = player.tamer_mp
+            player.restore_mp(float(item.effect_value))
+            var restored_mp: float = maxf(0.0, player.tamer_mp - previous_mp)
+            applied = restored_mp > 0.0
+            message = "Tamer MP +%.0f" % restored_mp
     if not applied:
         _busy = false
         return false
