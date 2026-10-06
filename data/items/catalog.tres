@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="ItemCatalog" load_steps=23 format=3]
+[gd_resource type="Resource" script_class="ItemCatalog" load_steps=28 format=3]
 [ext_resource type="Script" path="res://scripts/item_catalog.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/item_data.gd" id="2"]
 [ext_resource type="Resource" path="res://data/items/meat.tres" id="3"]
@@ -21,6 +21,11 @@
 [ext_resource type="Resource" path="res://data/items/evolution_unlock_champion.tres" id="evo_champion"]
 [ext_resource type="Resource" path="res://data/items/evolution_unlock_ultimate.tres" id="evo_ultimate"]
 [ext_resource type="Resource" path="res://data/items/evolution_unlock_mega.tres" id="evo_mega"]
+[ext_resource type="Resource" path="res://data/items/emberclaw_digitama.tres" id="egg_emberclaw"]
+[ext_resource type="Resource" path="res://data/items/frostfang_digitama.tres" id="egg_frostfang"]
+[ext_resource type="Resource" path="res://data/items/thunder_lynx_digitama.tres" id="egg_thunder"]
+[ext_resource type="Resource" path="res://data/items/tidecoil_manta_digitama.tres" id="egg_tidecoil"]
+[ext_resource type="Resource" path="res://data/items/nighttalon_harrier_digitama.tres" id="egg_nighttalon"]
 [resource]
 script = ExtResource("1")
 items = Array[ExtResource("2")]([
@@ -43,5 +48,10 @@ items = Array[ExtResource("2")]([
     ExtResource("tamer_mp_regen_core"),
     ExtResource("evo_champion"),
     ExtResource("evo_ultimate"),
-    ExtResource("evo_mega")
+    ExtResource("evo_mega"),
+    ExtResource("egg_emberclaw"),
+    ExtResource("egg_frostfang"),
+    ExtResource("egg_thunder"),
+    ExtResource("egg_tidecoil"),
+    ExtResource("egg_nighttalon")
 ])
