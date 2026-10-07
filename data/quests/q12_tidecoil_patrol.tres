@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q12_tidecoil_patrol"
+title = "ลาดตระเวน Tidecoil"
+description = "กำจัด Tidecoil Manta 5 ตัวที่บินวนรอบเส้นทางชายฝั่งและขัดขวางขบวนขนส่ง"
+zone_id = &"file_island"
+objective = 1
+target_id = &"tidecoil_manta"
+required_count = 5
+recommended_level = 24
+reward_exp = 3900
+reward_bits = 850
+unlock_flags = Array[StringName]([])
+unlock_zones = Array[StringName]([])
+unlock_stage = -1
