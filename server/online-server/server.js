@@ -1,14 +1,9 @@
 import http from "node:http";
 import crypto from "node:crypto";
-import {
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  renameSync,
-  writeFileSync,
-} from "node:fs";
-import { dirname } from "node:path";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { WebSocketServer, WebSocket } from "ws";
+import { EncryptedJsonStore } from "./encrypted_json_store.js";
 
 const PORT = Number(process.env.PORT || 8787);
 const MAX_PACKET = 8192;
@@ -16,52 +11,170 @@ const MAX_CHAT = 160;
 const MAX_GUILD_NAME = 20;
 const MAX_GUILD_MEMBERS = 50;
 const GUILD_INVITE_TTL_MS = 30_000;
-const RELEASE = "online-safety-2026-10-07";
+const RELEASE = "online-secure-json-2026-10-07";
 const TRADE_UNAVAILABLE = "Trade ปิดชั่วคราวเพื่อปรับปรุงความปลอดภัยของไอเทมและ Bits";
 const HEARTBEAT_MS = Number(process.env.HEARTBEAT_MS || 30_000);
-const GUILD_DATA_PATH =
-  process.env.GUILD_DATA_PATH ||
-  (existsSync("/data") ? "/data/guilds.json" : "./data/guilds.json");
+const DATA_DIR =
+  process.env.DATA_DIR || (existsSync("/data") ? "/data" : "./data");
+const STORE_PATHS = {
+  guilds: process.env.GUILD_DATA_PATH || join(DATA_DIR, "guilds.json"),
+  accounts: join(DATA_DIR, "accounts.json"),
+  characters: join(DATA_DIR, "characters.json"),
+  inventories: join(DATA_DIR, "inventories.json"),
+  partners: join(DATA_DIR, "partners.json"),
+  transactions: join(DATA_DIR, "transactions.json"),
+};
 
 const clients = new Map();
 const guildInvites = new Map();
-let guildStore = loadGuildStore();
 
 function emptyGuildStore() {
   return { version: 2, guilds: {}, memberships: {} };
 }
 
-function loadGuildStore() {
-  try {
-    if (!existsSync(GUILD_DATA_PATH)) return emptyGuildStore();
-    const parsed = JSON.parse(readFileSync(GUILD_DATA_PATH, "utf8"));
-    if (!parsed || parsed.version !== 2 || typeof parsed.guilds !== "object") {
-      if (parsed?.version === 1) {
-        console.warn("Resetting legacy guild store: v1 used non-unique demo character identities");
-      }
-      return emptyGuildStore();
-    }
-    if (!parsed.memberships || typeof parsed.memberships !== "object") {
-      parsed.memberships = {};
-    }
-    return parsed;
-  } catch (error) {
-    console.error("Guild store load failed:", error);
-    return emptyGuildStore();
-  }
+function emptyAccountsStore() {
+  return { version: 1, accounts: {} };
 }
+
+function emptyCharactersStore() {
+  return { version: 1, characters: {} };
+}
+
+function emptyInventoriesStore() {
+  return { version: 1, inventories: {} };
+}
+
+function emptyPartnersStore() {
+  return { version: 1, partners: {} };
+}
+
+function emptyTransactionsStore() {
+  return { version: 1, transactions: [] };
+}
+
+const guildDiskStore = new EncryptedJsonStore({
+  path: STORE_PATHS.guilds,
+  name: "guilds",
+  defaultValue: emptyGuildStore(),
+});
+const accountsDiskStore = new EncryptedJsonStore({
+  path: STORE_PATHS.accounts,
+  name: "accounts",
+  defaultValue: emptyAccountsStore(),
+});
+const charactersDiskStore = new EncryptedJsonStore({
+  path: STORE_PATHS.characters,
+  name: "characters",
+  defaultValue: emptyCharactersStore(),
+});
+const inventoriesDiskStore = new EncryptedJsonStore({
+  path: STORE_PATHS.inventories,
+  name: "inventories",
+  defaultValue: emptyInventoriesStore(),
+});
+const partnersDiskStore = new EncryptedJsonStore({
+  path: STORE_PATHS.partners,
+  name: "partners",
+  defaultValue: emptyPartnersStore(),
+});
+const transactionsDiskStore = new EncryptedJsonStore({
+  path: STORE_PATHS.transactions,
+  name: "transactions",
+  defaultValue: emptyTransactionsStore(),
+});
+
+function loadVersionedStore(diskStore, collectionName, collectionType = "object") {
+  const parsed = diskStore.load();
+  if (!parsed || parsed.version !== 1) {
+    throw new Error(`Secure store ${collectionName} has an unsupported version`);
+  }
+  const collection = parsed[collectionName];
+  if (
+    (collectionType === "array" && !Array.isArray(collection)) ||
+    (collectionType === "object" &&
+      (!collection || typeof collection !== "object" || Array.isArray(collection)))
+  ) {
+    throw new Error(`Secure store ${collectionName} has an invalid shape`);
+  }
+  return parsed;
+}
+
+function loadGuildStore() {
+  const parsed = guildDiskStore.load();
+  if (!parsed || parsed.version !== 2 || typeof parsed.guilds !== "object") {
+    if (parsed?.version === 1) {
+      const reset = emptyGuildStore();
+      guildDiskStore.save(reset);
+      return reset;
+    }
+    throw new Error("Secure guild store has an unsupported format");
+  }
+  if (!parsed.memberships || typeof parsed.memberships !== "object") {
+    parsed.memberships = {};
+    guildDiskStore.save(parsed);
+  }
+  return parsed;
+}
+
+let guildStore = loadGuildStore();
+const accountsStore = loadVersionedStore(accountsDiskStore, "accounts");
+const charactersStore = loadVersionedStore(charactersDiskStore, "characters");
+const inventoriesStore = loadVersionedStore(inventoriesDiskStore, "inventories");
+const partnersStore = loadVersionedStore(partnersDiskStore, "partners");
+const transactionsStore = loadVersionedStore(
+  transactionsDiskStore,
+  "transactions",
+  "array",
+);
 
 function saveGuildStore() {
   try {
-    mkdirSync(dirname(GUILD_DATA_PATH), { recursive: true });
-    const temp = `${GUILD_DATA_PATH}.tmp`;
-    writeFileSync(temp, JSON.stringify(guildStore, null, 2), "utf8");
-    renameSync(temp, GUILD_DATA_PATH);
+    guildDiskStore.save(guildStore);
     return true;
   } catch (error) {
     console.error("Guild store save failed:", error);
     return false;
   }
+}
+
+function persistCharacterShell(client) {
+  if (!validCharacterKey(client.characterKey)) return false;
+
+  const now = Date.now();
+  const previous = charactersStore.characters[client.characterKey] ?? {};
+  charactersStore.characters[client.characterKey] = {
+    character_key: client.characterKey,
+    name: cleanText(client.name, 24) || "Tamer",
+    created_at: Number(previous.created_at || now),
+    last_seen_at: now,
+    last_zone: cleanText(client.zone, 40) || "file_island",
+    tamer_model: cleanText(client.model, 64),
+    partner_form: cleanText(client.partner?.form_id, 64),
+    economy_migrated: previous.economy_migrated === true,
+  };
+
+  if (!inventoriesStore.inventories[client.characterKey]) {
+    inventoriesStore.inventories[client.characterKey] = {
+      migrated: false,
+      bits: null,
+      items: {},
+      equipment: {},
+      updated_at: now,
+    };
+    inventoriesDiskStore.save(inventoriesStore);
+  }
+
+  if (!partnersStore.partners[client.characterKey]) {
+    partnersStore.partners[client.characterKey] = {
+      migrated: false,
+      roster: [],
+      updated_at: now,
+    };
+    partnersDiskStore.save(partnersStore);
+  }
+
+  charactersDiskStore.save(charactersStore);
+  return true;
 }
 
 function validCharacterKey(value) {
@@ -649,7 +762,18 @@ const server = http.createServer((req, res) => {
         ok: true,
         release: RELEASE,
         commit: process.env.RAILWAY_GIT_COMMIT_SHA || "",
-        capabilities: { trade: false, single_character_session: true },
+        capabilities: {
+          trade: false,
+          single_character_session: true,
+          server_storage: "encrypted_json",
+        },
+        storage: {
+          encrypted: true,
+          algorithm: "aes-256-gcm",
+          characters: Object.keys(charactersStore.characters).length,
+          accounts: Object.keys(accountsStore.accounts).length,
+          pending_transactions: transactionsStore.transactions.length,
+        },
         players: readyPlayerCount(),
         sockets: clients.size,
         guilds: Object.keys(guildStore.guilds).length,
@@ -756,6 +880,18 @@ wss.on("connection", (ws) => {
       client.position = normalizeVector(msg.position, client.position);
       applyAppearance(client, msg);
       client.ready = true;
+      try {
+        persistCharacterShell(client);
+      } catch (error) {
+        console.error("Secure character storage failed:", error);
+        send(ws, {
+          type: "identity_error",
+          message: "ระบบบันทึกข้อมูลฝั่งเซิร์ฟเวอร์ขัดข้อง กรุณาลองใหม่ภายหลัง",
+        });
+        removeClient(ws);
+        ws.close(1011, "secure storage unavailable");
+        return;
+      }
       send(ws, {
         type: "online_ready",
         character_key: client.characterKey,
@@ -896,6 +1032,6 @@ wss.on("close", () => clearInterval(heartbeat));
 
 server.listen(PORT, "0.0.0.0", () => {
   console.log(
-    `Prism Tamer Online Server listening on :${server.address().port} • guild store ${GUILD_DATA_PATH}`,
+    `Prism Tamer Online Server listening on :${server.address().port} • AES-256-GCM stores ${DATA_DIR}`,
   );
 });
