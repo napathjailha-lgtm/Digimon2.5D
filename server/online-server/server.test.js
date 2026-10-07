@@ -1,0 +1,142 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { spawn } from 'node:child_process';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { WebSocket } from 'ws';
+
+async function fixture(t, heartbeat = 30000) {
+  const dir = await mkdtemp(join(tmpdir(), 'online-test-'));
+  const child = spawn(process.execPath, ['server.js'], {
+    cwd: import.meta.dirname,
+    env: { ...process.env, PORT: '0', GUILD_DATA_PATH: join(dir, 'guilds.json'), HEARTBEAT_MS: String(heartbeat) },
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  const peers = [];
+  t.after(async () => {
+    for (const peer of peers) peer.ws.terminate();
+    const exited = new Promise(resolve => child.once('exit', resolve));
+    child.kill();
+    await exited;
+    await rm(dir, { recursive: true, force: true });
+  });
+  const port = await new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('server startup timeout')), 5000);
+    child.once('error', reject);
+    child.once('exit', code => { clearTimeout(timer); reject(new Error(`server exited: ${code}`)); });
+    child.stdout.on('data', data => {
+      const match = String(data).match(/listening on :(\d+)/);
+      if (match) { clearTimeout(timer); resolve(Number(match[1])); }
+    });
+    child.stderr.on('data', data => reject(new Error(String(data))));
+  });
+  async function peer(autoPong = true) {
+    const ws = new WebSocket(`ws://127.0.0.1:${port}`, { autoPong });
+    const history = [], waiters = [];
+    ws.on('error', () => {});
+    ws.on('message', data => {
+      const msg = JSON.parse(data);
+      history.push(msg);
+      for (const wake of [...waiters]) wake();
+    });
+    const client = {
+      ws, history,
+      send(msg) { ws.send(JSON.stringify(msg)); },
+      wait(type, predicate = () => true, after = 0) {
+        return new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => { cleanup(); reject(new Error(`missing ${type}`)); }, 3000);
+          function cleanup() { clearTimeout(timeout); const i = waiters.indexOf(check); if (i >= 0) waiters.splice(i, 1); }
+          function check() {
+            const found = history.slice(after).find(m => m.type === type && predicate(m));
+            if (found) { cleanup(); resolve(found); }
+          }
+          waiters.push(check); check();
+        });
+      },
+      async hello(letter) {
+        const character_key = 'v2:' + letter.repeat(64);
+        this.send({ type: 'hello', protocol_version: 3, character_key, name: letter, zone: 'file_island' });
+        return await this.wait('online_ready', m => m.character_key === character_key);
+      },
+    };
+    peers.push(client);
+    client.id = (await client.wait('welcome')).id;
+    return client;
+  }
+  return { peer, health: async () => (await fetch(`http://127.0.0.1:${port}/health`)).json() };
+}
+
+test('all legacy trade commands fail closed, including forged commit preparation', async t => {
+  const f = await fixture(t), a = await f.peer(), b = await f.peer();
+  await a.hello('a'); await b.hello('b');
+  for (const type of ['trade_request', 'trade_invite_response', 'trade_offer', 'trade_ready', 'trade_confirm', 'trade_prepare_result', 'trade_commit', 'trade_cancel']) {
+    const after = a.history.length;
+    a.send({ type, target_peer_id: b.id, accept: true, ready: true, ok: true,
+      trade_id: 'forged', offer: { items: [{ item_id: 'meat', quantity: 999 }], bits: 1000000 } });
+    const result = await a.wait('trade_feedback', () => true, after);
+    assert.equal(result.ok, false); assert.equal(result.code, 'trade_unavailable');
+  }
+  for (const p of [a, b]) assert.equal(p.history.some(m => ['trade_open', 'trade_prepare', 'trade_commit', 'trade_closed'].includes(m.type)), false);
+  assert.equal((await f.health()).capabilities.trade, false);
+});
+
+test('duplicate identity replaces old presence once; repeated hello remains idempotent', async t => {
+  const f = await fixture(t), observer = await f.peer(), old = await f.peer();
+  await observer.hello('b'); await old.hello('a');
+  const fresh = await f.peer(); await fresh.hello('a');
+  await old.wait('session_replaced');
+  await observer.wait('leave', m => m.id === old.id);
+  await observer.wait('join', m => m.id === fresh.id);
+  assert.equal((await f.health()).players, 2);
+  fresh.send({ type: 'hello', protocol_version: 3, character_key: 'v2:' + 'a'.repeat(64), zone: 'file_island' });
+  fresh.send({ type: 'guild_request' });
+  await fresh.wait('guild_snapshot');
+  assert.equal((await f.health()).players, 2);
+  assert.equal(observer.history.filter(m => m.type === 'leave' && m.id === old.id).length, 1);
+});
+
+test('leave immediately clears counts and presence, then the character can reconnect', async t => {
+  const f = await fixture(t), observer = await f.peer(), a = await f.peer();
+  await observer.hello('b'); await a.hello('a');
+  a.send({ type: 'leave' });
+  await observer.wait('leave', m => m.id === a.id);
+  assert.equal((await f.health()).players, 1);
+  const fresh = await f.peer(); await fresh.hello('a');
+  assert.equal((await f.health()).players, 2);
+});
+
+test('socket identity cannot change to another character or inherit its guild', async t => {
+  const f = await fixture(t), a = await f.peer(), b = await f.peer();
+  await a.hello('a'); await b.hello('b');
+  a.send({ type: 'guild_create', name: 'Audit Guild' });
+  await a.wait('guild_snapshot', m => !!m.guild?.id);
+  const offset = b.history.length;
+  b.send({ type: 'guild_request' });
+  const snapshot = await b.wait('guild_snapshot', () => true, offset);
+  assert.ok(!snapshot.guild?.id);
+  a.send({ type: 'hello', protocol_version: 3, character_key: 'v2:' + 'b'.repeat(64) });
+  await a.wait('identity_error');
+  assert.equal((await f.health()).players, 1);
+  assert.equal(b.history.some(m => m.type === 'session_replaced'), false);
+});
+
+test('heartbeat removes half-open players and unauthenticated idle sockets', async t => {
+  const f = await fixture(t, 100), observer = await f.peer(), stale = await f.peer(false);
+  await observer.hello('b'); await stale.hello('a');
+  await observer.wait('leave', m => m.id === stale.id);
+  assert.equal((await f.health()).players, 1);
+  const idle = await f.peer();
+  await new Promise(resolve => idle.ws.once('close', resolve));
+  assert.equal((await f.health()).sockets, 1);
+});
+
+
+test('legacy clients cannot evict an upgraded character session', async t => {
+  const f = await fixture(t), current = await f.peer(), legacy = await f.peer();
+  await current.hello('a');
+  legacy.send({ type: 'hello', character_key: 'v2:' + 'a'.repeat(64) });
+  await legacy.wait('identity_error');
+  assert.equal((await f.health()).players, 1);
+  assert.equal(current.history.some(m => m.type === 'session_replaced'), false);
+});
