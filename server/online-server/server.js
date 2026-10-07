@@ -16,12 +16,16 @@ const MAX_CHAT = 160;
 const MAX_GUILD_NAME = 20;
 const MAX_GUILD_MEMBERS = 50;
 const GUILD_INVITE_TTL_MS = 30_000;
+const TRADE_INVITE_TTL_MS = 30_000;
+const MAX_TRADE_ITEMS = 8;
 const GUILD_DATA_PATH =
   process.env.GUILD_DATA_PATH ||
   (existsSync("/data") ? "/data/guilds.json" : "./data/guilds.json");
 
 const clients = new Map();
 const guildInvites = new Map();
+const tradeInvites = new Map();
+const tradeSessions = new Map();
 let guildStore = loadGuildStore();
 
 function emptyGuildStore() {
@@ -609,6 +613,314 @@ function broadcastGuildChat(client, text) {
   return true;
 }
 
+
+function cleanTradeOffer(raw) {
+  const itemTotals = new Map();
+  if (Array.isArray(raw?.items)) {
+    for (const entry of raw.items.slice(0, MAX_TRADE_ITEMS * 2)) {
+      const id = cleanText(entry?.id, 64);
+      const quantity = Math.floor(safeNumber(entry?.quantity, 0, 0, 999));
+      if (!id || quantity <= 0) continue;
+      itemTotals.set(id, Math.min(999, (itemTotals.get(id) ?? 0) + quantity));
+      if (itemTotals.size >= MAX_TRADE_ITEMS) break;
+    }
+  }
+  return {
+    items: Array.from(itemTotals.entries()).map(([id, quantity]) => ({
+      id,
+      quantity,
+    })),
+    bits: Math.floor(safeNumber(raw?.bits, 0, 0, 2_000_000_000)),
+  };
+}
+
+function tradeParticipant(session, peerId) {
+  return session?.participants?.find((part) => part.peerId === peerId) ?? null;
+}
+
+function tradeOtherParticipant(session, peerId) {
+  return session?.participants?.find((part) => part.peerId !== peerId) ?? null;
+}
+
+function tradePayload(session, client) {
+  const mine = tradeParticipant(session, client.id);
+  const other = tradeOtherParticipant(session, client.id);
+  return {
+    trade_id: session.id,
+    partner: {
+      id: other?.peerId ?? "",
+      name: other?.name ?? "ผู้เล่น",
+    },
+    your_offer: mine?.offer ?? { items: [], bits: 0 },
+    their_offer: other?.offer ?? { items: [], bits: 0 },
+    your_ready: mine?.ready === true,
+    their_ready: other?.ready === true,
+    your_confirmed: mine?.confirmed === true,
+    their_confirmed: other?.confirmed === true,
+    status: session.status,
+  };
+}
+
+function sendTradeSnapshot(session) {
+  for (const part of session.participants) {
+    const live = onlineClientForPeer(part.peerId);
+    if (live) send(live.ws, { type: "trade_snapshot", ...tradePayload(session, live.client) });
+  }
+}
+
+function clearTradeSession(session) {
+  if (!session) return;
+  for (const part of session.participants) {
+    const live = onlineClientForPeer(part.peerId);
+    if (live && live.client.tradeId === session.id) {
+      live.client.tradeId = "";
+    }
+  }
+  tradeSessions.delete(session.id);
+}
+
+function closeTrade(session, message, success = false) {
+  if (!session) return;
+  for (const part of session.participants) {
+    const live = onlineClientForPeer(part.peerId);
+    if (live) {
+      send(live.ws, {
+        type: "trade_closed",
+        trade_id: session.id,
+        success,
+        message: cleanText(message, 160),
+      });
+    }
+  }
+  clearTradeSession(session);
+}
+
+function requestTrade(ws, client, targetPeerId) {
+  if (!client.ready || !client.characterKey) {
+    send(ws, { type: "trade_feedback", message: "ยังไม่มีข้อมูลตัวละครออนไลน์", ok: false });
+    return;
+  }
+  if (client.tradeId) {
+    send(ws, { type: "trade_feedback", message: "คุณกำลังแลกเปลี่ยนอยู่แล้ว", ok: false });
+    return;
+  }
+
+  const target = onlineClientForPeer(cleanText(targetPeerId, 80));
+  if (!target || target.client.id === client.id) {
+    send(ws, { type: "trade_feedback", message: "ไม่พบผู้เล่นที่ต้องการแลกเปลี่ยน", ok: false });
+    return;
+  }
+  if (target.client.zone !== client.zone) {
+    send(ws, { type: "trade_feedback", message: "ผู้เล่นไม่ได้อยู่ในแมพเดียวกันแล้ว", ok: false });
+    return;
+  }
+  if (target.client.tradeId) {
+    send(ws, { type: "trade_feedback", message: "ผู้เล่นนี้กำลังแลกเปลี่ยนกับคนอื่น", ok: false });
+    return;
+  }
+
+  const now = Date.now();
+  for (const [inviteId, invite] of tradeInvites) {
+    if (invite.expiresAt <= now) {
+      tradeInvites.delete(inviteId);
+      continue;
+    }
+    if (invite.fromPeerId === client.id && invite.targetPeerId === target.client.id) {
+      send(ws, { type: "trade_feedback", message: "ส่งคำขอแลกเปลี่ยนไปแล้ว กรุณารออีกฝ่าย", ok: false });
+      return;
+    }
+  }
+
+  const inviteId = crypto.randomUUID();
+  tradeInvites.set(inviteId, {
+    id: inviteId,
+    fromPeerId: client.id,
+    fromName: client.name,
+    targetPeerId: target.client.id,
+    expiresAt: now + TRADE_INVITE_TTL_MS,
+  });
+  send(target.ws, {
+    type: "trade_invite",
+    invite_id: inviteId,
+    from_id: client.id,
+    from_name: client.name,
+    expires_in: Math.floor(TRADE_INVITE_TTL_MS / 1000),
+  });
+  send(ws, { type: "trade_feedback", message: `ส่งคำขอแลกเปลี่ยนให้ ${target.client.name} แล้ว`, ok: true });
+}
+
+function respondTradeInvite(ws, client, inviteId, accepted) {
+  const id = cleanText(inviteId, 80);
+  const invite = tradeInvites.get(id);
+  if (!invite || invite.targetPeerId !== client.id) {
+    send(ws, { type: "trade_feedback", message: "คำขอแลกเปลี่ยนหมดอายุหรือไม่ถูกต้อง", ok: false });
+    return;
+  }
+  tradeInvites.delete(id);
+
+  const inviter = onlineClientForPeer(invite.fromPeerId);
+  if (!inviter || invite.expiresAt <= Date.now()) {
+    send(ws, { type: "trade_feedback", message: "คำขอแลกเปลี่ยนหมดอายุแล้ว", ok: false });
+    return;
+  }
+  if (!accepted) {
+    send(ws, { type: "trade_feedback", message: "ปฏิเสธคำขอแลกเปลี่ยนแล้ว", ok: true });
+    send(inviter.ws, { type: "trade_feedback", message: `${client.name} ปฏิเสธการแลกเปลี่ยน`, ok: false });
+    return;
+  }
+  if (client.tradeId || inviter.client.tradeId) {
+    send(ws, { type: "trade_feedback", message: "มีผู้เล่นกำลังแลกเปลี่ยนอยู่แล้ว", ok: false });
+    return;
+  }
+  if (client.zone !== inviter.client.zone) {
+    send(ws, { type: "trade_feedback", message: "ผู้เล่นไม่ได้อยู่ในแมพเดียวกันแล้ว", ok: false });
+    return;
+  }
+
+  const tradeId = crypto.randomUUID();
+  const session = {
+    id: tradeId,
+    status: "open",
+    participants: [
+      {
+        peerId: inviter.client.id,
+        name: inviter.client.name,
+        offer: { items: [], bits: 0 },
+        ready: false,
+        confirmed: false,
+        prepared: false,
+      },
+      {
+        peerId: client.id,
+        name: client.name,
+        offer: { items: [], bits: 0 },
+        ready: false,
+        confirmed: false,
+        prepared: false,
+      },
+    ],
+  };
+  tradeSessions.set(tradeId, session);
+  inviter.client.tradeId = tradeId;
+  client.tradeId = tradeId;
+
+  send(inviter.ws, { type: "trade_open", ...tradePayload(session, inviter.client) });
+  send(ws, { type: "trade_open", ...tradePayload(session, client) });
+  sendTradeSnapshot(session);
+}
+
+function updateTradeOffer(ws, client, rawOffer) {
+  const session = tradeSessions.get(client.tradeId);
+  if (!session || session.status !== "open") {
+    send(ws, { type: "trade_feedback", message: "ไม่พบ Trade session ที่แก้ไขได้", ok: false });
+    return;
+  }
+  const mine = tradeParticipant(session, client.id);
+  if (!mine) return;
+  mine.offer = cleanTradeOffer(rawOffer);
+  for (const part of session.participants) {
+    part.ready = false;
+    part.confirmed = false;
+    part.prepared = false;
+  }
+  sendTradeSnapshot(session);
+}
+
+function setTradeReady(ws, client, ready) {
+  const session = tradeSessions.get(client.tradeId);
+  if (!session || session.status !== "open") return;
+  const mine = tradeParticipant(session, client.id);
+  if (!mine) return;
+  mine.ready = ready === true;
+  mine.confirmed = false;
+  if (!mine.ready) {
+    for (const part of session.participants) part.confirmed = false;
+  }
+  sendTradeSnapshot(session);
+}
+
+function confirmTrade(ws, client) {
+  const session = tradeSessions.get(client.tradeId);
+  if (!session || session.status !== "open") return;
+  if (!session.participants.every((part) => part.ready === true)) {
+    send(ws, { type: "trade_feedback", message: "ทั้งสองฝ่ายต้อง Ready ก่อน", ok: false });
+    return;
+  }
+  const mine = tradeParticipant(session, client.id);
+  if (!mine) return;
+  mine.confirmed = true;
+  sendTradeSnapshot(session);
+
+  if (!session.participants.every((part) => part.confirmed === true)) return;
+
+  session.status = "preparing";
+  for (const part of session.participants) {
+    part.prepared = false;
+    const live = onlineClientForPeer(part.peerId);
+    if (live) {
+      const payload = tradePayload(session, live.client);
+      send(live.ws, {
+        type: "trade_prepare",
+        trade_id: session.id,
+        outgoing: payload.your_offer,
+        incoming: payload.their_offer,
+      });
+    }
+  }
+}
+
+function tradePrepareResult(ws, client, tradeId, ok, message) {
+  const session = tradeSessions.get(cleanText(tradeId, 80));
+  if (!session || session.id !== client.tradeId || session.status !== "preparing") return;
+  const mine = tradeParticipant(session, client.id);
+  if (!mine) return;
+
+  if (ok !== true) {
+    closeTrade(session, cleanText(message, 160) || `${client.name} ไม่พร้อมทำรายการ`, false);
+    return;
+  }
+  mine.prepared = true;
+  if (!session.participants.every((part) => part.prepared === true)) return;
+
+  session.status = "committing";
+  const commitTargets = [];
+  for (const part of session.participants) {
+    const live = onlineClientForPeer(part.peerId);
+    if (!live) {
+      closeTrade(session, "มีผู้เล่นหลุดจากระบบก่อนยืนยันรายการ", false);
+      return;
+    }
+    commitTargets.push(live);
+  }
+
+  for (const live of commitTargets) {
+    const payload = tradePayload(session, live.client);
+    send(live.ws, {
+      type: "trade_commit",
+      trade_id: session.id,
+      outgoing: payload.your_offer,
+      incoming: payload.their_offer,
+    });
+  }
+  // WebSocket preserves packet order: each client receives commit before completed.
+  for (const live of commitTargets) {
+    send(live.ws, {
+      type: "trade_closed",
+      trade_id: session.id,
+      success: true,
+      message: "แลกเปลี่ยนสำเร็จ",
+    });
+    live.client.tradeId = "";
+  }
+  tradeSessions.delete(session.id);
+}
+
+function cancelTrade(ws, client) {
+  const session = tradeSessions.get(client.tradeId);
+  if (!session) return;
+  closeTrade(session, `${client.name} ยกเลิกการแลกเปลี่ยน`, false);
+}
+
 const server = http.createServer((req, res) => {
   if (req.url === "/health") {
     res.writeHead(200, { "content-type": "application/json" });
@@ -645,6 +957,7 @@ wss.on("connection", (ws) => {
     lastStateAt: 0,
     lastChatAt: 0,
     lastGuildChatAt: 0,
+    tradeId: "",
   };
   clients.set(ws, client);
   send(ws, { type: "welcome", id: client.id });
@@ -743,6 +1056,41 @@ wss.on("connection", (ws) => {
       return;
     }
 
+    if (msg.type === "trade_request") {
+      requestTrade(ws, client, msg.target_peer_id);
+      return;
+    }
+
+    if (msg.type === "trade_invite_response") {
+      respondTradeInvite(ws, client, msg.invite_id, msg.accept === true);
+      return;
+    }
+
+    if (msg.type === "trade_offer") {
+      updateTradeOffer(ws, client, msg.offer);
+      return;
+    }
+
+    if (msg.type === "trade_ready") {
+      setTradeReady(ws, client, msg.ready === true);
+      return;
+    }
+
+    if (msg.type === "trade_confirm") {
+      confirmTrade(ws, client);
+      return;
+    }
+
+    if (msg.type === "trade_prepare_result") {
+      tradePrepareResult(ws, client, msg.trade_id, msg.ok === true, msg.message);
+      return;
+    }
+
+    if (msg.type === "trade_cancel") {
+      cancelTrade(ws, client);
+      return;
+    }
+
     if (msg.type === "guild_create") {
       createGuild(ws, client, msg.name);
       return;
@@ -788,6 +1136,15 @@ wss.on("connection", (ws) => {
   ws.on("close", () => {
     const wasReady = client.ready;
     const guildId = guildIdForClient(client);
+    if (client.tradeId) {
+      const session = tradeSessions.get(client.tradeId);
+      if (session) closeTrade(session, `${client.name} หลุดจากการแลกเปลี่ยน`, false);
+    }
+    for (const [inviteId, invite] of tradeInvites) {
+      if (invite.fromPeerId === client.id || invite.targetPeerId === client.id) {
+        tradeInvites.delete(inviteId);
+      }
+    }
     for (const [inviteId, invite] of guildInvites) {
       if (invite.fromPeerId === client.id || invite.targetPeerId === client.id) {
         guildInvites.delete(inviteId);
