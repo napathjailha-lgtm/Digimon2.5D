@@ -11,6 +11,10 @@ var remotes: Dictionary = {}
 var local_chat_bubble: WorldChatBubble
 var local_guild_label: Label
 
+var _last_remote_interaction_ms: int = -1000
+var _last_remote_interaction_peer: String = ""
+const REMOTE_INTERACTION_DEBOUNCE_MS := 180
+
 func _ready() -> void:
     OnlineManager.remote_joined.connect(_on_remote_joined)
     OnlineManager.remote_left.connect(_on_remote_left)
@@ -114,6 +118,62 @@ func _ensure_remote(peer_id: String, payload: Dictionary) -> RemoteTamer:
         remote.interaction_requested.connect(_on_remote_interaction_requested)
     remotes[peer_id] = remote
     return remote
+
+func _unhandled_input(event: InputEvent) -> void:
+    if remotes.is_empty() or not OnlineManager.connected:
+        return
+
+    var point := Vector2.ZERO
+    var activate: bool = false
+
+    if event is InputEventMouseButton:
+        activate = event.pressed and event.button_index == MOUSE_BUTTON_LEFT
+        point = event.position
+    elif event is InputEventScreenTouch:
+        activate = event.pressed and not event.canceled
+        point = event.position
+
+    if not activate:
+        return
+
+    var picked := _remote_at_screen_point(point)
+    if picked == null:
+        return
+
+    var now: int = Time.get_ticks_msec()
+    if (
+        picked.peer_id == _last_remote_interaction_peer
+        and now - _last_remote_interaction_ms < REMOTE_INTERACTION_DEBOUNCE_MS
+    ):
+        get_viewport().set_input_as_handled()
+        return
+
+    _last_remote_interaction_peer = picked.peer_id
+    _last_remote_interaction_ms = now
+    picked.request_interaction()
+    get_viewport().set_input_as_handled()
+
+
+func _remote_at_screen_point(screen_point: Vector2) -> RemoteTamer:
+    var best: RemoteTamer = null
+    var best_distance: float = INF
+
+    for value: Variant in remotes.values():
+        if not is_instance_valid(value) or not (value is RemoteTamer):
+            continue
+        var remote := value as RemoteTamer
+        if not remote.contains_screen_point(screen_point):
+            continue
+
+        # ถ้าผู้เล่นซ้อนกัน ให้เลือกตัวที่จุดกึ่งกลางใกล้ pointer มากที่สุด
+        var center: Vector2 = remote.get_global_transform_with_canvas() * Vector2(0.0, -68.0)
+        var distance: float = center.distance_squared_to(screen_point)
+        if distance < best_distance:
+            best = remote
+            best_distance = distance
+
+    return best
+
 
 func _on_remote_interaction_requested(peer_id: String, display_name: String, guild_name: String) -> void:
     OnlineManager.request_remote_interaction(peer_id, display_name, guild_name)
