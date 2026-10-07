@@ -19,47 +19,7 @@ jobs:
       - name: Reject committed signing secrets
         run: |
           set -eu
-          signing_files="$(git ls-files | grep -Ei '\.(keystore|jks|p12|pfx)      - name: Setup Godot 4.7.1
-        uses: chickensoft-games/setup-godot@v2
-        with:
-          version: 4.7.1
-          use-dotnet: false
-          include-templates: true
-      - name: Import and parse project
-        run: python3 tools/check_godot.py --headless --path . --editor --quit
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Online server safety regression
-        working-directory: server/online-server
-        run: |
-          npm ci --ignore-scripts
-          npm test
-
-      - name: Validate every shipped script and resource
-        run: python3 tools/check_godot.py --headless --path . --script res://tests/project_integrity.gd
-
-      - name: Resource load smoke test
-        run: python3 tools/check_godot.py --headless --path . --script res://tests/resource_load_smoke.gd
-      - name: Online client lifecycle regression
-        run: python3 tools/check_godot.py --headless --path . res://tests/online_lifecycle_test.tscn
-
-      - name: Boot and menu runtime regression
-        run: python3 tools/check_godot.py --headless --path . res://tests/current_runtime_test.tscn
-
-      - name: Adventure partner evolution and combat regression
-        run: python3 tools/check_godot.py --headless --path . res://tests/adventure_partners_test.tscn
-
-      - name: Inventory, loot and consumable regression
-        run: python3 tools/check_godot.py --headless --path . res://tests/inventory_loot_test.tscn
-
-      - name: Validate Web export
-        run: |
-          mkdir -p /tmp/digimon-web
-          python3 tools/check_godot.py --headless --path . --export-release "Web" /tmp/digimon-web/index.html
- || true)"
+          signing_files="$(git ls-files '*.keystore' '*.jks' '*.p12' '*.pfx')"
           if [ -n "$signing_files" ]; then
             echo "::error::Signing material must never be committed to the repository."
             printf '%s\n' "$signing_files"
