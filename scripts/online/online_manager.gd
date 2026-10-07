@@ -39,6 +39,8 @@ var local_player: Tamer
 var _send_left: float = 0.0
 var _reconnect_left: float = 0.0
 var _manual_disconnect: bool = false
+var _socket_open_announced: bool = false
+var _hello_character_key: String = ""
 var _last_facing: String = "down"
 
 func _ready() -> void:
@@ -57,8 +59,9 @@ func configure(url: String, auto_connect_now: bool = true) -> void:
 func bind_world(player: Tamer, next_zone: StringName) -> void:
     local_player = player
     zone_id = next_zone
-    if connected:
-        _send_json(_presence_payload("hello"))
+    if socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
+        _hello_character_key = ""
+        _try_send_hello()
 
 func unbind_world(player: Tamer) -> void:
     if local_player == player:
@@ -68,6 +71,8 @@ func connect_to_server() -> void:
     if server_url.is_empty() or connected or connecting:
         return
     _manual_disconnect = false
+    _socket_open_announced = false
+    _hello_character_key = ""
     socket = WebSocketPeer.new()
     var error := socket.connect_to_url(server_url)
     if error != OK:
@@ -83,6 +88,8 @@ func disconnect_from_server() -> void:
         socket.close(1000, "client disconnect")
     connected = false
     connecting = false
+    _socket_open_announced = false
+    _hello_character_key = ""
     local_peer_id = ""
     _set_online_counts(0, 0)
     guild.clear()
@@ -98,24 +105,27 @@ func _process(delta: float) -> void:
 
     state = socket.get_ready_state()
     if state == WebSocketPeer.STATE_OPEN:
-        if not connected:
-            connected = true
-            connecting = false
+        if not _socket_open_announced:
+            _socket_open_announced = true
             _reconnect_left = 0.0
-            connection_changed.emit(true, "Online")
-            _send_json(_presence_payload("hello"))
+            connection_changed.emit(false, "เชื่อมต่อ Online Server แล้ว · รอยืนยันตัวละคร")
+        _try_send_hello()
+
         while socket.get_available_packet_count() > 0:
             _handle_packet(socket.get_packet().get_string_from_utf8())
 
-        _send_left -= delta
-        if _send_left <= 0.0 and is_instance_valid(local_player):
-            _send_left = float(ProjectSettings.get_setting("online/send_interval", DEFAULT_SEND_INTERVAL))
-            _send_player_state()
+        if connected:
+            _send_left -= delta
+            if _send_left <= 0.0 and is_instance_valid(local_player):
+                _send_left = float(ProjectSettings.get_setting("online/send_interval", DEFAULT_SEND_INTERVAL))
+                _send_player_state()
         return
 
     if connected or connecting:
         connected = false
         connecting = false
+        _socket_open_announced = false
+        _hello_character_key = ""
         local_peer_id = ""
         _set_online_counts(0, 0)
         guild.clear()
@@ -131,6 +141,16 @@ func _process(delta: float) -> void:
         _reconnect_left -= delta
         if _reconnect_left <= 0.0:
             connect_to_server()
+
+func _try_send_hello() -> void:
+    if socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
+        return
+    var character_key := _character_key()
+    if character_key.is_empty() or character_key == _hello_character_key:
+        return
+    _hello_character_key = character_key
+    _send_json(_presence_payload("hello"))
+
 
 func _send_player_state() -> void:
     var velocity := local_player.get_real_velocity()
@@ -203,6 +223,13 @@ func _handle_packet(raw: String) -> void:
     match str(payload.get("type", "")):
         "welcome":
             local_peer_id = str(payload.get("id", ""))
+        "online_ready":
+            local_peer_id = str(payload.get("id", local_peer_id))
+            if not connected:
+                connected = true
+                connecting = false
+                _reconnect_left = 0.0
+                connection_changed.emit(true, "Online")
         "join":
             var id := str(payload.get("id", ""))
             if not id.is_empty() and id != local_peer_id:
@@ -266,7 +293,13 @@ func _handle_packet(raw: String) -> void:
         "identity_error":
             var identity_message: String = str(payload.get("message", "Online identity ไม่ถูกต้อง"))
             GameChat.add_system(identity_message)
+            connected = false
+            connecting = true
+            _hello_character_key = ""
+            _set_online_counts(0, 0)
             connection_changed.emit(false, identity_message)
+            if socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
+                socket.close(1008, "identity rejected")
 
 func _set_online_counts(total: int, current_zone: int) -> void:
     var safe_total: int = maxi(0, total)
