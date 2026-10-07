@@ -47,3 +47,37 @@ GitHub Pages deploy ตัวเกมเมื่อ merge เข้า main �
 จาก root directory `server/online-server` ใน commit เดียวกัน (Auto Deploy หรือ Redeploy)
 ตรวจ `/health` ว่า `release` เป็น `online-safety-2026-10-07` และ commit ตรงกับ main
 ก่อนถือว่าปิดช่องโหว่ฝั่ง server แล้ว การ deploy Pages อย่างเดียวไม่อัปเดต server
+
+
+## Encrypted JSON Storage
+
+Production ใช้ JSON บน Railway Volume `/data` เป็น storage ชั่วคราวก่อนย้าย PostgreSQL:
+
+- `accounts.json`
+- `characters.json`
+- `inventories.json`
+- `partners.json`
+- `guilds.json`
+- `transactions.json`
+
+ทุกไฟล์เขียนเป็น encrypted envelope ด้วย **AES-256-GCM** ไม่เก็บข้อมูลผู้เล่นเป็น plaintext
+และใช้ authentication tag เพื่อตรวจว่าข้อมูลถูกแก้ไขหรือเสียหายหรือไม่
+
+ต้องตั้ง Environment Variable บน Railway:
+
+```
+DATA_ENCRYPTION_KEY=<32-byte secret>
+```
+
+รองรับค่าแบบ 64 hex characters หรือ base64 ที่ decode แล้วได้ 32 bytes
+ห้าม commit key ลง GitHub และห้ามส่ง key ไปที่ Godot client
+
+เมื่อ server รุ่นนี้เจอ `guilds.json` แบบ plaintext รุ่นเดิม จะอ่านข้อมูลเดิมและเขียนกลับ
+เป็น AES-256-GCM โดยอัตโนมัติในครั้งแรก เพื่อรักษาข้อมูลกิลด์เดิมไว้
+
+หาก key หายหรือเปลี่ยนโดยไม่มี migration key เดิม ข้อมูลเดิมจะถอดรหัสไม่ได้
+server จึง fail closed และไม่ reset ข้อมูลทิ้งอัตโนมัติ
+
+ขณะนี้ server เริ่มสร้าง secure character shell และพื้นที่สำหรับ inventory/partner/transaction แล้ว
+แต่ economy จาก local save ยังถือว่ายังไม่ได้ migrate (`migrated: false`) ดังนั้น Trade ยังคงปิดอยู่
+จนกว่า Bits/Item/Equipment/Partner ทั้งหมดจะถูกย้ายมาเป็น server-authoritative จริง
