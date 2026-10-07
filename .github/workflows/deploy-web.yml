@@ -55,6 +55,9 @@ jobs:
       - name: Inventory, loot and consumable regression
         run: python3 tools/check_godot.py --headless --path . res://tests/inventory_loot_test.tscn
 
+      - name: Frontier quest chain regression
+        run: python3 tools/check_godot.py --headless --path . res://tests/frontier_quests_test.tscn
+
       - name: Export Web
         run: |
           mkdir -p build/web
