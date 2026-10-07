@@ -44,8 +44,23 @@ func _on_player_hitbox_input(_viewport: Node, event: InputEvent, _shape_idx: int
         activate = event.pressed and event.button_index == MOUSE_BUTTON_LEFT
     if not activate:
         return
-    interaction_requested.emit(peer_id, display_name, guild_name)
+    request_interaction()
     get_viewport().set_input_as_handled()
+
+func contains_screen_point(screen_point: Vector2) -> bool:
+    # ใช้ hit-test จาก Canvas transform โดยตรง แทนการพึ่ง Area2D picking
+    # เพื่อให้ Web/PC ที่เปิด mouse<->touch emulation คลิกผู้เล่นได้สม่ำเสมอ
+    if not is_visible_in_tree() or not initialized:
+        return false
+    var local: Vector2 = get_global_transform_with_canvas().affine_inverse() * screen_point
+    return Rect2(Vector2(-62.0, -158.0), Vector2(124.0, 178.0)).has_point(local)
+
+
+func request_interaction() -> void:
+    if peer_id.is_empty():
+        return
+    interaction_requested.emit(peer_id, display_name, guild_name)
+
 
 func show_chat(message: String) -> void:
     if is_instance_valid(chat_bubble):
