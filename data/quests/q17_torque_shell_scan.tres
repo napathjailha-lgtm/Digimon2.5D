@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q17_torque_shell_scan"
+title = "เกราะข้อมูลที่แข็งตัว"
+description = "พบ Torque วิศวกรภาคสนามเพื่อรับเครื่องสแกนสำหรับตรวจ Iron Shell Crab"
+zone_id = &"file_island"
+objective = 0
+target_id = &"frontier_torque"
+required_count = 1
+recommended_level = 29
+reward_exp = 2700
+reward_bits = 650
+unlock_flags = Array[StringName]([])
+unlock_zones = Array[StringName]([])
+unlock_stage = -1
