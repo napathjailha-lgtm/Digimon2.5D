@@ -4,10 +4,10 @@
 [resource]
 script = ExtResource("1")
 item_id = "digitama_emberclaw"
-item_name = "Emberclaw Digitama"
+item_name = "Flameclaw Digitama"
 item_type = 2
 item_texture = ExtResource("2")
-description = "ไข่สายมังกรเพลิง: ฟักสำเร็จจะได้ Emberclaw 100%"
+description = "ไข่สายมังกรเพลิง Flameclaw: ฟักสำเร็จจะได้ Flameclaw 100%"
 egg_partner_id = &"emberclaw"
 required_chip_id = "data_chip"
 inject_goal = 5

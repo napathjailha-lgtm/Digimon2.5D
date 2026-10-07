@@ -4,7 +4,7 @@
 script = ExtResource("1")
 id = &"q01_emberclaw"
 title = "คู่หูคนแรก"
-description = "คุยกับ Emberclaw เพื่อเริ่มสำรวจโลกดิจิทัล"
+description = "คุยกับ Flameclaw เพื่อเริ่มสำรวจโลกดิจิทัล"
 zone_id = &"file_island"
 objective = 0
 target_id = &"emberclaw"
