@@ -155,6 +155,19 @@ func run() -> void:
     var json_copy: Dictionary = JSON.parse_string(JSON.stringify(manager.get_save_data()))
     manager.restore_data(json_copy)
     check(manager.count("meat") == 5, "JSON round-trip จำนวนตรง")
+
+    # Player Trade transaction: ตรวจของ/Bits ก่อน commit และย้ายสองฝั่งใน snapshot เดียว
+    GameManager.bits = 500
+    GameManager.bits_changed.emit(GameManager.bits)
+    manager.add_item(egg, 1)
+    var trade_out: Array[Dictionary] = [{"id":"meat", "quantity":2}]
+    var trade_in: Array[Dictionary] = [{"id":"digitama", "quantity":1}]
+    check(manager.validate_trade(trade_out, trade_in, 100, 50).is_empty(), "Trade prepare ตรวจของและ Bits ผ่าน")
+    check(manager.apply_trade(trade_out, trade_in, 100, 50), "Trade commit แบบ atomic สำเร็จ")
+    check(manager.count("meat") == 3 and manager.count("digitama") == 2 and GameManager.bits == 450, "Trade ย้ายไอเทมและ Bits ถูกต้อง")
+    check(not manager.validate_trade([{"id":"meat","quantity":99}], [], 0, 0).is_empty(), "Trade ปฏิเสธจำนวนที่ไม่มีจริง")
+    manager.restore_data({"stacks":[{"id":"meat","quantity":5}]})
+
     check(not manager.drop_item(-1) and not manager.drop_item(0, 6), "ทิ้ง index/จำนวนผิดไม่ได้")
     manager.add_item(egg, 1)
     partner.take_damage(60)
