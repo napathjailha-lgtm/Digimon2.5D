@@ -254,8 +254,14 @@ function sanitizeCooldowns(raw) {
 function sanitizePartnerEntry(raw) {
   if (!raw || typeof raw !== "object") return null;
   const id = safeId(raw.id);
-  const uid = safeId(raw.uid, 96);
-  if (!id || !uid) return null;
+  if (!id) return null;
+
+  // Legacy roster saves (before per-partner UID) must never be dropped.
+  // Create a durable safe UID instead of deleting the occupied partner slot.
+  let uid = safeId(raw.uid, 96);
+  if (!uid) {
+    uid = `${id}-legacy-${crypto.randomUUID()}`;
+  }
 
   const unlocked = [];
   if (Array.isArray(raw.unlocked_forms)) {
