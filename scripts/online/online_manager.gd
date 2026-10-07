@@ -13,6 +13,13 @@ signal guild_chat(peer_id: String, sender: String, text: String)
 signal guild_feedback(message: String, ok: bool)
 signal guild_invite_received(invite: Dictionary)
 signal remote_interaction_requested(peer_id: String, display_name: String, guild_name: String)
+signal trade_invite_received(invite: Dictionary)
+signal trade_opened(snapshot: Dictionary)
+signal trade_changed(snapshot: Dictionary)
+signal trade_prepare(payload: Dictionary)
+signal trade_commit(payload: Dictionary)
+signal trade_closed(message: String, success: bool)
+signal trade_feedback(message: String, ok: bool)
 
 const DEFAULT_SEND_INTERVAL := 0.10
 const RECONNECT_DELAY := 4.0
@@ -25,6 +32,7 @@ var local_peer_id: String = ""
 var total_online: int = 0
 var zone_online: int = 0
 var guild: Dictionary = {}
+var trade: Dictionary = {}
 var server_url: String = ""
 var zone_id: StringName = &"file_island"
 var local_player: Tamer
@@ -79,6 +87,8 @@ func disconnect_from_server() -> void:
     _set_online_counts(0, 0)
     guild.clear()
     guild_changed.emit({})
+    trade.clear()
+    trade_closed.emit("การเชื่อมต่อถูกปิด", false)
     connection_changed.emit(false, "Offline")
 
 func _process(delta: float) -> void:
@@ -110,6 +120,9 @@ func _process(delta: float) -> void:
         _set_online_counts(0, 0)
         guild.clear()
         guild_changed.emit({})
+        if not trade.is_empty():
+            trade.clear()
+            trade_closed.emit("หลุดจาก Online Server การแลกเปลี่ยนถูกยกเลิก", false)
         connection_changed.emit(false, "หลุดจาก Online Server")
         if not _manual_disconnect:
             _reconnect_left = RECONNECT_DELAY
@@ -228,6 +241,28 @@ func _handle_packet(raw: String) -> void:
             )
         "guild_invite":
             guild_invite_received.emit(payload.duplicate(true))
+        "trade_invite":
+            trade_invite_received.emit(payload.duplicate(true))
+        "trade_open":
+            trade = payload.duplicate(true)
+            trade_opened.emit(trade.duplicate(true))
+        "trade_snapshot":
+            trade = payload.duplicate(true)
+            trade_changed.emit(trade.duplicate(true))
+        "trade_prepare":
+            trade_prepare.emit(payload.duplicate(true))
+        "trade_commit":
+            trade_commit.emit(payload.duplicate(true))
+        "trade_closed":
+            var trade_message: String = str(payload.get("message", ""))
+            var trade_success: bool = bool(payload.get("success", false))
+            trade.clear()
+            trade_closed.emit(trade_message, trade_success)
+        "trade_feedback":
+            trade_feedback.emit(
+                str(payload.get("message", "")),
+                bool(payload.get("ok", false))
+            )
 
 func _set_online_counts(total: int, current_zone: int) -> void:
     var safe_total: int = maxi(0, total)
@@ -237,6 +272,73 @@ func _set_online_counts(total: int, current_zone: int) -> void:
     total_online = safe_total
     zone_online = safe_zone
     online_count_changed.emit(total_online, zone_online)
+
+
+func request_trade(peer_id: String) -> bool:
+    if not connected or not trade.is_empty():
+        return false
+    var clean: String = peer_id.strip_edges().substr(0, 80)
+    if clean.is_empty() or clean == local_peer_id:
+        return false
+    _send_json({"type": "trade_request", "target_peer_id": clean})
+    return true
+
+
+func respond_trade_invite(invite_id: String, accept: bool) -> bool:
+    if not connected:
+        return false
+    var clean: String = invite_id.strip_edges().substr(0, 80)
+    if clean.is_empty():
+        return false
+    _send_json({
+        "type": "trade_invite_response",
+        "invite_id": clean,
+        "accept": accept
+    })
+    return true
+
+
+func update_trade_offer(items: Array, bits: int) -> bool:
+    if not connected or trade.is_empty():
+        return false
+    _send_json({
+        "type": "trade_offer",
+        "offer": {
+            "items": items,
+            "bits": clampi(bits, 0, 2_000_000_000)
+        }
+    })
+    return true
+
+
+func set_trade_ready(ready: bool) -> bool:
+    if not connected or trade.is_empty():
+        return false
+    _send_json({"type": "trade_ready", "ready": ready})
+    return true
+
+
+func confirm_trade() -> bool:
+    if not connected or trade.is_empty():
+        return false
+    _send_json({"type": "trade_confirm"})
+    return true
+
+
+func send_trade_prepare_result(trade_id: String, ok: bool, message: String = "") -> void:
+    if not connected:
+        return
+    _send_json({
+        "type": "trade_prepare_result",
+        "trade_id": trade_id,
+        "ok": ok,
+        "message": message.substr(0, 160)
+    })
+
+
+func cancel_trade() -> void:
+    if connected and not trade.is_empty():
+        _send_json({"type": "trade_cancel"})
 
 
 func create_guild(name: String) -> bool:
