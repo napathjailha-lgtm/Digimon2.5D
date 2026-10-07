@@ -263,6 +263,10 @@ func _handle_packet(raw: String) -> void:
                 str(payload.get("message", "")),
                 bool(payload.get("ok", false))
             )
+        "identity_error":
+            var identity_message: String = str(payload.get("message", "Online identity ไม่ถูกต้อง"))
+            GameChat.add_system(identity_message)
+            connection_changed.emit(false, identity_message)
 
 func _set_online_counts(total: int, current_zone: int) -> void:
     var safe_total: int = maxi(0, total)
