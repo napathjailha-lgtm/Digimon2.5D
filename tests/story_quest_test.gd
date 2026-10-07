@@ -188,8 +188,9 @@ func run() -> void:
     boss = (world.get_node("Spawners/BossSpawner") as MonsterSpawner).current_monster
     boss.take_damage(9999, partner)
     await process_frame
-    check(quest_manager.get_current_quest() == null and quest_manager.has_flag(&"adventure_complete"), "จบเควสต์ทั้งหมดและรับ flag สุดท้าย")
-    check(current_tracker(world).title_label.text.contains("สำเร็จ"), "Tracker แสดงสถานะจบเนื้อเรื่อง")
+    check(quest_manager.has_flag(&"adventure_complete"), "จบเนื้อเรื่องหลักเดิมและรับ flag adventure_complete")
+    check(quest_manager.catalog.quests.size() == 32, "Catalog มีเควสต์เดิม 12 + Frontier Operations ใหม่ 20 เควสต์")
+    check(quest_manager.get_current_quest() != null and quest_manager.get_current_quest().id == &"q09_mira_briefing", "หลัง Piedmon มี Frontier Operations ต่อทันที")
     world.queue_free()
     await process_frame
     quest_manager.reset_progress(false)
