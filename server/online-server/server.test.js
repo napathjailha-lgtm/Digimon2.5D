@@ -1,16 +1,26 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { WebSocket } from 'ws';
+import { EncryptedJsonStore } from './encrypted_json_store.js';
+
+const TEST_ENCRYPTION_KEY = '11'.repeat(32);
 
 async function fixture(t, heartbeat = 30000) {
   const dir = await mkdtemp(join(tmpdir(), 'online-test-'));
   const child = spawn(process.execPath, ['server.js'], {
     cwd: import.meta.dirname,
-    env: { ...process.env, PORT: '0', GUILD_DATA_PATH: join(dir, 'guilds.json'), HEARTBEAT_MS: String(heartbeat) },
+    env: {
+      ...process.env,
+      PORT: '0',
+      DATA_DIR: dir,
+      GUILD_DATA_PATH: join(dir, 'guilds.json'),
+      DATA_ENCRYPTION_KEY: TEST_ENCRYPTION_KEY,
+      HEARTBEAT_MS: String(heartbeat),
+    },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   const peers = [];
@@ -64,8 +74,58 @@ async function fixture(t, heartbeat = 30000) {
     client.id = (await client.wait('welcome')).id;
     return client;
   }
-  return { peer, health: async () => (await fetch(`http://127.0.0.1:${port}/health`)).json() };
+  return {
+    dir,
+    peer,
+    health: async () => (await fetch(`http://127.0.0.1:${port}/health`)).json(),
+  };
 }
+
+test('encrypted JSON store migrates plaintext and rejects authenticated tampering', async t => {
+  const dir = await mkdtemp(join(tmpdir(), 'encrypted-store-test-'));
+  t.after(async () => rm(dir, { recursive: true, force: true }));
+  const path = join(dir, 'legacy.json');
+  await writeFile(path, JSON.stringify({ version: 1, secret: 'plain-secret-value' }), 'utf8');
+
+  const store = new EncryptedJsonStore({
+    path,
+    name: 'legacy-test',
+    defaultValue: { version: 1 },
+    key: TEST_ENCRYPTION_KEY,
+  });
+  assert.deepEqual(store.load(), { version: 1, secret: 'plain-secret-value' });
+
+  const encryptedText = await readFile(path, 'utf8');
+  assert.equal(encryptedText.includes('plain-secret-value'), false);
+  const envelope = JSON.parse(encryptedText);
+  assert.equal(envelope.algorithm, 'aes-256-gcm');
+
+  const ciphertext = Buffer.from(envelope.ciphertext, 'base64');
+  ciphertext[0] ^= 0xff;
+  envelope.ciphertext = ciphertext.toString('base64');
+  await writeFile(path, JSON.stringify(envelope), 'utf8');
+  assert.throws(() => store.load(), /could not be decrypted/);
+});
+
+test('online server persists guild and character shell only as encrypted JSON', async t => {
+  const f = await fixture(t);
+  const a = await f.peer();
+  await a.hello('a');
+  a.send({ type: 'guild_create', name: 'Encrypted Guild' });
+  await a.wait('guild_snapshot', m => m.guild?.name === 'Encrypted Guild');
+
+  const guildText = await readFile(join(f.dir, 'guilds.json'), 'utf8');
+  const characterText = await readFile(join(f.dir, 'characters.json'), 'utf8');
+  assert.equal(guildText.includes('Encrypted Guild'), false);
+  assert.equal(characterText.includes('v2:' + 'a'.repeat(64)), false);
+  assert.equal(JSON.parse(guildText).algorithm, 'aes-256-gcm');
+  assert.equal(JSON.parse(characterText).algorithm, 'aes-256-gcm');
+
+  const health = await f.health();
+  assert.equal(health.storage.encrypted, true);
+  assert.equal(health.storage.algorithm, 'aes-256-gcm');
+  assert.equal(health.storage.characters, 1);
+});
 
 test('all legacy trade commands fail closed, including forged commit preparation', async t => {
   const f = await fixture(t), a = await f.peer(), b = await f.peer();
