@@ -79,6 +79,97 @@ func add_item(item: ItemData, quantity: int = 1) -> bool:
     changed.emit()
     return true
 
+func is_tradeable(item: ItemData) -> bool:
+    # ไอเทมเควสต์ผูกกับความคืบหน้าตัวละคร ห้ามส่งต่อ
+    return item != null and item.item_type != ItemData.ItemType.QUEST_ITEM
+
+
+func validate_trade(outgoing: Array, incoming: Array, outgoing_bits: int = 0, incoming_bits: int = 0) -> String:
+    if _busy or catalog == null:
+        return "กระเป๋ากำลังถูกใช้งาน"
+    if outgoing_bits < 0 or incoming_bits < 0:
+        return "จำนวน Bits ไม่ถูกต้อง"
+    if not GameManager.can_apply_trade_bits(outgoing_bits, incoming_bits):
+        return "Bits ไม่เพียงพอหรือเกินเพดาน"
+
+    var simulated: Dictionary = {}
+    for entry: Dictionary in _items:
+        var current: ItemData = entry.item
+        simulated[current.item_id] = int(entry.quantity)
+
+    for value: Variant in outgoing:
+        if not (value is Dictionary):
+            return "ข้อมูลไอเทมที่เสนอไม่ถูกต้อง"
+        var entry := value as Dictionary
+        var item_id: String = str(entry.get("id", ""))
+        var quantity: int = int(entry.get("quantity", 0))
+        var item: ItemData = catalog.find_item(item_id)
+        if item == null or not is_tradeable(item) or quantity <= 0:
+            return "มีไอเทมที่ไม่สามารถแลกเปลี่ยนได้"
+        var owned: int = int(simulated.get(item_id, 0))
+        if owned < quantity:
+            return "%s มีไม่ครบตามจำนวนที่เสนอ" % item.item_name
+        simulated[item_id] = owned - quantity
+
+    for value: Variant in incoming:
+        if not (value is Dictionary):
+            return "ข้อมูลไอเทมที่จะรับไม่ถูกต้อง"
+        var entry := value as Dictionary
+        var item_id: String = str(entry.get("id", ""))
+        var quantity: int = int(entry.get("quantity", 0))
+        var item: ItemData = catalog.find_item(item_id)
+        if item == null or not is_tradeable(item) or quantity <= 0:
+            return "มีไอเทมฝั่งคู่ค้าไม่ถูกต้อง"
+        var next_quantity: int = int(simulated.get(item_id, 0)) + quantity
+        if next_quantity > max_stack:
+            return "%s จะเกินจำนวนซ้อนสูงสุด" % item.item_name
+        simulated[item_id] = next_quantity
+
+    var used_slots: int = 0
+    for amount: Variant in simulated.values():
+        if int(amount) > 0:
+            used_slots += 1
+    if used_slots > max_slots:
+        return "กระเป๋าไม่พอรับของจากการแลกเปลี่ยน"
+    return ""
+
+
+func apply_trade(outgoing: Array, incoming: Array, outgoing_bits: int = 0, incoming_bits: int = 0) -> bool:
+    var error: String = validate_trade(outgoing, incoming, outgoing_bits, incoming_bits)
+    if not error.is_empty():
+        feedback.emit(error)
+        return false
+
+    _busy = true
+    for value: Variant in outgoing:
+        var entry := value as Dictionary
+        var item_id: String = str(entry.get("id", ""))
+        var quantity: int = int(entry.get("quantity", 0))
+        var index: int = index_of(item_id)
+        if index >= 0:
+            _remove(index, quantity)
+
+    for value: Variant in incoming:
+        var entry := value as Dictionary
+        var item_id: String = str(entry.get("id", ""))
+        var quantity: int = int(entry.get("quantity", 0))
+        var item: ItemData = catalog.find_item(item_id)
+        var index: int = index_of(item_id)
+        if index < 0:
+            _items.append({"item": item, "quantity": quantity})
+        else:
+            _items[index].quantity += quantity
+
+    var bits_ok: bool = GameManager.apply_trade_bits(outgoing_bits, incoming_bits)
+    _busy = false
+    if not bits_ok:
+        push_error("InventoryManager: validated trade failed Bits commit")
+        return false
+    changed.emit()
+    feedback.emit("แลกเปลี่ยนสำเร็จ")
+    return true
+
+
 func can_use_item(item: ItemData) -> bool:
     # ใช้ guard เดียวกันทั้ง UI และคำสั่งจริง ไม่ปิดอาหารเพราะ HP คู่หูเต็ม/ยังเป็นไข่
     return _use_error(item,player_node()).is_empty()
