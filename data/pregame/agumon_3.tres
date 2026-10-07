@@ -1,23 +1,25 @@
-[gd_resource type="Resource" script_class="MonsterData" load_steps=6 format=3]
+[gd_resource type="Resource" script_class="MonsterData" load_steps=7 format=3]
 [ext_resource type="Script" path="res://scripts/monster_data.gd" id="s"]
-[ext_resource type="SpriteFrames" path="res://data/mega_frames.tres" id="f"]
-[ext_resource type="Resource" path="res://data/pregame/agumon_3_terra_force.tres" id="k0"]
-[ext_resource type="Resource" path="res://data/pregame/agumon_3_great_tornado.tres" id="k1"]
+[ext_resource type="SpriteFrames" path="res://data/pregame/aegisdrake_frames.tres" id="f"]
+[ext_resource type="Texture2D" path="res://assets/original_monsters/aegisdrake_portrait.tres" id="portrait"]
+[ext_resource type="Resource" path="res://data/pregame/aegisdrake_solar_aegis.tres" id="k0"]
+[ext_resource type="Resource" path="res://data/pregame/aegisdrake_royal_inferno.tres" id="k1"]
 [ext_resource type="Script" path="res://scripts/skill_data.gd" id="kt"]
 [resource]
 script = ExtResource("s")
 id = &"agumon_3"
-monster_name = "WarGreymon"
+monster_name = "Aegisdrake"
+portrait_texture = ExtResource("portrait")
 evolution_stage = 3
 max_hp = 650
 attack = 75
 move_speed = 270.0
 attack_range = 82.0
-attack_interval = 0.8
+attack_interval = 0.75
 sprite_frames = ExtResource("f")
-sprite_scale = Vector2(0.417266, 0.417266)
-attack_sprite_scale = Vector2(0.417266, 0.417266)
-cast_sprite_scale = Vector2(0.417266, 0.417266)
+sprite_scale = Vector2(0.82, 0.82)
+attack_sprite_scale = Vector2(0.82, 0.82)
+cast_sprite_scale = Vector2(0.82, 0.82)
 animation_reference_speed = 270.0
 idle_animation = &"idle_down"
 walk_animation = &"walk_down"

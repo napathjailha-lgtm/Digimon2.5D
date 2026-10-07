@@ -1,20 +1,24 @@
-[gd_resource type="Resource" script_class="MonsterData" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="MonsterData" load_steps=6 format=3]
 [ext_resource type="Script" path="res://scripts/monster_data.gd" id="s"]
-[ext_resource type="SpriteFrames" path="res://data/pregame/agumon_2_frames.tres" id="f"]
-[ext_resource type="Resource" path="res://data/pregame/agumon_2_skill.tres" id="k"]
+[ext_resource type="SpriteFrames" path="res://data/pregame/cindergear_frames.tres" id="f"]
+[ext_resource type="Texture2D" path="res://assets/original_monsters/cindergear_portrait.tres" id="portrait"]
+[ext_resource type="Resource" path="res://data/pregame/cindergear_core_barrage.tres" id="k"]
 [ext_resource type="Script" path="res://scripts/skill_data.gd" id="kt"]
 [resource]
 script = ExtResource("s")
 id = &"agumon_2"
-monster_name = "MetalGreymon"
+monster_name = "Cindergear"
+portrait_texture = ExtResource("portrait")
 evolution_stage = 2
 max_hp = 400
 attack = 58
 move_speed = 260.0
+attack_range = 65.0
+attack_interval = 0.9
 sprite_frames = ExtResource("f")
-sprite_scale = Vector2(0.630952, 0.630952)
-attack_sprite_scale = Vector2(0.630952, 0.630952)
-cast_sprite_scale = Vector2(0.630952, 0.630952)
+sprite_scale = Vector2(0.74, 0.74)
+attack_sprite_scale = Vector2(0.74, 0.74)
+cast_sprite_scale = Vector2(0.74, 0.74)
 animation_reference_speed = 260.0
 idle_animation = &"idle_down"
 walk_animation = &"walk_down"

@@ -1,20 +1,25 @@
-[gd_resource type="Resource" script_class="MonsterData" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="MonsterData" load_steps=6 format=3]
 [ext_resource type="Script" path="res://scripts/monster_data.gd" id="s"]
-[ext_resource type="SpriteFrames" path="res://data/pregame/agumon_0_frames.tres" id="f"]
-[ext_resource type="Resource" path="res://data/pregame/agumon_0_skill.tres" id="k"]
+[ext_resource type="SpriteFrames" path="res://data/pregame/flameclaw_frames.tres" id="f"]
+[ext_resource type="Texture2D" path="res://assets/original_monsters/flameclaw_portrait.tres" id="portrait"]
+[ext_resource type="Resource" path="res://data/pregame/flameclaw_flame_burst.tres" id="k"]
 [ext_resource type="Script" path="res://scripts/skill_data.gd" id="kt"]
 [resource]
 script = ExtResource("s")
+# Legacy id retained for old character/economy snapshots.
 id = &"agumon_0"
-monster_name = "Agumon"
+monster_name = "Flameclaw"
+portrait_texture = ExtResource("portrait")
 evolution_stage = 0
 max_hp = 120
 attack = 18
 move_speed = 240.0
+attack_range = 65.0
+attack_interval = 0.9
 sprite_frames = ExtResource("f")
-sprite_scale = Vector2(0.427481, 0.427481)
-attack_sprite_scale = Vector2(0.427481, 0.427481)
-cast_sprite_scale = Vector2(0.427481, 0.427481)
+sprite_scale = Vector2(0.73, 0.73)
+attack_sprite_scale = Vector2(0.73, 0.73)
+cast_sprite_scale = Vector2(0.73, 0.73)
 animation_reference_speed = 240.0
 idle_animation = &"idle_down"
 walk_animation = &"walk_down"
