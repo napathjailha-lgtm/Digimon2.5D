@@ -424,9 +424,12 @@ func send_guild_chat(text: String) -> bool:
 
 
 func _character_key() -> String:
-    if GameManager.account_key.is_empty():
+    # Login ปัจจุบันเป็น local/demo จึงห้ามใช้ username+slot เป็น online identity:
+    # คนละเครื่องสามารถใช้ username เดียวกันได้และจะชนกันทันที
+    var uid: String = GameManager.online_character_uid()
+    if uid.is_empty():
         return ""
-    return (GameManager.account_key + "|" + str(GameManager.selected_slot)).sha256_text()
+    return "v2:" + uid
 
 
 func _on_chat_outgoing(_channel: StringName, text: String) -> void:
