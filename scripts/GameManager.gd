@@ -254,6 +254,21 @@ func sync_party(profile: Dictionary) -> void:
 func can_afford_bits(amount: int) -> bool:
     return amount >= 0 and bits >= amount
 
+func can_apply_trade_bits(outgoing: int, incoming: int) -> bool:
+    if outgoing < 0 or incoming < 0 or bits < outgoing:
+        return false
+    var result: int = bits - outgoing + incoming
+    return result >= 0 and result <= 2_000_000_000
+
+
+func apply_trade_bits(outgoing: int, incoming: int) -> bool:
+    if not can_apply_trade_bits(outgoing, incoming):
+        return false
+    bits = bits - outgoing + incoming
+    bits_changed.emit(bits)
+    return true
+
+
 func spend_bits(amount: int) -> bool:
     # หัก Bits เฉพาะเมื่อยอดคงเหลือเพียงพอ
     if amount <= 0 or bits < amount:
