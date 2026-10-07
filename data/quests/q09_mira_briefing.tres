@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q09_mira_briefing"
+title = "สัญญาณใหม่จาก Data Harbor"
+description = "พบ Mira เจ้าหน้าที่ลาดตระเวนที่ Data Harbor เพื่อรับข้อมูลความผิดปกติระลอกใหม่"
+zone_id = &"file_island"
+objective = 0
+target_id = &"frontier_mira"
+required_count = 1
+recommended_level = 16
+reward_exp = 1800
+reward_bits = 450
+unlock_flags = Array[StringName]([])
+unlock_zones = Array[StringName]([])
+unlock_stage = -1
