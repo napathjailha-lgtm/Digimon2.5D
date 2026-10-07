@@ -1,6 +1,6 @@
 extends Node
-## Online Phase 1: presence / movement / chat เท่านั้น
-## Gameplay, loot, economy และ combat ยังเป็น local เพื่อไม่เปิดช่องโกง/ทำเซฟพัง
+## Online presence + encrypted server persistence for economy/partner snapshots.
+## Combat/loot validation ยังเป็น local; Trade จึงยังปิดจน gameplay events เป็น server-authoritative
 
 signal connection_changed(connected: bool, message: String)
 signal remote_joined(peer_id: String, payload: Dictionary)
@@ -20,6 +20,8 @@ signal trade_prepare(payload: Dictionary)
 signal trade_commit(payload: Dictionary)
 signal trade_closed(message: String, success: bool)
 signal trade_feedback(message: String, ok: bool)
+signal economy_sync_changed(migrated: bool, revision: int)
+signal economy_feedback(message: String, ok: bool)
 
 const DEFAULT_SEND_INTERVAL := 0.10
 const RECONNECT_DELAY := 4.0
@@ -45,6 +47,12 @@ var _socket_open_announced: bool = false
 var _hello_character_key: String = ""
 var _hello_left: float = 0.0
 var _last_facing: String = "down"
+var economy_revision: int = 0
+var economy_migrated: bool = false
+var _economy_pending: Dictionary = {}
+var _economy_inflight: bool = false
+var _economy_applying: bool = false
+var _economy_loaded_character_key: String = ""
 
 func _ready() -> void:
     process_mode = Node.PROCESS_MODE_ALWAYS
@@ -109,6 +117,13 @@ func disconnect_from_server() -> void:
     guild_changed.emit({})
     trade.clear()
     trade_closed.emit("การเชื่อมต่อถูกปิด", false)
+    economy_revision = 0
+    economy_migrated = false
+    _economy_pending.clear()
+    _economy_inflight = false
+    _economy_applying = false
+    _economy_loaded_character_key = ""
+    economy_sync_changed.emit(false, 0)
     connection_changed.emit(false, "Offline")
 
 func _process(delta: float) -> void:
@@ -276,6 +291,12 @@ func _handle_packet(raw: String) -> void:
                 connecting = false
                 _reconnect_left = 0.0
                 connection_changed.emit(true, "Online")
+        "economy_snapshot":
+            _handle_economy_snapshot(payload)
+        "economy_ack":
+            _handle_economy_ack(payload)
+        "economy_feedback":
+            _handle_economy_feedback(payload)
         "join":
             var id := str(payload.get("id", ""))
             if not id.is_empty() and id != local_peer_id:
@@ -335,6 +356,100 @@ func _set_online_counts(total: int, current_zone: int) -> void:
     total_online = safe_total
     zone_online = safe_zone
     online_count_changed.emit(total_online, zone_online)
+
+
+func is_applying_server_economy() -> bool:
+    return _economy_applying
+
+
+func sync_economy(state: Dictionary) -> void:
+    if _economy_applying or not connected or state.is_empty():
+        return
+    _economy_pending = state.duplicate(true)
+    _flush_economy()
+
+
+func request_economy_snapshot() -> void:
+    if connected:
+        _send_json({"type": "economy_request"})
+
+
+func _flush_economy() -> void:
+    if not connected or _economy_inflight or not economy_migrated or _economy_pending.is_empty():
+        return
+    var state: Dictionary = _economy_pending.duplicate(true)
+    _economy_pending.clear()
+    _economy_inflight = true
+    _send_json({
+        "type": "economy_update",
+        "revision": economy_revision,
+        "state": state
+    })
+
+
+func _handle_economy_snapshot(payload: Dictionary) -> void:
+    if not connected or not is_instance_valid(local_player):
+        return
+    var key: String = str(payload.get("character_key", ""))
+    if key.is_empty() or key != _character_key():
+        return
+
+    var migrated: bool = bool(payload.get("migrated", false))
+    economy_revision = maxi(0, int(payload.get("revision", 0)))
+    economy_migrated = migrated
+    _economy_inflight = false
+
+    if not migrated:
+        _economy_pending.clear()
+        var local_state: Dictionary = local_player.capture_party_state()
+        if local_state.is_empty():
+            economy_feedback.emit("ยังไม่มีข้อมูลสำหรับย้ายขึ้น Server", false)
+            return
+        _economy_inflight = true
+        _send_json({
+            "type": "economy_migrate",
+            "state": local_state
+        })
+        economy_sync_changed.emit(false, economy_revision)
+        return
+
+    var server_state: Variant = payload.get("state", {})
+    if server_state is Dictionary and _economy_loaded_character_key != key:
+        _economy_applying = true
+        var applied: bool = local_player.apply_server_economy_state(server_state)
+        _economy_applying = false
+        if applied:
+            _economy_loaded_character_key = key
+            _economy_pending.clear()
+        else:
+            economy_feedback.emit("โหลดข้อมูล Economy จาก Server ไม่สำเร็จ", false)
+    economy_sync_changed.emit(true, economy_revision)
+    _flush_economy()
+
+
+func _handle_economy_ack(payload: Dictionary) -> void:
+    if str(payload.get("character_key", "")) != _character_key():
+        return
+    economy_revision = maxi(economy_revision, int(payload.get("revision", economy_revision)))
+    economy_migrated = bool(payload.get("migrated", true))
+    _economy_inflight = false
+    if _economy_loaded_character_key.is_empty():
+        _economy_loaded_character_key = _character_key()
+    economy_sync_changed.emit(economy_migrated, economy_revision)
+    _flush_economy()
+
+
+func _handle_economy_feedback(payload: Dictionary) -> void:
+    _economy_inflight = false
+    var code: String = str(payload.get("code", ""))
+    var message: String = "บันทึกข้อมูลฝั่ง Server ไม่สำเร็จ"
+    if code == "revision_conflict":
+        message = "ข้อมูล Server ใหม่กว่า กำลังโหลดข้อมูลล่าสุด"
+        _economy_pending.clear()
+    elif code == "storage_error":
+        message = "Server Storage ขัดข้อง ข้อมูลรอบนี้ยังไม่ถูกยืนยัน"
+    economy_feedback.emit(message, false)
+    GameChat.add_system(message)
 
 
 func request_trade(_peer_id: String) -> bool:
