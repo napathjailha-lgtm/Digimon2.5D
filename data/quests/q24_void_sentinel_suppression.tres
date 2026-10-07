@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q24_void_sentinel_suppression"
+title = "ปิดวงล้อม Void Sentinel"
+description = "กำจัด Void Sentinel 6 ตัวเพื่อทำให้สนามรบปลอดภัยสำหรับทีมวิจัย"
+zone_id = &"file_island"
+objective = 1
+target_id = &"void_sentinel"
+required_count = 6
+recommended_level = 42
+reward_exp = 9000
+reward_bits = 1750
+unlock_flags = Array[StringName]([])
+unlock_zones = Array[StringName]([])
+unlock_stage = -1
