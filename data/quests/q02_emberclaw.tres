@@ -4,7 +4,7 @@
 script = ExtResource("1")
 id = &"q02_emberclaw"
 title = "คำแนะนำจากนักสำรวจ"
-description = "คุยกับ Emberclaw ทางตะวันออกของหมู่บ้าน เพื่อเรียนรู้เส้นทางไป Green Data Forest และวิธีรับมือมอนสเตอร์ภาคสนาม"
+description = "คุยกับ Flameclaw ทางตะวันออกของหมู่บ้าน เพื่อเรียนรู้เส้นทางไป Green Data Forest และวิธีรับมือมอนสเตอร์ภาคสนาม"
 zone_id = &"file_island"
 objective = 0
 target_id = &"emberclaw"

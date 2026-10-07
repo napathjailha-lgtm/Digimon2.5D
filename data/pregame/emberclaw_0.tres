@@ -1,13 +1,13 @@
 [gd_resource type="Resource" script_class="MonsterData" load_steps=6 format=3]
 [ext_resource type="Script" path="res://scripts/monster_data.gd" id="s"]
 [ext_resource type="SpriteFrames" path="res://data/pregame/emberclaw_frames.tres" id="f"]
-[ext_resource type="Texture2D" path="res://assets/original_monsters/emberclaw_portrait.tres" id="portrait"]
+[ext_resource type="Texture2D" path="res://assets/original_monsters/flameclaw_portrait.tres" id="portrait"]
 [ext_resource type="Script" path="res://scripts/skill_data.gd" id="kt"]
 [ext_resource type="Resource" path="res://data/pregame/emberclaw_spark_fang.tres" id="k0"]
 [resource]
 script = ExtResource("s")
 id = &"emberclaw_0"
-monster_name = "Emberclaw"
+monster_name = "Flameclaw"
 portrait_texture = ExtResource("portrait")
 evolution_stage = 0
 max_hp = 120

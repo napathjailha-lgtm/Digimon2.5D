@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="StarterPartnerData" load_steps=8 format=3]
 [ext_resource type="Script" path="res://scripts/pregame/starter_partner_data.gd" id="s"]
-[ext_resource type="Texture2D" path="res://assets/original_monsters/emberclaw_portrait.tres" id="p"]
+[ext_resource type="Texture2D" path="res://assets/original_monsters/flameclaw_portrait.tres" id="p"]
 [ext_resource type="Script" path="res://scripts/monster_data.gd" id="mt"]
 [ext_resource type="Resource" path="res://data/pregame/emberclaw_0.tres" id="f0"]
 [ext_resource type="Resource" path="res://data/pregame/flarewing_1.tres" id="f1"]
@@ -9,7 +9,7 @@
 [resource]
 script = ExtResource("s")
 id = &"emberclaw"
-display_name = "Emberclaw"
+display_name = "Flameclaw"
 attribute_name = "Solar"
 element_name = "ไฟ"
 description = "คู่หูมังกรเพลิงต้นฉบับ • พัฒนาได้จนถึง Aegisdrake"

@@ -4,7 +4,7 @@
 script = ExtResource("1")
 id = &"q01_agumon"
 title = "เริ่มต้นที่หมู่บ้านข้อมูล"
-description = "คุยกับ Agumon ใกล้จุดเริ่มต้น แล้วเตรียมเสบียงและยา Tamer ก่อนออกจากหมู่บ้าน"
+description = "คุยกับ Flameclaw ใกล้จุดเริ่มต้น แล้วเตรียมเสบียงและยา Tamer ก่อนออกจากหมู่บ้าน"
 zone_id = &"file_island"
 objective = 0
 target_id = &"agumon"
