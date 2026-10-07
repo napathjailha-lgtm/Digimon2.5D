@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q20_verdant_wall"
+title = "กำแพง Verdant Bulwark"
+description = "กำจัด Verdant Bulwark 4 ตัวที่ปิดกั้นเส้นทางสู่พื้นที่ตะวันออกชั้นใน"
+zone_id = &"file_island"
+objective = 1
+target_id = &"verdant_bulwark"
+required_count = 4
+recommended_level = 35
+reward_exp = 6500
+reward_bits = 1300
+unlock_flags = Array[StringName]([])
+unlock_zones = Array[StringName]([])
+unlock_stage = -1
