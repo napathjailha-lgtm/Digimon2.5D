@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q28_frontier_final_trial"
+title = "บททดสอบผู้พิทักษ์ Frontier"
+description = "กำจัด Nighttalon Harrier 8 ตัวในแนวปลายเกาะ เพื่อพิสูจน์ว่าพื้นที่ Frontier กลับมาปลอดภัย"
+zone_id = &"file_island"
+objective = 1
+target_id = &"nighttalon_harrier"
+required_count = 8
+recommended_level = 45
+reward_exp = 15000
+reward_bits = 3000
+unlock_flags = Array[StringName]([&"frontier_operations_complete"])
+unlock_zones = Array[StringName]([])
+unlock_stage = -1
