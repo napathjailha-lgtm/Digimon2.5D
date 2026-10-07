@@ -42,7 +42,7 @@ func _ready() -> void:
 
 func _draw() -> void:
     # เงา
-    draw_ellipse(Vector2(0, 2), Vector2(28, 9), Color(0, 0, 0, 0.28))
+    _draw_oval(Vector2(0, 2), Vector2(28, 9), Color(0, 0, 0, 0.28))
 
     # hologram body
     var body := PackedVector2Array([
@@ -63,7 +63,7 @@ func _draw() -> void:
     draw_line(Vector2(-7, -61), Vector2(7, -61), accent_color, 2.0)
 
 
-func draw_ellipse(center: Vector2, radii: Vector2, color: Color) -> void:
+func _draw_oval(center: Vector2, radii: Vector2, color: Color) -> void:
     var points := PackedVector2Array()
     for i: int in range(24):
         var angle: float = TAU * float(i) / 24.0
