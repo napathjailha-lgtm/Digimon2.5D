@@ -79,6 +79,19 @@ func run() -> void:
         return
     check(GameManager.catalog.tamers.size() == 8 and GameManager.catalog.starters.size() == 8, "มี 8 โมเดล Tamer และ 8 คู่หู")
     check(GameManager.catalog.tamer_by_id(&"sora").gender == "หญิง" and GameManager.catalog.tamer_by_id(&"mimi").gender == "หญิง", "ข้อมูลเพศของ Sora/Mimi ถูกต้อง")
+    var original_gabumon: StarterPartnerData = GameManager.catalog.starter_by_id(&"gabumon")
+    check(original_gabumon != null and original_gabumon.starter_available,
+        "Original Gabumon remains available as a starter")
+    if original_gabumon != null:
+        check(original_gabumon.display_name == "Gabumon" and original_gabumon.forms.size() == 4,
+            "Original Gabumon family remains intact")
+        var gabumon_names: Array[String] = []
+        for gabumon_form: MonsterData in original_gabumon.forms:
+            gabumon_names.append(gabumon_form.monster_name)
+        check(gabumon_names == ["Gabumon", "Garurumon", "WereGarurumon", "MetalGarurumon"],
+            "Original Gabumon evolution names cannot be replaced by another family")
+        check(original_gabumon.portrait != null and original_gabumon.forms[0].sprite_frames != null,
+            "Original Gabumon portrait and sprite frames remain loaded")
     for starter: StarterPartnerData in GameManager.catalog.starters:
         var expected_forms: int = 4 if starter.id in [&"agumon", &"gabumon", &"patamon", &"gomamon"] else 3
         check(starter.forms.size() == expected_forms and starter.forms[0].id.begins_with(String(starter.id)), starter.display_name + " มีสายร่างเฉพาะ %d ร่าง" % expected_forms)
