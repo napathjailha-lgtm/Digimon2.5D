@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q21_cyra_twilight"
+title = "ลาดตระเวนยามสนธยา"
+description = "พบ Cyra หน่วยสอดแนมที่แนว Twilight Ridge เพื่อรับรายงานการโจมตีจากอากาศ"
+zone_id = &"file_island"
+objective = 0
+target_id = &"frontier_cyra"
+required_count = 1
+recommended_level = 36
+reward_exp = 3200
+reward_bits = 760
+unlock_flags = Array[StringName]([])
+unlock_zones = Array[StringName]([])
+unlock_stage = -1
