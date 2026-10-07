@@ -35,6 +35,27 @@ func run() -> void:
     check(hud.minimap.world_layout == layout, "มินิแมปใช้ผังถนนและสะพานเดียวกับสนาม")
     check(not environment.can_spawn_at(layout.village_center), "ไม่มีมอนสเตอร์เกิดในหมู่บ้าน")
     check(not environment.can_spawn_at(Vector2(layout.river_x, 1700)), "ไม่มีมอนสเตอร์เกิดกลางแม่น้ำ")
+    var frontier_npcs: int = 0
+    for node: Node in world.get_node("StoryPoints").get_children():
+        if node is FieldQuestNPC:
+            frontier_npcs += 1
+    check(frontier_npcs == 10, "Frontier Operations สร้าง NPC ภาคสนามใหม่ครบ 10 คน")
+    var quest_target_ids: Dictionary = {}
+    for node: Node in get_tree().get_nodes_in_group("quest_targets"):
+        var target := node as QuestTarget
+        if target != null:
+            quest_target_ids[target.target_id] = true
+    var frontier_targets: Array[StringName] = [
+        &"frontier_mira", &"frontier_nami", &"frontier_rook", &"frontier_bramm",
+        &"frontier_torque", &"frontier_liora", &"frontier_cyra", &"frontier_sena",
+        &"frontier_orion", &"frontier_pax", &"crimson_byte", &"tidecoil_manta",
+        &"thunder_lynx", &"magma_ram", &"iron_shell_crab", &"verdant_bulwark",
+        &"nighttalon_harrier", &"void_sentinel"
+    ]
+    var all_frontier_targets: bool = true
+    for target_id: StringName in frontier_targets:
+        all_frontier_targets = all_frontier_targets and quest_target_ids.has(target_id)
+    check(all_frontier_targets, "NPC และมอนสเตอร์ของ Frontier Operations มี QuestTarget สำหรับ Tracker ครบ")
     var spawns_safe: bool = true
     var spawned: int = 0
     for node: Node in world.get_node("Spawners").get_children():
