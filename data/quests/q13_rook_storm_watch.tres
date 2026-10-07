@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q13_rook_storm_watch"
+title = "หอสังเกตการณ์พายุ"
+description = "ไปพบ Rook เจ้าหน้าที่เฝ้าพายุข้อมูลทางเหนือของ Data Harbor"
+zone_id = &"file_island"
+objective = 0
+target_id = &"frontier_rook"
+required_count = 1
+recommended_level = 23
+reward_exp = 2300
+reward_bits = 560
+unlock_flags = Array[StringName]([])
+unlock_zones = Array[StringName]([])
+unlock_stage = -1
