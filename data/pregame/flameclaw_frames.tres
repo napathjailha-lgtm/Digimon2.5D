@@ -3,27 +3,27 @@
 
 [sub_resource type="AtlasTexture" id="f0"]
 atlas = ExtResource("atlas")
-region = Rect2(0, 0, 128, 128)
+region = Rect2(0, 0, 96, 96)
 filter_clip = true
 [sub_resource type="AtlasTexture" id="f1"]
 atlas = ExtResource("atlas")
-region = Rect2(128, 0, 128, 128)
+region = Rect2(96, 0, 96, 96)
 filter_clip = true
 [sub_resource type="AtlasTexture" id="f2"]
 atlas = ExtResource("atlas")
-region = Rect2(256, 0, 128, 128)
+region = Rect2(192, 0, 96, 96)
 filter_clip = true
 [sub_resource type="AtlasTexture" id="f3"]
 atlas = ExtResource("atlas")
-region = Rect2(384, 0, 128, 128)
+region = Rect2(288, 0, 96, 96)
 filter_clip = true
 [sub_resource type="AtlasTexture" id="f4"]
 atlas = ExtResource("atlas")
-region = Rect2(512, 0, 128, 128)
+region = Rect2(384, 0, 96, 96)
 filter_clip = true
 [sub_resource type="AtlasTexture" id="f5"]
 atlas = ExtResource("atlas")
-region = Rect2(640, 0, 128, 128)
+region = Rect2(480, 0, 96, 96)
 filter_clip = true
 
 [resource]
