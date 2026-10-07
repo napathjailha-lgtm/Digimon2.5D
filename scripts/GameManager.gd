@@ -96,6 +96,51 @@ func _has_control_chars(value: String) -> bool:
             return true
     return false
 
+func _valid_online_uid(value: String) -> bool:
+    if value.length() != 64:
+        return false
+    for i: int in range(value.length()):
+        var code: int = value.unicode_at(i)
+        var hex_digit: bool = (
+            (code >= 48 and code <= 57)
+            or (code >= 97 and code <= 102)
+        )
+        if not hex_digit:
+            return false
+    return true
+
+
+func _new_online_uid() -> String:
+    var crypto := Crypto.new()
+    var random_bytes: PackedByteArray = crypto.generate_random_bytes(32)
+    if random_bytes.size() == 32:
+        return random_bytes.hex_encode()
+
+    # fallback สำหรับ platform ที่ไม่มี CSPRNG
+    var rng := RandomNumberGenerator.new()
+    rng.randomize()
+    return ("%s|%s|%s|%s" % [
+        Time.get_unix_time_from_system(),
+        Time.get_ticks_usec(),
+        rng.randi(),
+        rng.randi()
+    ]).sha256_text()
+
+
+func online_character_uid() -> String:
+    if selected_slot < 0 or selected_slot >= characters.size():
+        return ""
+    if characters[selected_slot].is_empty():
+        return ""
+
+    var uid: String = str(characters[selected_slot].get("online_uid", ""))
+    if not _valid_online_uid(uid):
+        uid = _new_online_uid()
+        characters[selected_slot]["online_uid"] = uid
+        save_roster()
+    return uid
+
+
 func profile_directory() -> String:
     return profile_root.path_join(account_key)
 
@@ -104,17 +149,28 @@ func character_save_path(slot_index: int) -> String:
 
 func load_roster() -> void:
     # มี 5 ช่องเสมอ กรองข้อมูลต้นแบบ/ID ที่ไม่มี ป้องกัน slot index นอกขอบ
+    # v2 เพิ่ม online_uid ถาวรต่อ "ตัวละคร" เพื่อไม่ให้คนละเครื่องที่ใช้ชื่อ Login เดียวกันชนกัน
     _empty_roster()
+    var migrated: bool = false
     var path: String = profile_directory().path_join("roster.json")
     if FileAccess.file_exists(path):
         var file: FileAccess = FileAccess.open(path, FileAccess.READ)
         if file != null:
             var parsed: Variant = JSON.parse_string(file.get_as_text())
-            if parsed is Dictionary and parsed.get("version", 0) == 1 and parsed.get("characters") is Array:
+            if parsed is Dictionary and int(parsed.get("version", 0)) in [1, 2] and parsed.get("characters") is Array:
                 var saved: Array = parsed["characters"]
                 for i: int in range(mini(SLOT_COUNT, saved.size())):
                     if saved[i] is Dictionary and _valid_record(saved[i]):
-                        characters[i] = saved[i].duplicate(true)
+                        var record: Dictionary = saved[i].duplicate(true)
+                        var uid: String = str(record.get("online_uid", ""))
+                        if not _valid_online_uid(uid):
+                            record["online_uid"] = _new_online_uid()
+                            migrated = true
+                        characters[i] = record
+                if int(parsed.get("version", 0)) != 2:
+                    migrated = true
+    if migrated:
+        save_roster()
     roster_changed.emit()
 
 func _valid_record(data: Dictionary) -> bool:
@@ -133,7 +189,7 @@ func save_roster() -> bool:
     var file: FileAccess = FileAccess.open(profile_directory().path_join("roster.json"), FileAccess.WRITE)
     if file == null:
         return _fail("บันทึกตัวละครไม่ได้: " + error_string(FileAccess.get_open_error()))
-    file.store_string(JSON.stringify({"version":1, "characters":characters}))
+    file.store_string(JSON.stringify({"version":2, "characters":characters}))
     file.close()
     return true
 
@@ -204,7 +260,8 @@ func confirm_starter(starter_id: StringName) -> bool:
     if slot_index < 0 or slot_index >= SLOT_COUNT or not characters[slot_index].is_empty():
         return _fail("ช่องนี้มีตัวละครแล้ว")
     var record: Dictionary = {"model":pending_character.model, "name":pending_character.name,
-        "starter":String(starter_id), "level":1, "created_at":int(Time.get_unix_time_from_system())}
+        "starter":String(starter_id), "level":1, "created_at":int(Time.get_unix_time_from_system()),
+        "online_uid":_new_online_uid()}
     characters[slot_index] = record
     if not save_roster():
         characters[slot_index] = {}
@@ -295,7 +352,9 @@ func import_legacy_character() -> bool:
     var data: Variant = JSON.parse_string(source)
     if not data is Dictionary or data.get("version", 0) != 1 or not data.get("party", {}) is Dictionary:
         return _fail("รูปแบบเซฟ v15 ไม่ถูกต้อง")
-    characters[selected_slot] = {"model":"taichi", "name":"Tamer v15", "starter":"legacy", "level":int(data.get("party", {}).get("tamer_progress", {}).get("level", 1))}
+    characters[selected_slot] = {"model":"taichi", "name":"Tamer v15", "starter":"legacy",
+        "level":int(data.get("party", {}).get("tamer_progress", {}).get("level", 1)),
+        "online_uid":_new_online_uid()}
     if not save_roster():
         characters[selected_slot] = {}
         return false
