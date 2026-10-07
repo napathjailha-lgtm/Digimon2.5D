@@ -1003,6 +1003,11 @@ wss.on("connection", (ws) => {
       client.position = normalizeVector(msg.position, client.position);
       applyAppearance(client, msg);
       client.ready = true;
+      send(ws, {
+        type: "online_ready",
+        id: client.id,
+        zone: client.zone,
+      });
 
       const guild = guildForClient(client);
       if (guild?.members?.[client.characterKey]) {
@@ -1027,6 +1032,8 @@ wss.on("connection", (ws) => {
       broadcastOnlineCounts();
       return;
     }
+
+    if (!client.ready) return;
 
     if (msg.type === "state") {
       const now = Date.now();
