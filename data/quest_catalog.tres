@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="QuestCatalog" load_steps=16 format=3]
+[gd_resource type="Resource" script_class="QuestCatalog" load_steps=36 format=3]
 [ext_resource type="Script" path="res://scripts/quest_catalog.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/story_quest.gd" id="2"]
 [ext_resource type="Resource" path="res://data/quests/q01_agumon.tres" id="q0"]
@@ -13,10 +13,35 @@
 [ext_resource type="Resource" path="res://data/quests/q06_eighth.tres" id="q9"]
 [ext_resource type="Resource" path="res://data/quests/q07_myotismon.tres" id="q10"]
 [ext_resource type="Resource" path="res://data/quests/q08_piedmon.tres" id="q11"]
+[ext_resource type="Resource" path="res://data/quests/q09_mira_briefing.tres" id="q12"]
+[ext_resource type="Resource" path="res://data/quests/q10_crimson_sweep.tres" id="q13"]
+[ext_resource type="Resource" path="res://data/quests/q11_nami_tide_report.tres" id="q14"]
+[ext_resource type="Resource" path="res://data/quests/q12_tidecoil_patrol.tres" id="q15"]
+[ext_resource type="Resource" path="res://data/quests/q13_rook_storm_watch.tres" id="q16"]
+[ext_resource type="Resource" path="res://data/quests/q14_thunder_lynx_hunt.tres" id="q17"]
+[ext_resource type="Resource" path="res://data/quests/q15_bramm_forge_call.tres" id="q18"]
+[ext_resource type="Resource" path="res://data/quests/q16_magma_ram_control.tres" id="q19"]
+[ext_resource type="Resource" path="res://data/quests/q17_torque_shell_scan.tres" id="q20"]
+[ext_resource type="Resource" path="res://data/quests/q18_iron_shell_break.tres" id="q21"]
+[ext_resource type="Resource" path="res://data/quests/q19_liora_green_archive.tres" id="q22"]
+[ext_resource type="Resource" path="res://data/quests/q20_verdant_wall.tres" id="q23"]
+[ext_resource type="Resource" path="res://data/quests/q21_cyra_twilight.tres" id="q24"]
+[ext_resource type="Resource" path="res://data/quests/q22_nighttalon_intercept.tres" id="q25"]
+[ext_resource type="Resource" path="res://data/quests/q23_sena_void_research.tres" id="q26"]
+[ext_resource type="Resource" path="res://data/quests/q24_void_sentinel_suppression.tres" id="q27"]
+[ext_resource type="Resource" path="res://data/quests/q25_orion_last_signal.tres" id="q28"]
+[ext_resource type="Resource" path="res://data/quests/q26_void_aftershock.tres" id="q29"]
+[ext_resource type="Resource" path="res://data/quests/q27_pax_frontier_oath.tres" id="q30"]
+[ext_resource type="Resource" path="res://data/quests/q28_frontier_final_trial.tres" id="q31"]
 [resource]
 script = ExtResource("1")
 quests = Array[ExtResource("2")]([
     ExtResource("q0"), ExtResource("q1"), ExtResource("q2"), ExtResource("q3"),
     ExtResource("q4"), ExtResource("q5"), ExtResource("q6"), ExtResource("q7"),
-    ExtResource("q8"), ExtResource("q9"), ExtResource("q10"), ExtResource("q11")
+    ExtResource("q8"), ExtResource("q9"), ExtResource("q10"), ExtResource("q11"),
+    ExtResource("q12"), ExtResource("q13"), ExtResource("q14"), ExtResource("q15"),
+    ExtResource("q16"), ExtResource("q17"), ExtResource("q18"), ExtResource("q19"),
+    ExtResource("q20"), ExtResource("q21"), ExtResource("q22"), ExtResource("q23"),
+    ExtResource("q24"), ExtResource("q25"), ExtResource("q26"), ExtResource("q27"),
+    ExtResource("q28"), ExtResource("q29"), ExtResource("q30"), ExtResource("q31")
 ])
