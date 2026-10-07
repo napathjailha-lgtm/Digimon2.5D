@@ -141,6 +141,12 @@ func _process(delta: float) -> void:
         return
 
     if connected or connecting:
+        # A close frame may arrive before the final JSON packet is delivered.
+        # Honor the close code too, so replaced/obsolete clients cannot retry.
+        var close_code: int = socket.get_close_code()
+        if close_code in [4001, 1008]:
+            _manual_disconnect = true
+            _reconnect_left = 0.0
         connected = false
         connecting = false
         _socket_open_announced = false
@@ -152,7 +158,12 @@ func _process(delta: float) -> void:
         if not trade.is_empty():
             trade.clear()
             trade_closed.emit("หลุดจาก Online Server การแลกเปลี่ยนถูกยกเลิก", false)
-        connection_changed.emit(false, "หลุดจาก Online Server")
+        var disconnect_message: String = "หลุดจาก Online Server"
+        if close_code == 4001:
+            disconnect_message = "ตัวละครนี้เชื่อมต่อจากหน้าต่างอื่นแล้ว"
+        elif close_code == 1008:
+            disconnect_message = "Online identity ถูกปฏิเสธ กรุณารีเฟรช/อัปเดตเกม"
+        connection_changed.emit(false, disconnect_message)
         if not _manual_disconnect:
             _reconnect_left = RECONNECT_DELAY
 

@@ -88,7 +88,11 @@ func run() -> void:
     OnlineManager.bind_world(player, &"file_island")
     await wait_connected()
     check(OnlineManager.connected and count_type("hello") == 2, "returning to a world opens a fresh session")
-    OnlineManager._handle_packet('{"type":"session_replaced"}')
+    # The final JSON notification may be lost when its close frame arrives.
+    sockets[-1].close(4001, "session replaced")
+    var close_deadline: int = Time.get_ticks_msec() + 3000
+    while OnlineManager.connected and Time.get_ticks_msec() < close_deadline:
+        await get_tree().process_frame
     OnlineManager._process(10.0)
     check(not OnlineManager.connected and not OnlineManager.connecting and OnlineManager._manual_disconnect,
         "replaced tab stays offline without reconnect competition")
