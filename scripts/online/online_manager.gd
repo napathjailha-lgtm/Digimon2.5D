@@ -394,6 +394,61 @@ func _flush_economy() -> void:
     })
 
 
+func _repair_missing_legacy_agumon_roster(server_state: Dictionary) -> Dictionary:
+    # Recovery for the brief broken migration that dropped pre-UID roster entries.
+    # Only repair characters whose persistent starter is the legacy Agumon slot.
+    if GameManager.partner_selected != &"agumon" or not is_instance_valid(local_player):
+        return server_state
+
+    var roster_raw: Variant = server_state.get("partner_roster", {})
+    if not (roster_raw is Dictionary):
+        return server_state
+    var members_raw: Variant = (roster_raw as Dictionary).get("members", [])
+    if not (members_raw is Array) or not (members_raw as Array).is_empty():
+        return server_state
+
+    var local_state: Dictionary = local_player.capture_party_state()
+    var local_roster_raw: Variant = local_state.get("partner_roster", {})
+    if not (local_roster_raw is Dictionary):
+        return server_state
+    var local_members_raw: Variant = (local_roster_raw as Dictionary).get("members", [])
+    if not (local_members_raw is Array) or (local_members_raw as Array).is_empty():
+        return server_state
+
+    var has_legacy_agumon: bool = false
+    for entry: Variant in local_members_raw:
+        if entry is Dictionary and str((entry as Dictionary).get("id", "")) == "agumon":
+            has_legacy_agumon = true
+            break
+    if not has_legacy_agumon:
+        return server_state
+
+    var repaired: Dictionary = server_state.duplicate(true)
+    repaired["partner_roster"] = (local_roster_raw as Dictionary).duplicate(true)
+
+    # Prefer authoritative top-level active-partner values when they exist.
+    var repaired_roster: Dictionary = repaired["partner_roster"]
+    var repaired_members: Array = repaired_roster.get("members", [])
+    var active_uid: String = str(repaired_roster.get("active_uid", ""))
+    for index: int in range(repaired_members.size()):
+        var member: Dictionary = repaired_members[index]
+        if str(member.get("id", "")) != "agumon":
+            continue
+        if active_uid.is_empty() or str(member.get("uid", "")) == active_uid:
+            var server_progress: Variant = server_state.get("partner_progress", {})
+            if server_progress is Dictionary and not (server_progress as Dictionary).is_empty():
+                member["progress"] = (server_progress as Dictionary).duplicate(true)
+            member["form_id"] = str(server_state.get("form_id", member.get("form_id", "agumon_0")))
+            member["hp"] = int(server_state.get("hp", member.get("hp", 0)))
+            member["mp"] = float(server_state.get("digimon_mp", member.get("mp", 0.0)))
+            member["egg"] = bool(server_state.get("egg", member.get("egg", false)))
+            repaired_members[index] = member
+            break
+    repaired_roster["members"] = repaired_members
+    repaired["partner_roster"] = repaired_roster
+    return repaired
+
+
 func _handle_economy_snapshot(payload: Dictionary) -> void:
     if not connected or not is_instance_valid(local_player):
         return
@@ -422,12 +477,20 @@ func _handle_economy_snapshot(payload: Dictionary) -> void:
 
     var server_state: Variant = payload.get("state", {})
     if server_state is Dictionary and _economy_loaded_character_key != key:
+        var original_state: Dictionary = (server_state as Dictionary).duplicate(true)
+        var repaired_state: Dictionary = _repair_missing_legacy_agumon_roster(original_state)
+        var repaired_missing_partner: bool = repaired_state != original_state
+
         _economy_applying = true
-        var applied: bool = local_player.apply_server_economy_state(server_state)
+        var applied: bool = local_player.apply_server_economy_state(repaired_state)
         _economy_applying = false
         if applied:
             _economy_loaded_character_key = key
             _economy_pending.clear()
+            if repaired_missing_partner:
+                _economy_pending = local_player.capture_party_state()
+                economy_feedback.emit("กู้คืนคู่หูเดิมในช่องที่หายและเปลี่ยนเป็น Flameclaw แล้ว", true)
+                GameChat.add_system("กู้คืนคู่หูเดิมในช่องที่หายและเปลี่ยนเป็น Flameclaw แล้ว")
         else:
             economy_feedback.emit("โหลดข้อมูล Economy จาก Server ไม่สำเร็จ", false)
     economy_sync_changed.emit(true, economy_revision)
