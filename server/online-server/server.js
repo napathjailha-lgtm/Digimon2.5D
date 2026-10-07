@@ -1058,8 +1058,9 @@ function broadcastGuildChat(client, text) {
 }
 
 
-// Local saves are not an authoritative economy. No trade mutation/commit path
-// may be restored until balances and durable transactions are server-owned.
+// Encrypted profiles are authoritative for persistence/revision ordering.
+ // Gameplay rewards are still client-originated, so Trade remains closed until
+ // loot/quest/shop mutations are validated as server-side events.
 function removeClient(ws) {
   const client = clients.get(ws);
   if (!client) return;
@@ -1099,7 +1100,7 @@ const server = http.createServer((req, res) => {
           algorithm: "aes-256-gcm",
           characters: Object.keys(charactersStore.characters).length,
           accounts: Object.keys(accountsStore.accounts).length,
-          pending_transactions: transactionsStore.transactions.length,
+          economy_audit_entries: transactionsStore.transactions.length,
         },
         players: readyPlayerCount(),
         sockets: clients.size,
