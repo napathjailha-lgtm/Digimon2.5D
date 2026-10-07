@@ -1,8 +1,8 @@
 name: Export Godot Web and Deploy Pages
 
+# Auto web deploy is paused intentionally while partner save/migration is being repaired.
+# Run manually from GitHub Actions only when the web build is explicitly approved.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
