@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q22_nighttalon_intercept"
+title = "สกัด Nighttalon"
+description = "กำจัด Nighttalon Harrier 5 ตัวที่กำลังดักโจมตีผู้เดินทางในเขต Twilight Ridge"
+zone_id = &"file_island"
+objective = 1
+target_id = &"nighttalon_harrier"
+required_count = 5
+recommended_level = 40
+reward_exp = 7600
+reward_bits = 1500
+unlock_flags = Array[StringName]([])
+unlock_zones = Array[StringName]([])
+unlock_stage = -1
