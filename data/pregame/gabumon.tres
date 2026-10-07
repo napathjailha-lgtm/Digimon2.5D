@@ -14,4 +14,5 @@ attribute_name = "ข้อมูล"
 element_name = "น้ำแข็ง"
 description = "คู่หูธาตุน้ำแข็ง • พัฒนาได้จนถึง MetalGarurumon"
 portrait = ExtResource("p")
+starter_available = true
 forms = Array[ExtResource("mt")]([ExtResource("f0"), ExtResource("f1"), ExtResource("f2"), ExtResource("f3")])
