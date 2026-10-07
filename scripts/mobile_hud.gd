@@ -31,6 +31,7 @@ var inventory_screen: InventoryUI
 var smart_panel: HudSmartPanel
 var digimon_screen: DigimonStatusScreen
 var guild_screen: GuildUI
+var trade_screen: TradeUI
 var _selected_remote_peer_id: String = ""
 var _selected_remote_name: String = ""
 var _selected_remote_guild: String = ""
@@ -128,6 +129,11 @@ func _ready() -> void:
     guild_screen.name = "GuildUI"
     add_child(guild_screen)
     guild_screen.configure(self)
+    trade_screen = TradeUI.new()
+    trade_screen.name = "TradeUI"
+    add_child(trade_screen)
+    trade_screen.configure(self)
+    trade_screen.closed.connect(_sync_skill_input)
     OnlineManager.remote_interaction_requested.connect(_on_remote_player_interaction)
     OnlineManager.guild_feedback.connect(_on_guild_feedback_toast)
     InventoryManager.feedback.connect(_show_message)
@@ -514,15 +520,17 @@ func _on_remote_player_interaction(peer_id: String, display_name: String, guild_
 
     var detail: String = "Tamer: %s" % _selected_remote_name
     detail += "\nกิลด์: %s" % ("<%s>" % guild_name if not guild_name.is_empty() else "ยังไม่มีกิลด์")
-    var options: Array[Dictionary] = []
+    var options: Array[Dictionary] = [
+        {"id": &"trade_player", "label": "แลกเปลี่ยน"}
+    ]
 
     if OnlineManager.guild.is_empty():
-        detail += "\n\nคุณต้องมีกิลด์ก่อนจึงจะเชิญผู้เล่นได้"
+        detail += "\n\nกิลด์: คุณยังไม่มีกิลด์ จึงชวนเข้ากิลด์ไม่ได้"
     elif not guild_name.is_empty():
         if guild_name == str(OnlineManager.guild.get("name", "")):
-            detail += "\n\nผู้เล่นนี้อยู่กิลด์เดียวกับคุณแล้ว"
+            detail += "\n\nกิลด์: ผู้เล่นนี้อยู่กิลด์เดียวกับคุณแล้ว"
         else:
-            detail += "\n\nผู้เล่นนี้มีกิลด์อยู่แล้ว"
+            detail += "\n\nกิลด์: ผู้เล่นนี้มีกิลด์อยู่แล้ว"
     else:
         options.append({"id": &"guild_invite_player", "label": "ชวนเข้ากิลด์"})
 
@@ -589,6 +597,12 @@ func _open_settings() -> void:
     smart_panel.open_kind(&"settings", "ตั้งค่า HUD", "ปรับขนาดปุ่มและลดการเคลื่อนไหวได้ทันที\nบันทึกอัตโนมัติบนเครื่องนี้", _settings_options())
 
 func _modal_action(action: StringName) -> void:
+    if action == &"trade_player":
+        var peer_id: String = _selected_remote_peer_id
+        smart_panel.close_screen()
+        if not OnlineManager.request_trade(peer_id):
+            _show_message("ส่งคำขอแลกเปลี่ยนไม่สำเร็จ")
+        return
     if action == &"guild_invite_player":
         var peer_id: String = _selected_remote_peer_id
         smart_panel.close_screen()
@@ -640,7 +654,7 @@ func _on_chat_editing(editing: bool) -> void:
     _sync_skill_input()
 
 func _sync_skill_input() -> void:
-    var blocked: bool = chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open) or (is_instance_valid(guild_screen) and guild_screen.is_open)
+    var blocked: bool = chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open) or (is_instance_valid(guild_screen) and guild_screen.is_open) or (is_instance_valid(trade_screen) and trade_screen.is_open)
     skill_panel.process_mode = Node.PROCESS_MODE_DISABLED if blocked else Node.PROCESS_MODE_INHERIT
     party_panel.process_mode = skill_panel.process_mode
 
@@ -676,7 +690,7 @@ func _request_digivolve(partner_node: PartnerMonster) -> void:
 func _unhandled_input(event: InputEvent) -> void:
     # Web/PC shortcuts: Space = โจมตี, 1-4 = สกิล, 5-8 = Quick Item, J = Fusion
     # ใช้ unhandled_input เพื่อไม่แย่งปุ่มจาก LineEdit/เมนูที่กำลังรับคีย์บอร์ด
-    if chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open) or (is_instance_valid(guild_screen) and guild_screen.is_open):
+    if chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open) or (is_instance_valid(guild_screen) and guild_screen.is_open) or (is_instance_valid(trade_screen) and trade_screen.is_open):
         return
     if event.is_action_pressed(&"basic_attack"):
         tamer.command_attack()
@@ -815,7 +829,7 @@ func _return_to_characters() -> void:
 
 func _refresh_combat_controls() -> void:
     # Cannot Battle ปิด Attack/Auto/Digivolve/สกิล แต่ Recover/อาหารยังใช้งานได้
-    var blocked: bool = chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open) or (is_instance_valid(guild_screen) and guild_screen.is_open)
+    var blocked: bool = chat_editing or menu.expanded or (is_instance_valid(smart_panel) and smart_panel.is_open) or (is_instance_valid(digimon_screen) and digimon_screen.is_open) or (is_instance_valid(guild_screen) and guild_screen.is_open) or (is_instance_valid(trade_screen) and trade_screen.is_open)
     attack_button.locked = blocked or not partner.can_battle() or partner.evolution_busy
     recover_button.locked = blocked or partner.evolution_busy
     auto_button.locked = attack_button.locked
