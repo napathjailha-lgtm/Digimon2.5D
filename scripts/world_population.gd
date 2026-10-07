@@ -13,6 +13,7 @@ const MAGMA_RAM: PackedScene = preload("res://scenes/magma_ram.tscn")
 const TIDECOIL_MANTA: PackedScene = preload("res://scenes/tidecoil_manta.tscn")
 const VERDANT_BULWARK: PackedScene = preload("res://scenes/verdant_bulwark.tscn")
 const NIGHTTALON_HARRIER: PackedScene = preload("res://scenes/nighttalon_harrier.tscn")
+const FIELD_QUEST_NPC: PackedScene = preload("res://scenes/field_quest_npc.tscn")
 var created_regular: int = 0
 var _centers: Array[Vector2] = []
 var _environment: OpenWorldEnvironment
@@ -68,6 +69,18 @@ func _ready() -> void:
     _add_story_point("res://scenes/npc_gennai.tscn", Vector2(5600, 2650))
     _add_story_point("res://scenes/reach_odaiba_clue.tscn", Vector2(8000, 4000))
 
+    # Frontier Operations: NPC ใหม่ 10 คน กระจายตามเส้นทางหลังเนื้อเรื่องหลัก
+    _add_quest_npc(&"frontier_mira", "Mira", Vector2(5750, 2380), Color("62d8ff"))
+    _add_quest_npc(&"frontier_nami", "Nami", Vector2(4920, 2920), Color("70d6c3"))
+    _add_quest_npc(&"frontier_rook", "Rook", Vector2(6280, 2350), Color("88aaff"))
+    _add_quest_npc(&"frontier_bramm", "Bramm", Vector2(6760, 3380), Color("ff9c62"))
+    _add_quest_npc(&"frontier_torque", "Torque", Vector2(7110, 4090), Color("e6c56b"))
+    _add_quest_npc(&"frontier_liora", "Liora", Vector2(7650, 4470), Color("7fe28d"))
+    _add_quest_npc(&"frontier_cyra", "Cyra", Vector2(8180, 4660), Color("c69cff"))
+    _add_quest_npc(&"frontier_sena", "Sena", Vector2(8580, 4860), Color("8fd0ff"))
+    _add_quest_npc(&"frontier_orion", "Orion", Vector2(9160, 5220), Color("f0b6ff"))
+    _add_quest_npc(&"frontier_pax", "Pax", Vector2(9620, 5520), Color("ffd36a"))
+
 func _add_ep1_forest_population() -> void:
     # โซน Green Data Forest อยู่ถัดจาก ReachPoint ไปทางตะวันออก
     # ใช้จุดคงที่เพื่อให้ Quest Tracker และเส้นทางฟาร์มคาดเดาได้
@@ -101,19 +114,22 @@ func _add_high_level_population() -> void:
     for i: int in range(crimson_points.size()):
         var p: Vector2 = _walkable_near(crimson_points[i])
         if p != Vector2.INF:
-            _add_spawn("CrimsonByte_%02d" % i, p, CRIMSON_BYTE, 80.0, 12.0)
+            var spawner := _add_spawn("CrimsonByte_%02d" % i, p, CRIMSON_BYTE, 80.0, 12.0)
+            _mark_boss(spawner, &"crimson_byte")
 
     var iron_points: Array[Vector2] = [Vector2(6700, 3900), Vector2(7050, 4200), Vector2(7350, 3750)]
     for i: int in range(iron_points.size()):
         var p: Vector2 = _walkable_near(iron_points[i])
         if p != Vector2.INF:
-            _add_spawn("IronShell_%02d" % i, p, IRON_SHELL, 75.0, 15.0)
+            var spawner := _add_spawn("IronShell_%02d" % i, p, IRON_SHELL, 75.0, 15.0)
+            _mark_boss(spawner, &"iron_shell_crab")
 
     var void_points: Array[Vector2] = [Vector2(8350, 4950), Vector2(8750, 5150), Vector2(9000, 4700)]
     for i: int in range(void_points.size()):
         var p: Vector2 = _walkable_near(void_points[i])
         if p != Vector2.INF:
-            _add_spawn("VoidSentinel_%02d" % i, p, VOID_SENTINEL, 65.0, 18.0)
+            var spawner := _add_spawn("VoidSentinel_%02d" % i, p, VOID_SENTINEL, 65.0, 18.0)
+            _mark_boss(spawner, &"void_sentinel")
 
 
 func _add_elite_population() -> void:
@@ -125,7 +141,8 @@ func _add_elite_population() -> void:
     for i: int in range(tide_points.size()):
         var p: Vector2 = _walkable_near(tide_points[i])
         if p != Vector2.INF:
-            _add_elite_spawn("TidecoilManta_%02d" % i, p, TIDECOIL_MANTA, 92.0, 13.0)
+            var spawner := _add_elite_spawn("TidecoilManta_%02d" % i, p, TIDECOIL_MANTA, 92.0, 13.0)
+            _mark_boss(spawner, &"tidecoil_manta")
 
     var thunder_points: Array[Vector2] = [
         Vector2(6300, 2500), Vector2(6350, 3150), Vector2(6150, 3550)
@@ -133,7 +150,8 @@ func _add_elite_population() -> void:
     for i: int in range(thunder_points.size()):
         var p: Vector2 = _walkable_near(thunder_points[i])
         if p != Vector2.INF:
-            _add_elite_spawn("ThunderLynx_%02d" % i, p, THUNDER_LYNX, 105.0, 12.0)
+            var spawner := _add_elite_spawn("ThunderLynx_%02d" % i, p, THUNDER_LYNX, 105.0, 12.0)
+            _mark_boss(spawner, &"thunder_lynx")
 
     var magma_points: Array[Vector2] = [
         Vector2(6650, 3550), Vector2(6950, 3900), Vector2(7200, 4300)
@@ -141,7 +159,8 @@ func _add_elite_population() -> void:
     for i: int in range(magma_points.size()):
         var p: Vector2 = _walkable_near(magma_points[i])
         if p != Vector2.INF:
-            _add_elite_spawn("MagmaRam_%02d" % i, p, MAGMA_RAM, 88.0, 15.0)
+            var spawner := _add_elite_spawn("MagmaRam_%02d" % i, p, MAGMA_RAM, 88.0, 15.0)
+            _mark_boss(spawner, &"magma_ram")
 
     var verdant_points: Array[Vector2] = [
         Vector2(7480, 4550), Vector2(7850, 5000)
@@ -149,7 +168,8 @@ func _add_elite_population() -> void:
     for i: int in range(verdant_points.size()):
         var p: Vector2 = _walkable_near(verdant_points[i])
         if p != Vector2.INF:
-            _add_elite_spawn("VerdantBulwark_%02d" % i, p, VERDANT_BULWARK, 78.0, 20.0)
+            var spawner := _add_elite_spawn("VerdantBulwark_%02d" % i, p, VERDANT_BULWARK, 78.0, 20.0)
+            _mark_boss(spawner, &"verdant_bulwark")
 
     var night_points: Array[Vector2] = [
         Vector2(8250, 5000), Vector2(8650, 5350), Vector2(9150, 5000)
@@ -157,7 +177,8 @@ func _add_elite_population() -> void:
     for i: int in range(night_points.size()):
         var p: Vector2 = _walkable_near(night_points[i])
         if p != Vector2.INF:
-            _add_elite_spawn("NighttalonHarrier_%02d" % i, p, NIGHTTALON_HARRIER, 110.0, 18.0)
+            var spawner := _add_elite_spawn("NighttalonHarrier_%02d" % i, p, NIGHTTALON_HARRIER, 110.0, 18.0)
+            _mark_boss(spawner, &"nighttalon_harrier")
 
 
 func _walkable_near(point: Vector2) -> Vector2:
@@ -211,6 +232,17 @@ func _add_boss(id: String, point: Vector2) -> void:
         return
     var scene: PackedScene = load("res://scenes/boss_" + id + ".tscn") as PackedScene
     _mark_boss(_add_spawn("Boss_" + id, destination, scene, 0.0, 25.0), StringName(id))
+
+func _add_quest_npc(id: StringName, display_name: String, point: Vector2, accent: Color) -> void:
+    var npc := FIELD_QUEST_NPC.instantiate() as FieldQuestNPC
+    npc.name = "FrontierNPC_" + String(id)
+    npc.npc_id = id
+    npc.display_name = display_name
+    npc.accent_color = accent
+    var destination: Vector2 = _walkable_near(point)
+    npc.position = destination if destination != Vector2.INF else point
+    _world.get_node("StoryPoints").add_child(npc)
+
 
 func _add_story_point(path: String, point: Vector2) -> void:
     var scene: PackedScene = load(path) as PackedScene
