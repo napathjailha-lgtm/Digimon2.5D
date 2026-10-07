@@ -29,14 +29,17 @@ const tradeSessions = new Map();
 let guildStore = loadGuildStore();
 
 function emptyGuildStore() {
-  return { version: 1, guilds: {}, memberships: {} };
+  return { version: 2, guilds: {}, memberships: {} };
 }
 
 function loadGuildStore() {
   try {
     if (!existsSync(GUILD_DATA_PATH)) return emptyGuildStore();
     const parsed = JSON.parse(readFileSync(GUILD_DATA_PATH, "utf8"));
-    if (!parsed || parsed.version !== 1 || typeof parsed.guilds !== "object") {
+    if (!parsed || parsed.version !== 2 || typeof parsed.guilds !== "object") {
+      if (parsed?.version === 1) {
+        console.warn("Resetting legacy guild store: v1 used non-unique demo character identities");
+      }
       return emptyGuildStore();
     }
     if (!parsed.memberships || typeof parsed.memberships !== "object") {
@@ -60,6 +63,10 @@ function saveGuildStore() {
     console.error("Guild store save failed:", error);
     return false;
   }
+}
+
+function validCharacterKey(value) {
+  return /^v2:[a-f0-9]{64}$/.test(String(value ?? ""));
 }
 
 function cleanText(value, max = 24) {
@@ -974,9 +981,17 @@ wss.on("connection", (ws) => {
 
     if (msg.type === "hello") {
       const incomingCharacterKey = cleanText(msg.character_key, 80);
-      // Autoload connects from the login screen too. Count/register a player only
-      // after a real character is bound to the world.
-      if (!incomingCharacterKey) return;
+      // v2 identity is a persistent random UID stored per character.
+      // Reject legacy username+slot hashes because separate devices could collide.
+      if (!validCharacterKey(incomingCharacterKey)) {
+        if (incomingCharacterKey) {
+          send(ws, {
+            type: "identity_error",
+            message: "Client รุ่นเก่า กรุณารีเฟรช/อัปเดตเกมก่อนใช้งาน Online"
+          });
+        }
+        return;
+      }
 
       const wasReady = client.ready;
       const oldZone = client.zone;
