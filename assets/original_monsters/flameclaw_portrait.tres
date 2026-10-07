@@ -2,5 +2,5 @@
 [ext_resource type="Texture2D" path="res://assets/original_monsters/flameclaw_atlas.png" id="atlas"]
 [resource]
 atlas = ExtResource("atlas")
-region = Rect2(0, 0, 128, 128)
+region = Rect2(0, 0, 96, 96)
 filter_clip = true
