@@ -1,8 +1,10 @@
-name: Export Godot Web and Deploy Pages
+name: Deploy Maintenance Page
 
-# Auto web deploy is paused intentionally while partner save/migration is being repaired.
-# Run manually from GitHub Actions only when the web build is explicitly approved.
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/deploy-web.yml"
   workflow_dispatch:
 
 permissions:
@@ -18,96 +20,43 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Reject committed signing secrets
-        run: |
-          set -eu
-          signing_files="$(git ls-files '*.keystore' '*.jks' '*.p12' '*.pfx')"
-          if [ -n "$signing_files" ]; then
-            echo "::error::Signing material must never be committed to the repository."
-            printf '%s\n' "$signing_files"
-            exit 1
-          fi
-          if grep -Eq 'keystore/(debug|release)="res://' export_presets.cfg; then
-            echo "::error::Android signing keys must not be referenced from res://."
-            exit 1
-          fi
-          if grep -Eq 'keystore/(debug|release)_(user|password)=' export_presets.cfg; then
-            echo "::error::Android signing credentials must not be stored in export_presets.cfg."
-            exit 1
-          fi
-
-      - name: Setup Godot 4.7.1
-        uses: chickensoft-games/setup-godot@v2
-        with:
-          version: 4.7.1
-          use-dotnet: false
-          include-templates: true
-
-      - name: Verify project
-        run: python3 tools/check_godot.py --headless --path . --editor --quit
-
-      - name: Validate Android online permission
-        run: |
-          grep -q 'name="Android Test"' export_presets.cfg
-          grep -q 'permissions/internet=true' export_presets.cfg
-          grep -q 'server_url="wss://online-server-production-aa88.up.railway.app"' project.godot
-
-      - name: Validate online server syntax
-        run: node --check server/online-server/server.js
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Online server safety regression
-        working-directory: server/online-server
-        run: |
-          npm ci --ignore-scripts
-          npm test
-
-      - name: Validate every shipped script and resource
-        run: python3 tools/check_godot.py --headless --path . --script res://tests/project_integrity.gd
-
-      - name: Resource load smoke test
-        run: python3 tools/check_godot.py --headless --path . --script res://tests/resource_load_smoke.gd
-
-      - name: Online client lifecycle regression
-        run: python3 tools/check_godot.py --headless --path . res://tests/online_lifecycle_test.tscn
-
-      - name: Boot and menu runtime regression
-        run: python3 tools/check_godot.py --headless --path . res://tests/current_runtime_test.tscn
-
-      - name: Adventure partner progression test
-        run: python3 tools/check_godot.py --headless --path . res://tests/adventure_partners_test.tscn
-
-      - name: Inventory, loot and consumable regression
-        run: python3 tools/check_godot.py --headless --path . res://tests/inventory_loot_test.tscn
-
-      - name: Frontier quest chain regression
-        run: python3 tools/check_godot.py --headless --path . res://tests/frontier_quests_test.tscn
-
-      - name: Export Web
+      - name: Build maintenance page
         run: |
           mkdir -p build/web
-          python3 tools/check_godot.py --headless --path . --export-release "Web" build/web/index.html
-
-      - name: Install Prism web loader
-        run: |
-          python3 -c 'import json, os; open("build/web/version.json", "w").write(json.dumps({"commit": os.environ["GITHUB_SHA"]}))'
-          cp assets/ui/splash/prism_tamer_frontier.svg build/web/prism_tamer_frontier.svg
-          python3 tools/patch_web_loader.py build/web/index.html
-          grep -q 'id="prism-preloader"' build/web/index.html
+          cat > build/web/index.html <<'EOF'
+          <!doctype html>
+          <html lang="th">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1">
+            <meta name="robots" content="noindex,nofollow,noarchive">
+            <title>Prism Tamer Frontier — Maintenance</title>
+            <style>
+              html,body{height:100%;margin:0}
+              body{display:grid;place-items:center;background:#07111c;color:#edf7ff;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+              main{max-width:620px;padding:42px;text-align:center}
+              h1{font-size:clamp(30px,6vw,54px);margin:0 0 18px}
+              p{font-size:clamp(16px,2.3vw,21px);line-height:1.65;color:#b8cadd}
+              .badge{display:inline-block;padding:8px 14px;border:1px solid #5aa9d6;border-radius:999px;color:#7fd2ff;margin-bottom:22px}
+            </style>
+          </head>
+          <body>
+            <main>
+              <div class="badge">SERVER CLOSED</div>
+              <h1>ปิดให้บริการชั่วคราว</h1>
+              <p>เกมอยู่ระหว่างปรับปรุงระบบและตรวจสอบข้อมูลผู้เล่น จึงปิดการเข้าเล่นชั่วคราว</p>
+              <p>หน้าเกมและไฟล์ Godot Web ไม่ได้ถูกเผยแพร่ในช่วง Maintenance นี้</p>
+            </main>
+          </body>
+          </html>
+          EOF
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
           enablement: true
 
-      - name: Upload Pages artifact
+      - name: Upload maintenance artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: build/web
@@ -119,6 +68,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy maintenance page
         id: deployment
         uses: actions/deploy-pages@v4
