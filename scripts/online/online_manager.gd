@@ -170,6 +170,13 @@ func _process(delta: float) -> void:
         _set_online_counts(0, 0)
         guild.clear()
         guild_changed.emit({})
+        economy_revision = 0
+        economy_migrated = false
+        _economy_pending.clear()
+        _economy_inflight = false
+        _economy_applying = false
+        _economy_loaded_character_key = ""
+        economy_sync_changed.emit(false, 0)
         if not trade.is_empty():
             trade.clear()
             trade_closed.emit("หลุดจาก Online Server การแลกเปลี่ยนถูกยกเลิก", false)
