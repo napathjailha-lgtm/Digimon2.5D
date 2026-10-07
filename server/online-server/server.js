@@ -6,12 +6,12 @@ import { WebSocketServer, WebSocket } from "ws";
 import { EncryptedJsonStore } from "./encrypted_json_store.js";
 
 const PORT = Number(process.env.PORT || 8787);
-const MAX_PACKET = 8192;
+const MAX_PACKET = 65536;
 const MAX_CHAT = 160;
 const MAX_GUILD_NAME = 20;
 const MAX_GUILD_MEMBERS = 50;
 const GUILD_INVITE_TTL_MS = 30_000;
-const RELEASE = "online-secure-json-2026-10-07";
+const RELEASE = "online-economy-json-2026-10-07";
 const TRADE_UNAVAILABLE = "Trade ปิดชั่วคราวเพื่อปรับปรุงความปลอดภัยของไอเทมและ Bits";
 const HEARTBEAT_MS = Number(process.env.HEARTBEAT_MS || 30_000);
 const DATA_DIR =
@@ -175,6 +175,331 @@ function persistCharacterShell(client) {
 
   charactersDiskStore.save(charactersStore);
   return true;
+}
+
+const ECONOMY_PROFILE_VERSION = 1;
+const MAX_ECONOMY_AUDIT = 5000;
+const EQUIPMENT_SLOTS = new Set([
+  "head", "face", "chest", "legs", "gloves", "boots", "back", "neck",
+  "ring", "bracelet", "belt", "charm", "device", "chip_a", "chip_b",
+]);
+
+function safeId(value, max = 64) {
+  const text = cleanText(value, max);
+  return /^[A-Za-z0-9_.:-]+$/.test(text) ? text : "";
+}
+
+function safeInt(value, fallback = 0, min = 0, max = 2_000_000_000) {
+  const n = Number(value);
+  if (!Number.isFinite(n) || !Number.isInteger(n)) return fallback;
+  return Math.max(min, Math.min(max, n));
+}
+
+function sanitizeProgress(raw) {
+  return {
+    level: safeInt(raw?.level, 1, 1, 99),
+    exp: safeInt(raw?.exp, 0, 0, 2_000_000_000),
+  };
+}
+
+function sanitizeInventory(raw) {
+  const result = { version: 1, stacks: [] };
+  const totals = new Map();
+  if (Array.isArray(raw?.stacks)) {
+    for (const entry of raw.stacks.slice(0, 48)) {
+      if (!entry || typeof entry !== "object") continue;
+      const id = safeId(entry.id);
+      const quantity = safeInt(entry.quantity, 0, 1, 999);
+      if (!id || quantity <= 0) continue;
+      totals.set(id, Math.min(999, (totals.get(id) ?? 0) + quantity));
+      if (totals.size >= 24) break;
+    }
+  }
+  result.stacks = [...totals.entries()].map(([id, quantity]) => ({ id, quantity }));
+  return result;
+}
+
+function sanitizeEquipment(raw) {
+  const bag = {};
+  if (raw?.bag && typeof raw.bag === "object" && !Array.isArray(raw.bag)) {
+    for (const [rawId, rawQuantity] of Object.entries(raw.bag).slice(0, 256)) {
+      const id = safeId(rawId);
+      const quantity = safeInt(rawQuantity, 0, 0, 999);
+      if (id && quantity > 0) bag[id] = quantity;
+    }
+  }
+
+  const equipped = {};
+  if (raw?.equipped && typeof raw.equipped === "object" && !Array.isArray(raw.equipped)) {
+    for (const [slot, rawId] of Object.entries(raw.equipped)) {
+      if (!EQUIPMENT_SLOTS.has(slot)) continue;
+      const id = safeId(rawId);
+      if (id) equipped[slot] = id;
+    }
+  }
+  return { version: 2, bag, equipped };
+}
+
+function sanitizeCooldowns(raw) {
+  const result = {};
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return result;
+  for (const [rawId, rawValue] of Object.entries(raw).slice(0, 12)) {
+    const id = safeId(rawId);
+    if (!id) continue;
+    result[id] = safeNumber(rawValue, 0, 0, 3600);
+  }
+  return result;
+}
+
+function sanitizePartnerEntry(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  const id = safeId(raw.id);
+  const uid = safeId(raw.uid, 96);
+  if (!id || !uid) return null;
+
+  const unlocked = [];
+  if (Array.isArray(raw.unlocked_forms)) {
+    for (const value of raw.unlocked_forms.slice(0, 12)) {
+      const formId = safeId(value);
+      if (formId && !unlocked.includes(formId)) unlocked.push(formId);
+    }
+  }
+
+  return {
+    uid,
+    id,
+    form_id: safeId(raw.form_id),
+    hp: safeInt(raw.hp, 0, 0, 10_000_000),
+    max_hp: safeInt(raw.max_hp, 1, 1, 10_000_000),
+    mp: safeNumber(raw.mp, 0, 0, 1_000_000),
+    egg: raw.egg === true,
+    progress: sanitizeProgress(raw.progress),
+    enhancement: safeInt(raw.enhancement, 0, 0, 5),
+    unlocked_forms: unlocked,
+    cooldowns: sanitizeCooldowns(raw.cooldowns),
+    basic_cooldown: safeNumber(raw.basic_cooldown, 0, 0, 3600),
+  };
+}
+
+function sanitizePartnerRoster(raw) {
+  const members = [];
+  const storage = [];
+  if (Array.isArray(raw?.members)) {
+    for (const entry of raw.members.slice(0, 3)) {
+      const clean = sanitizePartnerEntry(entry);
+      if (clean) members.push(clean);
+    }
+  }
+  if (Array.isArray(raw?.storage)) {
+    for (const entry of raw.storage.slice(0, 64)) {
+      const clean = sanitizePartnerEntry(entry);
+      if (clean) storage.push(clean);
+    }
+  }
+
+  const known = new Set([...members, ...storage].map((entry) => entry.uid));
+  let activeUid = safeId(raw?.active_uid, 96);
+  if (!known.has(activeUid)) activeUid = members[0]?.uid ?? "";
+  const active = members.find((entry) => entry.uid === activeUid) ?? members[0] ?? null;
+  return {
+    version: 6,
+    active_id: active?.id ?? "",
+    active_uid: active?.uid ?? "",
+    members,
+    storage,
+  };
+}
+
+function sanitizeIncubator(raw) {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+  const result = {};
+  for (const [rawKey, value] of Object.entries(raw).slice(0, 32)) {
+    const key = safeId(rawKey);
+    if (!key) continue;
+    if (typeof value === "boolean") result[key] = value;
+    else if (typeof value === "string") result[key] = cleanText(value, 64);
+    else if (Number.isFinite(Number(value))) result[key] = safeNumber(value, 0, 0, 2_000_000_000);
+  }
+  return result;
+}
+
+function sanitizeEconomyState(raw) {
+  const state = raw && typeof raw === "object" ? raw : {};
+  const result = {
+    bits: safeInt(state.bits, 0, 0, 2_000_000_000),
+    inventory: sanitizeInventory(state.inventory),
+    equipment: sanitizeEquipment(state.equipment),
+    incubator: sanitizeIncubator(state.incubator),
+    partner_roster: sanitizePartnerRoster(state.partner_roster),
+    partner_progress: sanitizeProgress(state.partner_progress),
+    form_id: safeId(state.form_id),
+    hp: safeInt(state.hp, 0, 0, 10_000_000),
+    digimon_mp: safeNumber(state.digimon_mp, 0, 0, 1_000_000),
+    egg: state.egg === true,
+  };
+  return result;
+}
+
+function economyStoreFor(characterKey) {
+  const uid = String(characterKey).slice(3);
+  return new EncryptedJsonStore({
+    path: join(DATA_DIR, "profiles", `${uid}.json`),
+    name: `profile-${uid}`,
+    defaultValue: {
+      version: ECONOMY_PROFILE_VERSION,
+      character_key: characterKey,
+      migrated: false,
+      revision: 0,
+      state: {},
+      updated_at: 0,
+    },
+  });
+}
+
+function loadEconomyProfile(characterKey) {
+  const profile = economyStoreFor(characterKey).load();
+  if (
+    !profile ||
+    profile.version !== ECONOMY_PROFILE_VERSION ||
+    profile.character_key !== characterKey ||
+    typeof profile.state !== "object"
+  ) {
+    throw new Error("Economy profile has an unsupported format");
+  }
+  profile.revision = safeInt(profile.revision, 0, 0, 2_000_000_000);
+  profile.migrated = profile.migrated === true;
+  return profile;
+}
+
+function sendEconomySnapshot(ws, client) {
+  const profile = loadEconomyProfile(client.characterKey);
+  send(ws, {
+    type: "economy_snapshot",
+    character_key: client.characterKey,
+    migrated: profile.migrated,
+    revision: profile.revision,
+    state: profile.migrated ? profile.state : {},
+  });
+}
+
+function appendEconomyAudit(characterKey, action, revision, state) {
+  const canonical = JSON.stringify(state);
+  transactionsStore.transactions.push({
+    id: crypto.randomUUID(),
+    character_key: characterKey,
+    action,
+    revision,
+    state_hash: crypto.createHash("sha256").update(canonical).digest("hex"),
+    created_at: Date.now(),
+  });
+  if (transactionsStore.transactions.length > MAX_ECONOMY_AUDIT) {
+    transactionsStore.transactions.splice(
+      0,
+      transactionsStore.transactions.length - MAX_ECONOMY_AUDIT,
+    );
+  }
+  transactionsDiskStore.save(transactionsStore);
+}
+
+function commitEconomy(ws, client, msg, migration) {
+  let profile;
+  try {
+    profile = loadEconomyProfile(client.characterKey);
+  } catch (error) {
+    console.error("Economy profile load failed:", error);
+    send(ws, { type: "economy_feedback", ok: false, code: "storage_error" });
+    return;
+  }
+
+  if (migration) {
+    if (profile.migrated) {
+      sendEconomySnapshot(ws, client);
+      return;
+    }
+  } else {
+    if (!profile.migrated) {
+      sendEconomySnapshot(ws, client);
+      return;
+    }
+    const expectedRevision = safeInt(msg.revision, -1, -1, 2_000_000_000);
+    if (expectedRevision !== profile.revision) {
+      send(ws, {
+        type: "economy_feedback",
+        ok: false,
+        code: "revision_conflict",
+        revision: profile.revision,
+      });
+      sendEconomySnapshot(ws, client);
+      return;
+    }
+  }
+
+  const nextState = sanitizeEconomyState(msg.state);
+  const nextRevision = profile.revision + 1;
+  const nextProfile = {
+    version: ECONOMY_PROFILE_VERSION,
+    character_key: client.characterKey,
+    migrated: true,
+    revision: nextRevision,
+    state: nextState,
+    updated_at: Date.now(),
+  };
+
+  try {
+    economyStoreFor(client.characterKey).save(nextProfile);
+    const character = charactersStore.characters[client.characterKey];
+    if (character) {
+      character.economy_migrated = true;
+      character.economy_revision = nextRevision;
+      charactersDiskStore.save(charactersStore);
+    }
+
+    inventoriesStore.inventories[client.characterKey] = {
+      migrated: true,
+      revision: nextRevision,
+      bits: nextState.bits,
+      inventory: nextState.inventory,
+      equipment: nextState.equipment,
+      incubator: nextState.incubator,
+      updated_at: nextProfile.updated_at,
+    };
+    partnersStore.partners[client.characterKey] = {
+      migrated: true,
+      revision: nextRevision,
+      roster: nextState.partner_roster,
+      active: {
+        progress: nextState.partner_progress,
+        form_id: nextState.form_id,
+        hp: nextState.hp,
+        mp: nextState.digimon_mp,
+        egg: nextState.egg,
+      },
+      updated_at: nextProfile.updated_at,
+    };
+    inventoriesDiskStore.save(inventoriesStore);
+    partnersDiskStore.save(partnersStore);
+
+    try {
+      appendEconomyAudit(
+        client.characterKey,
+        migration ? "legacy_migration" : "client_sync",
+        nextRevision,
+        nextState,
+      );
+    } catch (auditError) {
+      console.error("Economy audit save failed:", auditError);
+    }
+
+    send(ws, {
+      type: "economy_ack",
+      character_key: client.characterKey,
+      migrated: true,
+      revision: nextRevision,
+    });
+  } catch (error) {
+    console.error("Economy commit failed:", error);
+    send(ws, { type: "economy_feedback", ok: false, code: "storage_error" });
+  }
 }
 
 function validCharacterKey(value) {
@@ -766,6 +1091,8 @@ const server = http.createServer((req, res) => {
           trade: false,
           single_character_session: true,
           server_storage: "encrypted_json",
+          economy_sync: true,
+          economy_revision: true,
         },
         storage: {
           encrypted: true,
@@ -898,6 +1225,12 @@ wss.on("connection", (ws) => {
         id: client.id,
         zone: client.zone,
       });
+      try {
+        sendEconomySnapshot(ws, client);
+      } catch (error) {
+        console.error("Economy snapshot failed:", error);
+        send(ws, { type: "economy_feedback", ok: false, code: "storage_error" });
+      }
 
       const guild = guildForClient(client);
       if (guild?.members?.[client.characterKey]) {
@@ -924,6 +1257,26 @@ wss.on("connection", (ws) => {
     }
 
     if (!client.ready) return;
+
+    if (msg.type === "economy_request") {
+      try {
+        sendEconomySnapshot(ws, client);
+      } catch (error) {
+        console.error("Economy request failed:", error);
+        send(ws, { type: "economy_feedback", ok: false, code: "storage_error" });
+      }
+      return;
+    }
+
+    if (msg.type === "economy_migrate") {
+      commitEconomy(ws, client, msg, true);
+      return;
+    }
+
+    if (msg.type === "economy_update") {
+      commitEconomy(ws, client, msg, false);
+      return;
+    }
 
     if (msg.type === "state") {
       const now = Date.now();
