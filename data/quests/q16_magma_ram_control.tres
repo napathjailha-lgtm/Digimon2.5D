@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q16_magma_ram_control"
+title = "หยุดฝูง Magma Ram"
+description = "กำจัด Magma Ram 5 ตัวก่อนที่เส้นทางขนส่งไปเขตตะวันออกจะถูกตัดขาด"
+zone_id = &"file_island"
+objective = 1
+target_id = &"magma_ram"
+required_count = 5
+recommended_level = 30
+reward_exp = 5200
+reward_bits = 1050
+unlock_flags = Array[StringName]([])
+unlock_zones = Array[StringName]([])
+unlock_stage = -1
