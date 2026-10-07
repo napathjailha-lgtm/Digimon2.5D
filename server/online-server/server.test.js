@@ -127,6 +127,58 @@ test('online server persists guild and character shell only as encrypted JSON', 
   assert.equal(health.storage.characters, 1);
 });
 
+test('legacy partner entries without uid are preserved during economy migration', async t => {
+  const f = await fixture(t);
+  const a = await f.peer();
+  await a.hello('a');
+  await a.wait('economy_snapshot', m => m.migrated === false);
+
+  const before = a.history.length;
+  a.send({
+    type: 'economy_migrate',
+    state: {
+      bits: 100,
+      inventory: { version: 1, stacks: [] },
+      equipment: { version: 2, bag: {}, equipped: {} },
+      incubator: {},
+      partner_progress: { level: 17, exp: 321 },
+      form_id: 'agumon_1',
+      hp: 210,
+      digimon_mp: 55,
+      egg: false,
+      partner_roster: {
+        version: 3,
+        active_id: 'agumon',
+        members: [{
+          id: 'agumon',
+          form_id: 'agumon_1',
+          hp: 210,
+          max_hp: 260,
+          mp: 55,
+          progress: { level: 17, exp: 321 },
+          enhancement: 2,
+          unlocked_forms: ['agumon_0', 'agumon_1'],
+        }],
+        storage: [],
+      },
+    },
+  });
+  await a.wait('economy_ack', m => m.revision === 1, before);
+
+  const beforeRequest = a.history.length;
+  a.send({ type: 'economy_request' });
+  const snapshot = await a.wait(
+    'economy_snapshot',
+    m => m.migrated === true && m.revision === 1,
+    beforeRequest,
+  );
+  assert.equal(snapshot.state.partner_roster.members.length, 1);
+  assert.equal(snapshot.state.partner_roster.members[0].id, 'agumon');
+  assert.match(snapshot.state.partner_roster.members[0].uid, /^agumon-legacy-/);
+  assert.equal(snapshot.state.partner_roster.members[0].progress.level, 17);
+  assert.equal(snapshot.state.partner_roster.members[0].enhancement, 2);
+});
+
 test('economy migration is one-time, revisioned and encrypted per character', async t => {
   const f = await fixture(t);
   const a = await f.peer();
