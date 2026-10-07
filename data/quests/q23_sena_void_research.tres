@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q23_sena_void_research"
+title = "งานวิจัยจากเขต Void"
+description = "พบ Sena นักวิจัยข้อมูลมืดเพื่อเตรียมรับมือสิ่งมีชีวิตที่ออกมาจากรอยแยก"
+zone_id = &"file_island"
+objective = 0
+target_id = &"frontier_sena"
+required_count = 1
+recommended_level = 39
+reward_exp = 3500
+reward_bits = 820
+unlock_flags = Array[StringName]([])
+unlock_zones = Array[StringName]([])
+unlock_stage = -1
