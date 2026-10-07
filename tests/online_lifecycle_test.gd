@@ -6,6 +6,9 @@ var packets: Array[Dictionary] = []
 var assertions: int = 0
 var failures: int = 0
 var trade_events: int = 0
+var economy_migrated: bool = false
+var economy_revision: int = 0
+var economy_state: Dictionary = {}
 
 func _ready() -> void:
     process_mode = Node.PROCESS_MODE_ALWAYS
@@ -25,6 +28,32 @@ func _process(_delta: float) -> void:
             packets.append(packet)
             if packet.get("type") == "hello":
                 peer.send_text(JSON.stringify({"type": "online_ready", "id": "loopback", "character_key": packet.character_key}))
+                peer.send_text(JSON.stringify({
+                    "type": "economy_snapshot",
+                    "character_key": packet.character_key,
+                    "migrated": economy_migrated,
+                    "revision": economy_revision,
+                    "state": economy_state
+                }))
+            elif packet.get("type") == "economy_migrate" and not economy_migrated:
+                economy_migrated = true
+                economy_revision = 1
+                economy_state = packet.get("state", {}).duplicate(true)
+                peer.send_text(JSON.stringify({
+                    "type": "economy_ack",
+                    "character_key": "v2:" + "a".repeat(64),
+                    "migrated": true,
+                    "revision": economy_revision
+                }))
+            elif packet.get("type") == "economy_update" and int(packet.get("revision", -1)) == economy_revision:
+                economy_revision += 1
+                economy_state = packet.get("state", {}).duplicate(true)
+                peer.send_text(JSON.stringify({
+                    "type": "economy_ack",
+                    "character_key": "v2:" + "a".repeat(64),
+                    "migrated": true,
+                    "revision": economy_revision
+                }))
 
 func check(ok: bool, message: String) -> void:
     assertions += 1
@@ -36,6 +65,12 @@ func wait_connected() -> void:
     var deadline: int = Time.get_ticks_msec() + 3000
     while not OnlineManager.connected and Time.get_ticks_msec() < deadline:
         await get_tree().process_frame
+
+func wait_economy_migrated() -> void:
+    var deadline: int = Time.get_ticks_msec() + 3000
+    while not OnlineManager.economy_migrated and Time.get_ticks_msec() < deadline:
+        await get_tree().process_frame
+
 
 func wait_disconnect() -> void:
     var deadline: int = Time.get_ticks_msec() + 3000
@@ -68,6 +103,9 @@ func run() -> void:
     OnlineManager.bind_world(player, &"file_island")
     await wait_connected()
     check(OnlineManager.connected and count_type("hello") == 1, "world binds and authenticates exactly once")
+    await wait_economy_migrated()
+    check(OnlineManager.economy_migrated and OnlineManager.economy_revision >= 1,
+        "legacy local economy migrates once and receives a server revision")
     OnlineManager.trade_prepare.connect(on_trade)
     OnlineManager.trade_commit.connect(on_trade)
     var original_bits: int = GameManager.bits
@@ -102,6 +140,8 @@ func run() -> void:
     GameManager.logout()
     check(not OnlineManager.connected and OnlineManager.guild.is_empty() and OnlineManager.total_online == 0,
         "logout clears presence, guild snapshot and counts")
+    check(not OnlineManager.economy_migrated and OnlineManager.economy_revision == 0,
+        "logout clears economy session revision without deleting server data")
     OnlineManager.unbind_world(player)
     OnlineManager.configure("", false)
     player.queue_free()

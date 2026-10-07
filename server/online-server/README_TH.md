@@ -81,3 +81,29 @@ server จึง fail closed และไม่ reset ข้อมูลทิ�
 ขณะนี้ server เริ่มสร้าง secure character shell และพื้นที่สำหรับ inventory/partner/transaction แล้ว
 แต่ economy จาก local save ยังถือว่ายังไม่ได้ migrate (`migrated: false`) ดังนั้น Trade ยังคงปิดอยู่
 จนกว่า Bits/Item/Equipment/Partner ทั้งหมดจะถูกย้ายมาเป็น server-authoritative จริง
+
+
+## Server Economy Migration
+
+รุ่น `online-economy-json-2026-10-07` เพิ่ม profile ต่อ Character ที่
+`/data/profiles/<online_uid>.json` และเข้ารหัส AES-256-GCM เหมือน store อื่น
+
+ลำดับการทำงาน:
+1. Character เชื่อม Online และได้รับ `economy_snapshot`
+2. ถ้ายังไม่เคย migrate, client ส่ง local snapshot เดิมขึ้น Server **ครั้งเดียว**
+3. Server sanitize ข้อมูลและบันทึก revision 1
+4. หลังจากนั้นทุก update ต้องระบุ revision ปัจจุบัน
+5. packet เก่าหรือ revision ไม่ตรงจะถูกปฏิเสธและ Server ส่ง snapshot ล่าสุดกลับ
+6. เวลาเข้าเกมครั้งถัดไป Server snapshot เป็น source of truth สำหรับ Bits, Inventory,
+   Equipment, Incubator และ Partner roster/progression
+
+Server จำกัด schema/จำนวน stack/จำนวน item/slot/Partner roster และ clamp ค่าตัวเลข
+ก่อนเขียนไฟล์ ไม่เขียน JSON ที่ client ส่งมาตรง ๆ
+
+ข้อจำกัดด้าน Anti-Cheat:
+- การ migrate ครั้งแรกจำเป็นต้องเชื่อ legacy local save เพื่อรักษาของผู้เล่นเดิม
+- หลัง migration Server เป็น source of truth ด้าน persistence และ revision ordering
+- แต่ Combat, Loot drop, Quest reward และ Shop action ยังเกิดจาก client gameplay
+  ดังนั้น client ที่ถูกดัดแปลงยังอาจสร้าง mutation ปลอมได้
+- **Trade ยังคงปิด** จนกว่า reward/spend/item mutation จะถูกเปลี่ยนเป็น server-validated events
+  และ transaction ledger สามารถ commit สองผู้เล่นแบบ atomic/idempotent ได้
