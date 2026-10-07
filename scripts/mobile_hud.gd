@@ -521,7 +521,7 @@ func _on_remote_player_interaction(peer_id: String, display_name: String, guild_
     var detail: String = "Tamer: %s" % _selected_remote_name
     detail += "\nกิลด์: %s" % ("<%s>" % guild_name if not guild_name.is_empty() else "ยังไม่มีกิลด์")
     var options: Array[Dictionary] = [
-        {"id": &"trade_player", "label": "แลกเปลี่ยน"}
+        {"id": &"trade_player", "label": "Trade (ปิดปรับปรุง)"}
     ]
 
     if OnlineManager.guild.is_empty():
@@ -601,7 +601,7 @@ func _modal_action(action: StringName) -> void:
         var peer_id: String = _selected_remote_peer_id
         smart_panel.close_screen()
         if not OnlineManager.request_trade(peer_id):
-            _show_message("ส่งคำขอแลกเปลี่ยนไม่สำเร็จ")
+            _show_message(OnlineManager.TRADE_UNAVAILABLE_MESSAGE)
         return
     if action == &"guild_invite_player":
         var peer_id: String = _selected_remote_peer_id

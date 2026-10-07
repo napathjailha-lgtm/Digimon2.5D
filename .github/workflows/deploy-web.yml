@@ -40,11 +40,25 @@ jobs:
       - name: Validate online server syntax
         run: node --check server/online-server/server.js
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Online server safety regression
+        working-directory: server/online-server
+        run: |
+          npm ci --ignore-scripts
+          npm test
+
       - name: Validate every shipped script and resource
         run: python3 tools/check_godot.py --headless --path . --script res://tests/project_integrity.gd
 
       - name: Resource load smoke test
         run: python3 tools/check_godot.py --headless --path . --script res://tests/resource_load_smoke.gd
+
+      - name: Online client lifecycle regression
+        run: python3 tools/check_godot.py --headless --path . res://tests/online_lifecycle_test.tscn
 
       - name: Boot and menu runtime regression
         run: python3 tools/check_godot.py --headless --path . res://tests/current_runtime_test.tscn
@@ -65,6 +79,7 @@ jobs:
 
       - name: Install Prism web loader
         run: |
+          python3 -c 'import json, os; open("build/web/version.json", "w").write(json.dumps({"commit": os.environ["GITHUB_SHA"]}))'
           cp assets/ui/splash/prism_tamer_frontier.svg build/web/prism_tamer_frontier.svg
           python3 tools/patch_web_loader.py build/web/index.html
           grep -q 'id="prism-preloader"' build/web/index.html

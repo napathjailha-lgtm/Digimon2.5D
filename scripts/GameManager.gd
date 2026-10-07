@@ -370,6 +370,7 @@ func import_legacy_character() -> bool:
     return true
 
 func logout() -> void:
+    OnlineManager.disconnect_from_server()
     # UI เรียกหลังกลับหน้าตัวละคร ไม่เก็บรหัสผ่านไว้ใน Singleton
     gameplay_active = false
     username = ""

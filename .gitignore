@@ -7,3 +7,7 @@ build/
 __pycache__/
 Thumbs.db
 Desktop.ini
+
+# Online server dependencies and runtime data.
+server/online-server/node_modules/
+server/online-server/data/

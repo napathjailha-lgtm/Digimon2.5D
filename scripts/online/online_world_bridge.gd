@@ -8,6 +8,7 @@ const THAI_FONT: Font = preload("res://assets/fonts/NotoSansThai.ttf")
 @export var local_tamer_path: NodePath = NodePath("../Actors/Tamer")
 
 var remotes: Dictionary = {}
+var _bound_tamer: Tamer
 var local_chat_bubble: WorldChatBubble
 var local_guild_label: Label
 
@@ -26,15 +27,16 @@ func _ready() -> void:
 
     var tamer := get_node_or_null(local_tamer_path) as Tamer
     if tamer != null:
+        _bound_tamer = tamer
         _ensure_local_chat_bubble(tamer)
         _ensure_local_guild_label(tamer)
         OnlineManager.bind_world(tamer, zone_id)
         _on_guild_changed(OnlineManager.guild)
 
 func _exit_tree() -> void:
-    var tamer := get_node_or_null(local_tamer_path) as Tamer
-    if tamer != null:
-        OnlineManager.unbind_world(tamer)
+    # The Actors sibling may already be leaving the tree. Retain the binding.
+    if is_instance_valid(_bound_tamer):
+        OnlineManager.unbind_world(_bound_tamer)
     for node: Variant in remotes.values():
         if is_instance_valid(node):
             node.queue_free()
