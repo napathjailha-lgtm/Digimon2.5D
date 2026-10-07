@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q25_orion_last_signal"
+title = "สัญญาณสุดท้ายจากปลายเกาะ"
+description = "ไปพบ Orion ผู้ควบคุมเสาสัญญาณบริเวณปลายเกาะ เพื่อเตรียมปฏิบัติการกวาดล้างครั้งใหญ่"
+zone_id = &"file_island"
+objective = 0
+target_id = &"frontier_orion"
+required_count = 1
+recommended_level = 42
+reward_exp = 3800
+reward_bits = 900
+unlock_flags = Array[StringName]([])
+unlock_zones = Array[StringName]([])
+unlock_stage = -1
