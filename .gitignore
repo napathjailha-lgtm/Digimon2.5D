@@ -8,6 +8,13 @@ __pycache__/
 Thumbs.db
 Desktop.ini
 
+# Android signing material must stay outside the repository.
+android_signing/
+*.keystore
+*.jks
+*.p12
+*.pfx
+
 # Online server dependencies and runtime data.
 server/online-server/node_modules/
 server/online-server/data/

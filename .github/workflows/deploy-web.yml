@@ -21,6 +21,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Reject committed signing secrets
+        run: |
+          set -eu
+          signing_files="$(git ls-files '*.keystore' '*.jks' '*.p12' '*.pfx')"
+          if [ -n "$signing_files" ]; then
+            echo "::error::Signing material must never be committed to the repository."
+            printf '%s\n' "$signing_files"
+            exit 1
+          fi
+          if grep -Eq 'keystore/(debug|release)="res://' export_presets.cfg; then
+            echo "::error::Android signing keys must not be referenced from res://."
+            exit 1
+          fi
+          if grep -Eq 'keystore/(debug|release)_(user|password)=' export_presets.cfg; then
+            echo "::error::Android signing credentials must not be stored in export_presets.cfg."
+            exit 1
+          fi
+
       - name: Setup Godot 4.7.1
         uses: chickensoft-games/setup-godot@v2
         with:
