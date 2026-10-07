@@ -446,12 +446,73 @@ func capture_party_state() -> Dictionary:
         result["partner_roster"] = party_roster.get_save_data()
     return result
 
+func apply_server_economy_state(state: Dictionary) -> bool:
+    # Server เป็นแหล่งข้อมูลหลักหลัง migration; local file คงไว้เป็น cache/fallback ของ quest เท่านั้น
+    if state.is_empty() or not is_instance_valid(partner):
+        return false
+
+    GameManager.bits = clampi(int(state.get("bits", 0)), 0, 2_000_000_000)
+    GameManager.incubator_state = state.get("incubator", {}).duplicate(true) if state.get("incubator", {}) is Dictionary else {}
+    GameManager.bits_changed.emit(GameManager.bits)
+
+    var saved_equipment: Variant = state.get("equipment", {})
+    if saved_equipment is Dictionary:
+        equipment.restore_data(saved_equipment)
+        apply_progress_stats()
+        hp = mini(hp, max_hp)
+        ds = minf(ds, max_ds)
+        partner.refresh_equipment_stats()
+
+    var roster_data: Variant = state.get("partner_roster", {})
+    if is_instance_valid(party_roster) and roster_data is Dictionary and not roster_data.is_empty():
+        party_roster.initialize(roster_data)
+    else:
+        var saved_progress: Variant = state.get("partner_progress", {})
+        if saved_progress is Dictionary:
+            partner.progress.restore_data(saved_progress)
+        var selected: MonsterData = partner.forms[0] if not partner.forms.is_empty() else null
+        for data: MonsterData in partner.forms:
+            if data != null and String(data.id) == str(state.get("form_id", "")) and QuestManager.can_use_form(data):
+                selected = data
+                break
+        if selected != null:
+            partner._internal_load = true
+            partner.load_monster_data(selected, false)
+            partner._internal_load = false
+            partner.hp = clampi(int(state.get("hp", partner.hp)), 0, partner.max_hp)
+            partner.digimon_mp = clampf(float(state.get("digimon_mp", partner.digimon_mp)), 0.0, partner.digimon_max_mp)
+            if bool(state.get("egg", false)) or partner.hp == 0:
+                partner.enter_fainted(false)
+            partner.hp_changed.emit(partner.hp, partner.max_hp)
+            partner.mp_changed.emit(partner.digimon_mp, partner.digimon_max_mp)
+
+    var saved_inventory: Variant = state.get("inventory", {})
+    if saved_inventory is Dictionary:
+        if InventoryManager.player_node() == self:
+            InventoryManager.restore_data(saved_inventory)
+            InventoryManager.changed.emit()
+        else:
+            InventoryManager.bind_player(self, saved_inventory)
+
+    hp_changed.emit(hp, max_hp)
+    ds_changed.emit(ds, max_ds)
+    mp_changed.emit(tamer_mp, max_tamer_mp)
+
+    # Cache snapshot ที่ server ยืนยันแล้วลง local save เพื่อเปิด Scene ใหม่ด้วยค่าเดียวกัน
+    QuestManager.party_profile = capture_party_state()
+    GameManager.sync_party(QuestManager.party_profile)
+    QuestManager.save_progress()
+    return true
+
+
 func save_party_progress() -> void:
-    # ไม่บันทึก DS ที่กำลังจองคัตซีนลง Save จนกว่าจะ Commit/Cancel เสร็จ
+    # Local save เป็น cache; Economy/Equipment/Partner ส่งต่อให้ encrypted server store เมื่อ Online
     if is_instance_valid(partner) and not partner.evolution_busy and (not is_instance_valid(party_roster) or not party_roster._switching):
         QuestManager.party_profile = capture_party_state()
         GameManager.sync_party(QuestManager.party_profile)
         QuestManager.save_progress()
+        if not OnlineManager.is_applying_server_economy():
+            OnlineManager.sync_economy(QuestManager.party_profile)
 
 func can_battle() -> bool:
     # แม้ระบบภายนอกเขียน HP ตรง ๆ ก็ไม่ข้ามประตูนี้; ใช้จำนวนเต็ม *5 ป้องกัน float ที่ 20%
