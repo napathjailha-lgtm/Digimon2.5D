@@ -127,6 +127,112 @@ test('online server persists guild and character shell only as encrypted JSON', 
   assert.equal(health.storage.characters, 1);
 });
 
+test('economy migration is one-time, revisioned and encrypted per character', async t => {
+  const f = await fixture(t);
+  const a = await f.peer();
+  await a.hello('a');
+
+  const initial = await a.wait('economy_snapshot', m => m.migrated === false);
+  assert.equal(initial.revision, 0);
+
+  const migratedState = {
+    bits: 12345,
+    inventory: {
+      version: 1,
+      stacks: [
+        { id: 'hp_potion_small', quantity: 25 },
+        { id: 'emberclaw_egg', quantity: 6 },
+      ],
+    },
+    equipment: {
+      version: 2,
+      bag: { forest_guardian_armor: 1 },
+      equipped: { chest: 'forest_guardian_armor' },
+    },
+    incubator: { selected_egg: 'emberclaw_egg', level: 3 },
+    partner_progress: { level: 31, exp: 15800 },
+    form_id: 'emberclaw_mega',
+    hp: 4421,
+    digimon_mp: 188,
+    egg: false,
+    partner_roster: {
+      version: 6,
+      active_id: 'emberclaw',
+      active_uid: 'emberclaw-100-200',
+      members: [{
+        uid: 'emberclaw-100-200',
+        id: 'emberclaw',
+        form_id: 'emberclaw_mega',
+        hp: 4421,
+        max_hp: 5000,
+        mp: 188,
+        egg: false,
+        progress: { level: 31, exp: 15800 },
+        enhancement: 3,
+        unlocked_forms: ['emberclaw_rookie', 'emberclaw_mega'],
+        cooldowns: { skill_1: 1.25 },
+        basic_cooldown: 0.5,
+      }],
+      storage: [],
+    },
+  };
+
+  const beforeMigrate = a.history.length;
+  a.send({ type: 'economy_migrate', state: migratedState });
+  const ack1 = await a.wait('economy_ack', m => m.revision === 1, beforeMigrate);
+  assert.equal(ack1.migrated, true);
+
+  const profilePath = join(f.dir, 'profiles', 'a'.repeat(64) + '.json');
+  const profileText = await readFile(profilePath, 'utf8');
+  assert.equal(profileText.includes('emberclaw_egg'), false);
+  assert.equal(profileText.includes('12345'), false);
+  assert.equal(JSON.parse(profileText).algorithm, 'aes-256-gcm');
+
+  const beforeSecondMigration = a.history.length;
+  a.send({ type: 'economy_migrate', state: { ...migratedState, bits: 999999999 } });
+  const preserved = await a.wait(
+    'economy_snapshot',
+    m => m.migrated === true && m.revision === 1,
+    beforeSecondMigration,
+  );
+  assert.equal(preserved.state.bits, 12345);
+
+  const beforeStale = a.history.length;
+  a.send({ type: 'economy_update', revision: 0, state: { ...migratedState, bits: 1 } });
+  const conflict = await a.wait(
+    'economy_feedback',
+    m => m.code === 'revision_conflict',
+    beforeStale,
+  );
+  assert.equal(conflict.revision, 1);
+  const latest = await a.wait(
+    'economy_snapshot',
+    m => m.revision === 1,
+    beforeStale,
+  );
+  assert.equal(latest.state.bits, 12345);
+
+  const beforeUpdate = a.history.length;
+  a.send({
+    type: 'economy_update',
+    revision: 1,
+    state: { ...migratedState, bits: 12000 },
+  });
+  const ack2 = await a.wait('economy_ack', m => m.revision === 2, beforeUpdate);
+  assert.equal(ack2.revision, 2);
+
+  const beforeRequest = a.history.length;
+  a.send({ type: 'economy_request' });
+  const current = await a.wait(
+    'economy_snapshot',
+    m => m.migrated === true && m.revision === 2,
+    beforeRequest,
+  );
+  assert.equal(current.state.bits, 12000);
+  assert.equal(current.state.inventory.stacks[0].quantity, 25);
+  assert.equal(current.state.partner_roster.members[0].enhancement, 3);
+});
+
 test('all legacy trade commands fail closed, including forged commit preparation', async t => {
   const f = await fixture(t), a = await f.peer(), b = await f.peer();
   await a.hello('a'); await b.hello('b');
