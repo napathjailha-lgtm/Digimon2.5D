@@ -74,23 +74,27 @@ func _build() -> void:
     dim.color = Color(0.01, 0.025, 0.045, 0.7)
     dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
     root.add_child(dim)
-    safe = MarginContainer.new()
-    safe.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-    root.add_child(safe)
-    var center := CenterContainer.new()
-    safe.add_child(center)
+    # หน้าต่างใช้กรอบขนาดกำหนดเองบน Root โดยตรง เพื่อไม่ให้ CenterContainer
+    # ขยายตาม minimum size ของเนื้อหาแล้วดัน growth panel หลุดจอ
     panel = PanelContainer.new()
-    panel.add_theme_stylebox_override("panel", ClassicUIStyle.frame(Color("3c7898"), Color("091827fa")))
-    center.add_child(panel)
+    panel.name = "DigimonStatusWindow"
+    panel.add_theme_stylebox_override("panel", ClassicUIStyle.frame(ClassicUIStyle.GOLD, Color("241b10f5")))
+    root.add_child(panel)
     var margin := MarginContainer.new()
+    margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
     for side: String in ["left", "right", "top", "bottom"]:
         margin.add_theme_constant_override("margin_" + side, 18)
     panel.add_child(margin)
     scroll = ScrollContainer.new()
     scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+    scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+    scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
     margin.add_child(scroll)
     var stack := VBoxContainer.new()
     stack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    stack.size_flags_vertical = Control.SIZE_EXPAND_FILL
     stack.add_theme_constant_override("separation", 10)
     scroll.add_child(stack)
     var title_panel := PanelContainer.new()
@@ -208,18 +212,13 @@ func _build() -> void:
     visual_fx = ModalVisualFX.attach(root, panel)
 
 func _layout() -> void:
-    if hud == null:
+    if hud == null or not is_instance_valid(panel):
         return
 
-    # ใช้ Safe Area เดียวกับ HUD แล้ว scale Panel ทั้งก้อนเมื่อ child minimum size ใหญ่กว่าพื้นที่จริง
-    ResponsiveUI.apply_safe_margins(safe, get_viewport(), 12.0)
-    var view: Vector2 = get_viewport().get_visible_rect().size
-    var width: float = maxf(1.0, view.x - safe.get_theme_constant("margin_left") - safe.get_theme_constant("margin_right"))
-    var height: float = maxf(1.0, view.y - safe.get_theme_constant("margin_top") - safe.get_theme_constant("margin_bottom"))
-
-    panel.custom_minimum_size = Vector2(780, 660)
-    scroll.custom_minimum_size = Vector2(0, minf(620.0, maxf(300.0, height - 40.0)))
-    ResponsiveUI.fit_centered(panel, get_viewport(), 14.0)
+    # กำหนด viewport ของหน้าต่างให้แน่นอน แล้วปล่อยให้ ScrollContainer เลื่อนเนื้อหาที่เหลือ
+    # ขนาดนี้เหมาะกับจอแนวนอน; ResponsiveUI จะย่อทั้งกรอบและ hitbox ในจอเตี้ย/มือถือ
+    scroll.custom_minimum_size = Vector2.ZERO
+    ResponsiveUI.fit_absolute_design(panel, get_viewport(), Vector2(860, 620), 14.0, 1.0)
 
 
 func open_screen() -> bool:
