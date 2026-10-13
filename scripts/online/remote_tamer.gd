@@ -30,6 +30,8 @@ var partner_facing: String = "down"
 var partner_initialized := false
 var partner_visible := false
 var _tamer_model_id: StringName = &""
+var _last_interaction_ms: int = -1000
+const INTERACTION_DEBOUNCE_MS := 180
 
 func _ready() -> void:
     var hitbox := get_node_or_null("PlayerHitbox") as Area2D
@@ -59,6 +61,13 @@ func contains_screen_point(screen_point: Vector2) -> bool:
 func request_interaction() -> void:
     if peer_id.is_empty():
         return
+    # The Area2D hitbox and OnlineWorldBridge's screen-space hit test can
+    # receive the same mouse/touch event. Debounce at the actor so both paths
+    # share one guard and cannot open two interaction flows for one tap.
+    var now: int = Time.get_ticks_msec()
+    if now - _last_interaction_ms < INTERACTION_DEBOUNCE_MS:
+        return
+    _last_interaction_ms = now
     interaction_requested.emit(peer_id, display_name, guild_name)
 
 
