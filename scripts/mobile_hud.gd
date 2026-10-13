@@ -524,7 +524,7 @@ func _layout() -> void:
     chat_panel.layout_panel()
     quest_button.visible = chat_panel.collapsed
 
-    if is_instance_valid(quick_bar):
+    if touch_mode and is_instance_valid(quick_bar):
         quick_bar.position = Vector2((viewport_size.x - quick_bar.size.x) * 0.5, viewport_size.y - inset.w - 238.0)
     target_card.offset_top = inset.y
     target_card.offset_bottom = inset.y + 59
