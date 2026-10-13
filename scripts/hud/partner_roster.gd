@@ -41,7 +41,8 @@ func configure(player: Tamer) -> void:
         partner.hp_changed,
         partner.mp_changed,
         partner.form_changed,
-        partner.state_changed
+        partner.state_changed,
+        partner.growth_changed
     ]:
         source.connect(_on_actor_changed)
 
@@ -75,6 +76,7 @@ func initialize(saved: Dictionary = {}) -> void:
             var member: Dictionary = (entry as Dictionary).duplicate(true)
             _ensure_uid(member)
             member["progress"] = _entry_progress(member, legacy_progress)
+            member["growth"] = _sanitize_growth(member.get("growth", {}))
             member["unlocked_forms"] = _sanitize_unlocked_forms(member, data)
             member["enhancement"] = clampi(int(member.get("enhancement", 0)), 0, MAX_ENHANCEMENT)
             members.append(member)
@@ -91,6 +93,7 @@ func initialize(saved: Dictionary = {}) -> void:
             var stored: Dictionary = (entry as Dictionary).duplicate(true)
             _ensure_uid(stored)
             stored["progress"] = _entry_progress(stored, legacy_progress)
+            stored["growth"] = _sanitize_growth(stored.get("growth", {}))
             stored["unlocked_forms"] = _sanitize_unlocked_forms(stored, stored_data)
             stored["enhancement"] = clampi(int(stored.get("enhancement", 0)), 0, MAX_ENHANCEMENT)
             storage.append(stored)
@@ -147,6 +150,28 @@ func _sanitize_progress(raw: Dictionary) -> Dictionary:
     if level >= EvolutionRules.MAX_LEVEL:
         exp = 0
     return {"level": level, "exp": exp}
+
+
+func _sanitize_growth(raw: Variant) -> Dictionary:
+    var source: Dictionary = raw if raw is Dictionary else {}
+    var stats_source: Variant = source.get("stats", {})
+    var skills_source: Variant = source.get("skills", {})
+    var stats: Dictionary = {"hp": 0, "attack": 0, "defense": 0, "speed": 0}
+    if stats_source is Dictionary:
+        for stat: String in ["hp", "attack", "defense", "speed"]:
+            stats[stat] = clampi(int(stats_source.get(stat, 0)), 0, 999)
+    var skills: Dictionary = {}
+    if skills_source is Dictionary:
+        for key: Variant in skills_source:
+            var skill_id: String = str(key).strip_edges()
+            if not skill_id.is_empty():
+                skills[skill_id] = clampi(int(skills_source[key]), 0, 4)
+    return {
+        "stat_points": clampi(int(source.get("stat_points", 0)), 0, 9999),
+        "skill_points": clampi(int(source.get("skill_points", 0)), 0, 9999),
+        "stats": stats,
+        "skills": skills
+    }
 
 
 func _sanitize_unlocked_forms(entry: Dictionary, data: StarterPartnerData) -> Array[String]:
@@ -335,6 +360,7 @@ func add_partner(id: StringName) -> bool:
         "mp": partner.digimon_max_mp,
         "egg": false,
         "progress": {"level": 1, "exp": 0},
+        "growth": {"stat_points": 0, "skill_points": 0, "stats": {"hp": 0, "attack": 0, "defense": 0, "speed": 0}, "skills": {}},
         "unlocked_forms": [String(rookie.id)],
         "enhancement": 0,
         "cooldowns": {},
@@ -464,6 +490,7 @@ func _apply_member(entry: Dictionary) -> bool:
     # โหลด Level/EXP ของสมาชิกเป้าหมายก่อนคำนวณสเตตัสและสิทธิ์ร่าง
     var member_progress: Dictionary = _entry_progress(entry, {"level":1, "exp":0})
     partner.progress.restore_data(member_progress)
+    partner.restore_growth_data(_sanitize_growth(entry.get("growth", {})))
 
     partner.auto_battle = false
     partner.cancel_page_skill()
@@ -577,6 +604,7 @@ func _capture(id: StringName, uid: String = "") -> Dictionary:
         "mp": partner.digimon_mp,
         "egg": not partner.is_alive(),
         "progress": _sanitize_progress(partner.progress.get_save_data()),
+        "growth": partner.get_growth_save_data(),
         "enhancement": current_enhancement_level(),
         "cooldowns": cooldowns,
         "basic_cooldown": partner._basic_cooldown

@@ -55,6 +55,7 @@ var equipment := EquipmentInventory.new()
 var party_roster: PartnerRoster # สร้างโดย MobileHUD และ initialize หลัง World คืนเซฟ
 var _base_max_ds: float = 100.0
 const LEVEL_EFFECT = preload("res://scripts/level_up_effect.gd")
+const PARTNER_EXP_RATE: float = 0.75
 
 var tamer_ds: float = 100.0:
     set(value):
@@ -384,12 +385,24 @@ func take_damage(amount: int, _attacker: Node2D = null) -> void:
         hp_changed.emit(hp, max_hp)
 
 func grant_party_exp(amount: int) -> void:
-    # เครดิตการฆ่าหนึ่งตัวให้ Tamer + Digimon ที่กำลังลงสนามเท่านั้น
-    # สมาชิกสำรอง/ใน Archive ไม่ได้รับ EXP จึงมี Level/EXP แยกกันจริง
-    progress.add_exp(amount)
+    # รางวัลเดียวกันถูกแปลงเป็น EXP ของแต่ละตัวแยกกัน: Tamer 100%, Digimon active 75%
+    # ทั้งสองใช้ CharacterProgress/EXP curve ของตนเอง; ตัวสำรองไม่รับ EXP แทนตัวลงสนาม
+    if amount <= 0:
+        return
+    grant_tamer_exp(amount)
     if is_instance_valid(partner):
-        partner.progress.add_exp(amount)
+        grant_partner_exp(maxi(1, roundi(float(amount) * PARTNER_EXP_RATE)))
     save_party_progress()
+
+
+func grant_tamer_exp(amount: int) -> void:
+    if amount > 0:
+        progress.add_exp(amount)
+
+
+func grant_partner_exp(amount: int) -> void:
+    if amount > 0 and is_instance_valid(partner):
+        partner.progress.add_exp(amount)
 
 func _on_level_up(_new_level: int) -> void:
     # เพิ่ม HP เท่าค่าที่ Max HP เพิ่ม ไม่ทำให้ Tamer HP 0 ฟื้นเอง

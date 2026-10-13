@@ -20,6 +20,10 @@ var hp_bar: ProgressBar
 var mp_bar: ProgressBar
 var values: Dictionary = {}
 var skill_buttons: Array[DigimonTouchButton] = []
+var stat_buttons: Dictionary = {}
+var growth_label: Label
+var upgrade_skill_button: DigimonTouchButton
+var _selected_skill_index: int = -1
 var close_button: DigimonTouchButton
 var visual_fx: ModalVisualFX
 var _form: MonsterData
@@ -163,6 +167,35 @@ func _build() -> void:
         button.pressed.connect(_show_skill.bind(i))
         row.add_child(button)
         skill_buttons.append(button)
+    var growth_frame := PanelContainer.new()
+    growth_frame.add_theme_stylebox_override("panel", ClassicUIStyle.frame(Color("3b8d83"), Color("10251f")))
+    stack.add_child(growth_frame)
+    var growth_stack := VBoxContainer.new()
+    growth_stack.add_theme_constant_override("separation", 7)
+    growth_frame.add_child(growth_stack)
+    growth_label = _label(growth_stack, "", 15, Color("b8ead5"))
+    growth_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+
+    var stat_row := HBoxContainer.new()
+    stat_row.add_theme_constant_override("separation", 7)
+    growth_stack.add_child(stat_row)
+    var stat_ids: Array[StringName] = [&"hp", &"attack", &"defense", &"speed"]
+    var stat_titles: Array[String] = ["HP +25", "ATK +3", "DEF +2", "SPD +2"]
+    for i: int in range(stat_ids.size()):
+        var button := DigimonTouchButton.new()
+        button.text = stat_titles[i]
+        button.custom_minimum_size = Vector2(78, 44)
+        button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+        button.pressed.connect(_spend_stat_point.bind(stat_ids[i]))
+        stat_row.add_child(button)
+        stat_buttons[String(stat_ids[i])] = button
+
+    upgrade_skill_button = DigimonTouchButton.new()
+    upgrade_skill_button.text = "อัปสกิลที่เลือก • 1 แต้ม"
+    upgrade_skill_button.custom_minimum_size = Vector2(0, 44)
+    upgrade_skill_button.pressed.connect(_upgrade_selected_skill)
+    growth_stack.add_child(upgrade_skill_button)
+
     detail_label = _label(stack, "", 14, Color("b7c8da"))
     detail_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     detail_label.custom_minimum_size.y = 42
@@ -226,7 +259,7 @@ func refresh() -> void:
     values.AS.text = "%.2f s" % form.attack_interval
     values.CT.text = "%.1f%%" % form.critical_chance
     values.HT.text = "%.1f%%" % form.hit_chance
-    values.DE.text = str(form.defense)
+    values.DE.text = str(form.defense + int(partner.allocated_stats.get("defense", 0)) * PartnerMonster.STAT_POINT_DEFENSE)
     values.BL.text = "%.1f%%" % form.block_chance
     values.EV.text = "%.1f%%" % form.evasion_chance
     values.MS.text = "%.0f" % partner.move_speed
@@ -249,12 +282,66 @@ func refresh() -> void:
             skill_buttons[i].tooltip_text = skill.display_name if skill != null else "ยังไม่มี Memory Skill" if i >= 4 else "ไม่มีสกิลในช่องนี้"
         _show_skill(0)
 
+    growth_label.text = "แต้มสเตตัส: %d  •  แต้มสกิล: %d\nสะสมแล้ว  HP +%d  •  ATK +%d  •  DEF +%d  •  SPD +%d" % [
+        partner.unspent_stat_points, partner.unspent_skill_points,
+        int(partner.allocated_stats.get("hp", 0)) * PartnerMonster.STAT_POINT_HP,
+        int(partner.allocated_stats.get("attack", 0)) * PartnerMonster.STAT_POINT_ATTACK,
+        int(partner.allocated_stats.get("defense", 0)) * PartnerMonster.STAT_POINT_DEFENSE,
+        int(partner.allocated_stats.get("speed", 0)) * int(PartnerMonster.STAT_POINT_SPEED)
+    ]
+    var stat_ids: Array[StringName] = [&"hp", &"attack", &"defense", &"speed"]
+    var stat_titles: Array[String] = ["HP +25", "ATK +3", "DEF +2", "SPD +2"]
+    for i: int in range(stat_ids.size()):
+        var button: DigimonTouchButton = stat_buttons.get(String(stat_ids[i])) as DigimonTouchButton
+        if is_instance_valid(button):
+            button.text = "%s (%d)" % [stat_titles[i], int(partner.allocated_stats.get(String(stat_ids[i]), 0))]
+            button.disabled = partner.unspent_stat_points <= 0
+    for i: int in range(mini(4, partner.active_skills.size())):
+        var learned_skill: MonsterSkill = partner.active_skills[i]
+        if learned_skill != null:
+            skill_buttons[i].tooltip_text = "%s • Rank %d/5" % [learned_skill.display_name, partner.skill_rank(learned_skill.id)]
+    if _selected_skill_index >= 0:
+        _show_skill(_selected_skill_index)
+
+
 func _show_skill(index: int) -> void:
-    if index >= hud.partner.active_skills.size():
-        detail_label.text = "ร่างนี้ยังไม่มีสกิล"
+    _selected_skill_index = index
+    if hud == null or not is_instance_valid(hud.partner):
+        upgrade_skill_button.disabled = true
         return
-    var skill: MonsterSkill = hud.partner.active_skills[index]
-    detail_label.text = "%s  •  AT %.0f%%  •  MP %.0f  •  CD %.1fs\n%s" % [skill.display_name, skill.multiplier * 100, skill.mp_cost, skill.cooldown, "ระยะ %.0f  •  รัศมี %.0f" % [skill.cast_range, skill.impact_radius]]
+    var partner: PartnerMonster = hud.partner
+    if index < 0 or index >= 4 or index >= partner.active_skills.size() or partner.active_skills[index] == null:
+        detail_label.text = "เลือกสกิลใน 4 ช่องแรกเพื่อดูรายละเอียดและใช้แต้มอัปเกรด"
+        upgrade_skill_button.text = "เลือกสกิลที่อัปได้"
+        upgrade_skill_button.disabled = true
+        return
+    var skill: MonsterSkill = partner.active_skills[index]
+    var rank: int = partner.skill_rank(skill.id)
+    detail_label.text = "%s  •  Rank %d/5  •  ดาเมจสกิล +%d%%\nAT %.0f%%  •  MP %.0f  •  CD %.1fs\nระยะ %.0f  •  รัศมี %.0f" % [
+        skill.display_name, rank, (rank - 1) * 15, skill.multiplier * 100,
+        skill.mp_cost, skill.cooldown, skill.cast_range, skill.impact_radius
+    ]
+    upgrade_skill_button.text = "อัปสกิล • Rank %d/5 • เหลือ %d แต้ม" % [rank, partner.unspent_skill_points]
+    upgrade_skill_button.disabled = partner.unspent_skill_points <= 0 or rank >= PartnerMonster.SKILL_RANK_MAX
+
+
+func _spend_stat_point(stat: StringName) -> void:
+    if hud == null or not is_instance_valid(hud.partner):
+        return
+    if hud.partner.spend_stat_point(stat):
+        refresh()
+
+
+func _upgrade_selected_skill() -> void:
+    if hud == null or not is_instance_valid(hud.partner):
+        return
+    var partner: PartnerMonster = hud.partner
+    if _selected_skill_index < 0 or _selected_skill_index >= partner.active_skills.size():
+        return
+    var skill: MonsterSkill = partner.active_skills[_selected_skill_index]
+    if skill != null and partner.upgrade_skill(skill.id):
+        refresh()
+        _show_skill(_selected_skill_index)
 
 func _process(delta: float) -> void:
     if not is_open:

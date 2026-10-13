@@ -103,6 +103,55 @@ func run() -> void:
     check(roster.add_partner(&"patamon") and roster.add_partner(&"gomamon"), "New lines fit the three-member party")
     await verify_service_first_open()
 
+    # XP belongs to two independent tracks: Tamer 100%, active Digimon 75%.
+    var original_tamer_progress: Dictionary = player.progress.get_save_data().duplicate(true)
+    var original_partner_progress: Dictionary = partner.progress.get_save_data().duplicate(true)
+    var original_growth: Dictionary = partner.get_growth_save_data().duplicate(true)
+    player.progress.restore_data({"level": 1, "exp": 0})
+    partner.progress.restore_data({"level": 1, "exp": 0})
+    partner.restore_growth_data({})
+    partner.refresh_growth_stats()
+    player.grant_party_exp(80)
+    check(player.progress.current_exp == 80, "Tamer receives its own full EXP reward")
+    check(partner.progress.current_exp == 60, "Active Digimon receives its separate 75% EXP reward")
+    player.progress.restore_data(original_tamer_progress)
+    player.apply_progress_stats()
+    partner.progress.restore_data(original_partner_progress)
+    partner.restore_growth_data(original_growth)
+    partner.refresh_growth_stats()
+    player.save_party_progress()
+
+    # Each Digimon earns 3 stat points per level and 1 skill point every 3 levels.
+    partner.progress.restore_data({"level": 1, "exp": 0})
+    partner.restore_growth_data({})
+    partner.refresh_growth_stats()
+    partner.progress.add_exp(250)
+    check(partner.progress.level == 3 and partner.unspent_stat_points == 6, "Digimon level-ups award independent stat points")
+    check(partner.unspent_skill_points == 1, "Every third Digimon level awards a skill point")
+    var attack_before_growth: int = partner.attack_power
+    check(partner.spend_stat_point(&"attack") and partner.attack_power == attack_before_growth + PartnerMonster.STAT_POINT_ATTACK,
+        "Spending a stat point immediately raises Digimon ATK")
+    if not partner.active_skills.is_empty() and partner.active_skills[0] != null:
+        var growth_skill: MonsterSkill = partner.active_skills[0]
+        check(partner.upgrade_skill(growth_skill.id) and partner.skill_rank(growth_skill.id) == 2,
+            "Skill point raises the selected skill to Rank 2")
+    else:
+        check(false, "Current Digimon form has an upgradeable skill")
+    var growth_snapshot: Dictionary = roster.get_save_data().duplicate(true)
+    var active_entry: Dictionary = growth_snapshot["members"][roster.active_index]
+    var saved_growth: Dictionary = active_entry.get("growth", {})
+    check(int(saved_growth.get("stat_points", -1)) == 5 and int(saved_growth.get("skill_points", -1)) == 0,
+        "Unspent growth points persist on the active roster member")
+    check(int(saved_growth.get("stats", {}).get("attack", 0)) == 1,
+        "Allocated stat investment is persisted per Digimon")
+    if not partner.active_skills.is_empty() and partner.active_skills[0] != null:
+        check(int(saved_growth.get("skills", {}).get(String(partner.active_skills[0].id), 0)) == 1,
+            "Skill rank is persisted without changing the shared MonsterSkill resource")
+    partner.progress.restore_data(original_partner_progress)
+    partner.restore_growth_data(original_growth)
+    partner.refresh_growth_stats()
+    player.save_party_progress()
+
     # Level/EXP ต้องแยกกันจริง: ตัวที่ไม่ได้ลงสนามไม่โตตาม
     set_level(12, 34)
     check(roster.member_level(&"tailmon") == 12 and roster.member_level(&"patamon") == 1 and roster.member_level(&"gomamon") == 1, "Only active Tailmon gains level")
