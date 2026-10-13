@@ -6,14 +6,14 @@ var accent: Color = Color("34779f")
 var quantity: int = -1
 
 func _draw() -> void:
-    var border: Color = Color("e5c170") if selected else accent
-    var fill: Color = Color("164461") if selected else Color("0a2238")
+    var border: Color = Color("f0d58e") if selected else accent.lerp(Color("b99757"), 0.65)
+    var fill: Color = Color("5a411e") if selected else Color("2a1d0e")
     if locked:
-        fill = Color("0a1725")
+        fill = Color("171109")
     if _finger >= 0:
         fill = fill.lightened(0.15)
     draw_style_box(ClassicUIStyle.frame(border, fill), Rect2(Vector2.ZERO, size))
-    draw_texture_rect(preload("res://assets/ui/digital/slot_frame.png"), Rect2(Vector2.ZERO, size), false, Color("e8bd79") if selected else (Color("51687d") if locked else Color.WHITE))
+    draw_texture_rect(preload("res://assets/ui/digital/slot_frame.png"), Rect2(Vector2.ZERO, size), false, Color("f3d795") if selected else (Color("6d552d") if locked else Color("d8b66d")))
     draw_line(Vector2(3, 3), Vector2(size.x - 3, 3), border.lightened(0.15), 1.0)
     if icon != null:
         var side: float = minf(size.x - 12, size.y - 16)

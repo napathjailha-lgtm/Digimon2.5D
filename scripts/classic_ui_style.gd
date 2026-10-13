@@ -18,6 +18,25 @@ static func frame(accent: Color = GOLD, background: Color = NAVY) -> StyleBoxFla
     style.shadow_offset = Vector2(2, 3)
     return style
 
+static func title_bar(background: Color = Color("68152a")) -> StyleBoxFlat:
+    # แถบหัวหน้าต่างแดงเลือดหมูตัดกับขอบทองแบบ MMORPG คลาสสิก
+    var style := StyleBoxFlat.new()
+    style.bg_color = background
+    style.border_color = GOLD
+    style.set_border_width_all(2)
+    style.set_corner_radius_all(4)
+    style.corner_radius_bottom_left = 2
+    style.corner_radius_bottom_right = 2
+    style.shadow_color = Color(0.01, 0.006, 0.002, 0.45)
+    style.shadow_size = 3
+    style.shadow_offset = Vector2(1, 2)
+    style.content_margin_left = 10
+    style.content_margin_right = 10
+    style.content_margin_top = 4
+    style.content_margin_bottom = 4
+    return style
+
+
 static func label(text: String, at: Vector2, extent: Vector2, font_size: int = 14) -> Label:
     var node := Label.new()
     node.text = text

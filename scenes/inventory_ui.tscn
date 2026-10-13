@@ -30,18 +30,25 @@ theme_override_constants/margin_top = 12
 theme_override_constants/margin_bottom = 12
 [node name="Column" type="VBoxContainer" parent="Root/Panel/Margin"]
 theme_override_constants/separation = 12
-[node name="Header" type="HBoxContainer" parent="Root/Panel/Margin/Column"]
-theme_override_constants/separation = 16
-[node name="Title" type="Label" parent="Root/Panel/Margin/Column/Header"]
+[node name="Header" type="PanelContainer" parent="Root/Panel/Margin/Column"]
+custom_minimum_size = Vector2(0, 58)
+[node name="Row" type="HBoxContainer" parent="Root/Panel/Margin/Column/Header"]
+layout_mode = 2
+theme_override_constants/separation = 12
+[node name="Title" type="Label" parent="Root/Panel/Margin/Column/Header/Row"]
+layout_mode = 2
 size_flags_horizontal = 3
-text = "DIGIVICE • กระเป๋าไอเทม"
-theme_override_font_sizes/font_size = 25
-[node name="Count" type="Label" parent="Root/Panel/Margin/Column/Header"]
+text = "アイテムリスト  •  กระเป๋าไอเทม"
+theme_override_font_sizes/font_size = 23
+[node name="Count" type="Label" parent="Root/Panel/Margin/Column/Header/Row"]
+layout_mode = 2
 text = "0 / 24 ช่อง"
-[node name="Close" type="Control" parent="Root/Panel/Margin/Column/Header"]
-custom_minimum_size = Vector2(96, 56)
+theme_override_colors/font_color = Color(0.95, 0.84, 0.61, 1)
+[node name="Close" type="Control" parent="Root/Panel/Margin/Column/Header/Row"]
+layout_mode = 2
+custom_minimum_size = Vector2(58, 48)
 script = ExtResource("3")
-caption = "ปิด"
+caption = "×"
 [node name="Body" type="HBoxContainer" parent="Root/Panel/Margin/Column"]
 size_flags_vertical = 3
 theme_override_constants/separation = 18
