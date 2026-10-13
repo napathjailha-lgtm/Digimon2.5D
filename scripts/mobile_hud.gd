@@ -293,7 +293,7 @@ func _build_quick_item_bar() -> void:
         var button := HybridCommand.new()
         button.custom_minimum_size = Vector2(58, 58)
         button.size = Vector2(58, 58)
-        button.illustrated = true
+        button.rectangular_slot = true
         button.pressed.connect(_use_quick_slot.bind(slot))
         quick_bar.add_child(button)
         quick_buttons.append(button)
