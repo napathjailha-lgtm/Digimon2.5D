@@ -14,8 +14,9 @@ var visual_fx: ModalVisualFX
 var equipment_shortcut: EquipmentButton
 @onready var root: Control = $Root
 @onready var grid: GridContainer = $Root/Panel/Margin/Column/Body/Bag/Inner/Stack/Grid
-@onready var count_label: Label = $Root/Panel/Margin/Column/Header/Count
-@onready var close_button: EquipmentButton = $Root/Panel/Margin/Column/Header/Close
+@onready var header_panel: PanelContainer = $Root/Panel/Margin/Column/Header
+@onready var count_label: Label = $Root/Panel/Margin/Column/Header/Row/Count
+@onready var close_button: EquipmentButton = $Root/Panel/Margin/Column/Header/Row/Close
 @onready var popup: PanelContainer = $Root/Panel/Margin/Column/Body/Popup
 @onready var icon: TextureRect = $Root/Panel/Margin/Column/Body/Popup/Inner/Details/Icon
 @onready var name_label: Label = $Root/Panel/Margin/Column/Body/Popup/Inner/Details/Name
@@ -31,8 +32,9 @@ func _ready() -> void:
     process_mode = Node.PROCESS_MODE_ALWAYS
     layer = 85
     root.hide()
-    ($Root/Panel as PanelContainer).add_theme_stylebox_override("panel", ClassicUIStyle.frame(Color("5ac4d7")))
-    popup.add_theme_stylebox_override("panel", ClassicUIStyle.frame(Color("9070af"), Color("101d31")))
+    ($Root/Panel as PanelContainer).add_theme_stylebox_override("panel", ClassicUIStyle.frame(ClassicUIStyle.GOLD, Color("241b10f5")))
+    header_panel.add_theme_stylebox_override("panel", ClassicUIStyle.title_bar())
+    popup.add_theme_stylebox_override("panel", ClassicUIStyle.frame(Color("d6b46e"), Color("2b2011f5")))
     visual_fx = ModalVisualFX.attach(root, $Root/Panel)
     popup.hide()
     for index: int in range(24):
@@ -43,6 +45,8 @@ func _ready() -> void:
         button.pressed.connect(_choose_slot.bind(index))
         grid.add_child(button)
         slots.append(button)
+    close_button.caption = "×"
+    close_button.custom_minimum_size = Vector2(58, 48)
     close_button.pressed.connect(close_screen)
     # เข้าหน้าสวมใส่จาก Inventory โดยตรง ตาม flow มือถือ/เว็บเดียวกัน
     equipment_shortcut = EquipmentButton.new()
@@ -50,6 +54,7 @@ func _ready() -> void:
     equipment_shortcut.custom_minimum_size = Vector2(110, 42)
     equipment_shortcut.pressed.connect(_open_equipment)
     close_button.get_parent().add_child(equipment_shortcut)
+    close_button.get_parent().move_child(equipment_shortcut, close_button.get_index())
     use_button.pressed.connect(_use_selected)
     drop_button.pressed.connect(_drop_selected)
     InventoryManager.changed.connect(_request_refresh)
