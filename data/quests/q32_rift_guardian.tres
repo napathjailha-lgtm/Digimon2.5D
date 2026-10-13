@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q32_rift_guardian"
+title = "ผู้พิทักษ์แห่งรอยแยก"
+description = "กำจัด Nighttalon Harrier 10 ตัวที่รวมฝูงใกล้รอยแยก เพื่อยืนยันว่าเส้นทางสำรวจพร้อมใช้งาน"
+zone_id = &"file_island"
+objective = 1
+target_id = &"nighttalon_harrier"
+required_count = 10
+recommended_level = 47
+reward_exp = 18000
+reward_bits = 4000
+unlock_flags = Array[StringName]([&"rift_guardian_defeated"])
+unlock_zones = Array[StringName]([])
+unlock_stage = -1

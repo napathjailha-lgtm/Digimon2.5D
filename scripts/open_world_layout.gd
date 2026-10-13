@@ -18,7 +18,11 @@ extends Resource
     PackedVector2Array([Vector2(3540, 1000), Vector2(3710, 1650), Vector2(3660, 2250), Vector2(3800, 3200), Vector2(4200, 4000), Vector2(4100, 5300), Vector2(5200, 5700), Vector2(6800, 5550), Vector2(8300, 5600), Vector2(9600, 5500)]),
     PackedVector2Array([Vector2(1050, 2300), Vector2(1150, 3750), Vector2(1600, 5000), Vector2(2400, 5400), Vector2(2920, 5400), Vector2(4100, 5300)]),
     PackedVector2Array([Vector2(6700, 1100), Vector2(6600, 1900), Vector2(7100, 2700), Vector2(7000, 4000), Vector2(6800, 5550)]),
-    PackedVector2Array([Vector2(9500, 1000), Vector2(9000, 1900), Vector2(8700, 2850), Vector2(9000, 4300), Vector2(9600, 5500)])
+    PackedVector2Array([Vector2(9500, 1000), Vector2(9000, 1900), Vector2(8700, 2850), Vector2(9000, 4300), Vector2(9600, 5500)]),
+    # เส้นทางสำรวจรอยแยก: เชื่อมเมืองกลางเกาะกับแนวป่าตะวันออกและจุดสัญญาณ
+    PackedVector2Array([Vector2(4820, 700), Vector2(5300, 1450), Vector2(6100, 2050), Vector2(7100, 2700), Vector2(7900, 3500)]),
+    # ทางเลี่ยงแนวหน้าด้านใต้ เชื่อมสะพานกับค่ายสำรวจโดยไม่ตัดผ่านแม่น้ำ
+    PackedVector2Array([Vector2(2400, 5400), Vector2(3300, 5850), Vector2(4300, 6000), Vector2(5400, 5700), Vector2(6800, 5550)])
 ]
 
 func distance_to_roads(point: Vector2) -> float:
