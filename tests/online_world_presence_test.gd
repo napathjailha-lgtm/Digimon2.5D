@@ -8,6 +8,10 @@ var last_interaction_peer: String = ""
 
 func _ready() -> void:
     process_mode = Node.PROCESS_MODE_ALWAYS
+    # This test is fully local and must never connect to production.
+    OnlineManager.disconnect_from_server()
+    OnlineManager.configure("", false)
+    GameManager.logout()
     run.call_deferred()
 
 func check(ok: bool, message: String) -> void:
