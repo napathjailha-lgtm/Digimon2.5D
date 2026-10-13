@@ -53,7 +53,9 @@ func run() -> void:
     check(interaction_events == 1, "one tap cannot emit duplicate interaction requests")
     check(last_interaction_peer == "presence-test-peer", "interaction keeps the selected remote peer id")
 
-    await get_tree().create_timer(0.2).timeout
+    # Move the guard timestamp explicitly to test the post-debounce path
+    # deterministically, without relying on CI frame scheduling.
+    remote._last_interaction_ms = Time.get_ticks_msec() - 200
     remote.request_interaction()
     check(interaction_events == 2, "a later intentional interaction is still accepted")
 
