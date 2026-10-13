@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q31_pax_route_briefing"
+title = "เส้นทางสู่เขตอันตราย"
+description = "รายงานผลการสำรวจต่อ Pax เขาจะชี้ตำแหน่งทางผ่านที่ปลอดภัยและเตรียมทีมก่อนเข้าเขตอันตราย"
+zone_id = &"file_island"
+objective = 0
+target_id = &"frontier_pax"
+required_count = 1
+recommended_level = 46
+reward_exp = 5500
+reward_bits = 1400
+unlock_flags = Array[StringName]([&"frontier_route_briefed"])
+unlock_zones = Array[StringName]([])
+unlock_stage = -1
