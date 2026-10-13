@@ -55,6 +55,7 @@ var fusion_manager: FusionManager
 var _rotate_overlay: ColorRect
 var quick_bar: HBoxContainer
 var quick_buttons: Array[HybridCommand] = []
+var status_frame: Panel
 var safe_inset_override := Vector4(-1, -1, -1, -1) # ใช้ทดสอบรอยบาก; ค่า -1 ให้อ่าน OS จริง
 
 func _ready() -> void:
@@ -171,13 +172,14 @@ func _build_extras() -> void:
     chat_panel.editing_changed.connect(_on_chat_editing)
     chat_panel.folded_changed.connect(_on_chat_folded)
     chat_panel.set_collapsed(preferences.chat_collapsed)
-    minimap = $Root/Safe/Layout/TopLeft/MapRow/Minimap as RoundMinimap
+    minimap = $Root/Safe/Layout/Minimap as RoundMinimap
     var world: Node = tamer.get_parent().get_parent()
     minimap.configure(tamer, partner, world.get("background_texture"))
     if world.get("world_extent") is Vector2:
         minimap.world_extent = world.get("world_extent")
     if bool(world.get("open_world_enabled")):
         minimap.world_layout = (world.get_node("OpenWorldEnvironment") as OpenWorldEnvironment).layout
+    _build_classic_status_frame()
     _build_target_card()
     _build_online_badge()
     _tracker = preload("res://scenes/quest_tracker.tscn").instantiate() as QuestTracker
@@ -188,6 +190,27 @@ func _build_extras() -> void:
     _tracker.hide()
     quest_button.set_caption("เควสต์หลัก · แตะดูรายละเอียด/นำทาง")
     quest_button.pressed.connect(_open_quest_details)
+
+func _build_classic_status_frame() -> void:
+    # แผ่นรองสถานะสไตล์ MMORPG อยู่ใต้หลอดเลือด/พลังงานเฉพาะ layout จอใหญ่
+    status_frame = Panel.new()
+    status_frame.name = "ClassicStatusFrame"
+    status_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    status_frame.z_index = -1
+    var style := StyleBoxFlat.new()
+    style.bg_color = Color(0.075, 0.052, 0.026, 0.88)
+    style.border_color = Color("d7b56f")
+    style.set_border_width_all(2)
+    style.set_corner_radius_all(4)
+    style.shadow_color = Color(0.01, 0.008, 0.003, 0.52)
+    style.shadow_size = 5
+    style.shadow_offset = Vector2(2, 3)
+    status_frame.add_theme_stylebox_override("panel", style)
+    var layout: Control = $Root/Safe/Layout
+    layout.add_child(status_frame)
+    layout.move_child(status_frame, party_status.get_index())
+    status_frame.hide()
+
 
 func _build_online_badge() -> void:
     online_badge = PanelContainer.new()
@@ -374,13 +397,109 @@ func _layout() -> void:
     joystick.offset_bottom = -inset.w
     joystick.offset_top = joystick.offset_bottom - joystick_side
 
-    # กันพื้นที่ Joystick และวงสกิลก่อนกำหนดความกว้างหลอดกลางล่าง
+    # Desktop: HUD แบบ MMORPG อยู่ชิดมุม ส่วนมือถือคงตำแหน่งที่เหมาะกับนิ้วโป้ง
     var combat_width: float = 374.0 * combat_scale
-    var min_vitals: float = 240.0 if compact_touch else 300.0
-    var vital_width: float = clampf(safe_width - joystick_side - combat_width - 44.0, min_vitals, 460.0)
-    party_status.offset_left = -vital_width * 0.5
-    party_status.offset_right = vital_width * 0.5
-    party_panel.set_compact(compact_touch or safe_height < 660.0)
+    var top_left_controls: Control = $Root/Safe/Layout/TopLeft
+    if touch_mode:
+        var min_vitals: float = 240.0 if compact_touch else 300.0
+        var vital_width: float = clampf(safe_width - joystick_side - combat_width - 44.0, min_vitals, 460.0)
+        party_status.anchor_left = 0.5
+        party_status.anchor_right = 0.5
+        party_status.anchor_top = 1.0
+        party_status.anchor_bottom = 1.0
+        party_status.offset_left = -vital_width * 0.5
+        party_status.offset_right = vital_width * 0.5
+        party_status.offset_top = -172.0
+        party_status.offset_bottom = -20.0
+        status_frame.hide()
+
+        # แผนที่แยกจากปุ่มลัด แต่คงอยู่ทางซ้ายบนบนมือถือ
+        minimap.anchor_left = 0.0
+        minimap.anchor_right = 0.0
+        minimap.anchor_top = 0.0
+        minimap.anchor_bottom = 0.0
+        minimap.custom_minimum_size = Vector2(146, 146)
+        minimap.offset_left = inset.x + 10.0
+        minimap.offset_top = inset.y + 10.0
+        minimap.offset_right = minimap.offset_left + 146.0
+        minimap.offset_bottom = minimap.offset_top + 146.0
+
+        top_left_controls.anchor_left = 0.0
+        top_left_controls.anchor_right = 0.0
+        top_left_controls.anchor_top = 0.0
+        top_left_controls.anchor_bottom = 0.0
+        top_left_controls.offset_left = inset.x + 168.0
+        top_left_controls.offset_right = top_left_controls.offset_left + 300.0
+        top_left_controls.offset_top = inset.y + 10.0
+        top_left_controls.offset_bottom = top_left_controls.offset_top + 146.0
+        party_panel.anchor_left = 1.0
+        party_panel.anchor_right = 1.0
+        party_panel.anchor_top = 0.0
+        party_panel.anchor_bottom = 0.0
+        party_panel.offset_left = -90.0
+        party_panel.offset_right = -4.0
+        party_panel.offset_top = inset.y + 90.0
+        party_panel.offset_bottom = party_panel.offset_top + (3.0 * (76.0 if compact_touch else 88.0) + 24.0)
+        party_panel.visible = true
+        party_panel.set_compact(compact_touch or safe_height < 660.0)
+        if is_instance_valid(quick_bar):
+            quick_bar.position = Vector2((viewport_size.x - quick_bar.size.x) * 0.5, viewport_size.y - inset.w - 238.0)
+    else:
+        var vital_width_desktop: float = clampf(safe_width * 0.27, 288.0, 330.0)
+        party_status.anchor_left = 0.0
+        party_status.anchor_right = 0.0
+        party_status.anchor_top = 0.0
+        party_status.anchor_bottom = 0.0
+        party_status.offset_left = inset.x + 16.0
+        party_status.offset_right = party_status.offset_left + vital_width_desktop
+        party_status.offset_top = inset.y + 14.0
+        party_status.offset_bottom = party_status.offset_top + 136.0
+        status_frame.show()
+        status_frame.position = Vector2(party_status.offset_left - 8.0, party_status.offset_top - 8.0)
+        status_frame.size = Vector2(vital_width_desktop + 16.0, 152.0)
+
+        # หน้าต่างปุ่มลัดอยู่ใต้แถบตัวละคร; มินิแมปชิดมุมขวาบน
+        top_left_controls.anchor_left = 0.0
+        top_left_controls.anchor_right = 0.0
+        top_left_controls.anchor_top = 0.0
+        top_left_controls.anchor_bottom = 0.0
+        top_left_controls.offset_left = inset.x + 18.0
+        top_left_controls.offset_right = top_left_controls.offset_left + 300.0
+        top_left_controls.offset_top = inset.y + 154.0
+        top_left_controls.offset_bottom = top_left_controls.offset_top + 144.0
+
+        minimap.anchor_left = 1.0
+        minimap.anchor_right = 1.0
+        minimap.anchor_top = 0.0
+        minimap.anchor_bottom = 0.0
+        minimap.custom_minimum_size = Vector2(176, 176)
+        minimap.offset_left = -190.0
+        minimap.offset_right = -14.0
+        minimap.offset_top = inset.y + 12.0
+        minimap.offset_bottom = minimap.offset_top + 176.0
+
+        # ทีมอยู่ใต้แมพแต่เยื้องซ้ายพ้นวงสกิลมุมขวาล่าง
+        party_panel.anchor_left = 1.0
+        party_panel.anchor_right = 1.0
+        party_panel.anchor_top = 0.0
+        party_panel.anchor_bottom = 0.0
+        party_panel.offset_left = -500.0
+        party_panel.offset_right = -410.0
+        party_panel.offset_top = inset.y + 198.0
+        party_panel.offset_bottom = party_panel.offset_top + (3.0 * (76.0 if safe_height < 760.0 else 88.0) + 24.0)
+        party_panel.visible = true
+        party_panel.set_compact(safe_height < 760.0)
+        if is_instance_valid(quick_bar):
+            # ใช้ offset ของ anchor ล่างแทนตำแหน่ง viewport ที่อาจดันแถบออกนอกจอ
+            var quick_width: float = 4.0 * 58.0 + 3.0 * 6.0
+            quick_bar.anchor_left = 0.5
+            quick_bar.anchor_right = 0.5
+            quick_bar.anchor_top = 1.0
+            quick_bar.anchor_bottom = 1.0
+            quick_bar.offset_left = -quick_width * 0.5
+            quick_bar.offset_right = quick_width * 0.5
+            quick_bar.offset_top = -74.0
+            quick_bar.offset_bottom = -16.0
 
     var web_mobile_low_power: bool = HybridPlatform.is_web_mobile(get_viewport())
     menu.animations_enabled = preferences.animations_enabled and not web_mobile_low_power
