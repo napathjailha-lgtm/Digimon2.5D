@@ -7,6 +7,7 @@ signal switched(index: int)
 signal feedback(message: String)
 
 const CAPACITY: int = 3
+const GROWTH_VERSION: int = 1
 const MAX_ENHANCEMENT: int = 5
 const ENHANCEMENT_EGG_COST: int = 5
 const ENHANCEMENT_SUCCESS: Array[float] = [1.0, 0.85, 0.70, 0.55, 0.40]
@@ -63,6 +64,9 @@ func initialize(saved: Dictionary = {}) -> void:
     storage.clear()
 
     var legacy_progress: Dictionary = _legacy_progress_fallback(saved)
+    # Version ที่ยังไม่มี growth marker อาจเป็นเซฟที่สร้างจาก build แรกซึ่งบันทึกแต้มเป็น 0
+    # จึงคำนวณแต้มรวมจากเลเวลและหักเฉพาะแต้มที่ผู้เล่นลงทุนไปแล้ว
+    var migrate_growth: bool = int(saved.get("growth_version", 0)) < GROWTH_VERSION
 
     var raw: Variant = saved.get("members", [])
     if raw is Array:
@@ -76,7 +80,10 @@ func initialize(saved: Dictionary = {}) -> void:
             var member: Dictionary = (entry as Dictionary).duplicate(true)
             _ensure_uid(member)
             member["progress"] = _entry_progress(member, legacy_progress)
-            member["growth"] = _sanitize_growth(member.get("growth", {}))
+            var member_growth: Dictionary = _sanitize_growth(member.get("growth", {}))
+            if migrate_growth:
+                member_growth = _migrate_growth(member_growth, member["progress"])
+            member["growth"] = member_growth
             member["unlocked_forms"] = _sanitize_unlocked_forms(member, data)
             member["enhancement"] = clampi(int(member.get("enhancement", 0)), 0, MAX_ENHANCEMENT)
             members.append(member)
@@ -93,7 +100,10 @@ func initialize(saved: Dictionary = {}) -> void:
             var stored: Dictionary = (entry as Dictionary).duplicate(true)
             _ensure_uid(stored)
             stored["progress"] = _entry_progress(stored, legacy_progress)
-            stored["growth"] = _sanitize_growth(stored.get("growth", {}))
+            var stored_growth: Dictionary = _sanitize_growth(stored.get("growth", {}))
+            if migrate_growth:
+                stored_growth = _migrate_growth(stored_growth, stored["progress"])
+            stored["growth"] = stored_growth
             stored["unlocked_forms"] = _sanitize_unlocked_forms(stored, stored_data)
             stored["enhancement"] = clampi(int(stored.get("enhancement", 0)), 0, MAX_ENHANCEMENT)
             storage.append(stored)
@@ -110,6 +120,8 @@ func initialize(saved: Dictionary = {}) -> void:
         var first: Dictionary = _capture(id)
         _ensure_uid(first)
         first["progress"] = _sanitize_progress(partner.progress.get_save_data())
+        if migrate_growth:
+            first["growth"] = _migrate_growth(_sanitize_growth(first.get("growth", {})), first["progress"])
         first["unlocked_forms"] = [String(partner.forms[0].id)]
         members.append(first)
         active_index = 0
@@ -172,6 +184,26 @@ func _sanitize_growth(raw: Variant) -> Dictionary:
         "stats": stats,
         "skills": skills
     }
+
+
+func _migrate_growth(raw_growth: Variant, progress_data: Dictionary) -> Dictionary:
+    # แต้มย้อนหลัง: level 1 เริ่ม 0, ทุก Level Up ได้ 3 stat points
+    # และเลเวล 3/6/9/... ได้ skill point; รองรับเซฟเก่าที่เคยบันทึก growth เป็นศูนย์แล้ว
+    var growth: Dictionary = _sanitize_growth(raw_growth)
+    var level: int = clampi(int(progress_data.get("level", 1)), 1, EvolutionRules.MAX_LEVEL)
+    var earned_stat_points: int = (level - 1) * 3
+    var earned_skill_points: int = floori(float(level) / 3.0)
+    var spent_stat_points: int = 0
+    var saved_stats: Dictionary = growth.get("stats", {})
+    for stat: String in ["hp", "attack", "defense", "speed"]:
+        spent_stat_points += maxi(0, int(saved_stats.get(stat, 0)))
+    var spent_skill_points: int = 0
+    var saved_skills: Dictionary = growth.get("skills", {})
+    for skill_id: Variant in saved_skills:
+        spent_skill_points += maxi(0, int(saved_skills[skill_id]))
+    growth["stat_points"] = clampi(earned_stat_points - spent_stat_points, 0, 9999)
+    growth["skill_points"] = clampi(earned_skill_points - spent_skill_points, 0, 9999)
+    return growth
 
 
 func _sanitize_unlocked_forms(entry: Dictionary, data: StarterPartnerData) -> Array[String]:
@@ -684,6 +716,7 @@ func get_save_data() -> Dictionary:
 
     return {
         "version": 6,
+        "growth_version": GROWTH_VERSION,
         "active_id": members[active_index].get("id", ""),
         "active_uid": members[active_index].get("uid", ""),
         "members": members.duplicate(true),
