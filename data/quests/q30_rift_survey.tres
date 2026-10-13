@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StoryQuest" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/story_quest.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = &"q30_rift_survey"
+title = "สำรวจขอบเขตรอยแยก"
+description = "กำจัด Void Sentinel 12 ตัวที่เฝ้ารอบรอยแยก แล้วรวบรวมข้อมูลความผิดปกติให้ทีมสำรวจ"
+zone_id = &"file_island"
+objective = 1
+target_id = &"void_sentinel"
+required_count = 12
+recommended_level = 46
+reward_exp = 14000
+reward_bits = 2600
+unlock_flags = Array[StringName]([&"rift_survey_complete"])
+unlock_zones = Array[StringName]([])
+unlock_stage = -1
