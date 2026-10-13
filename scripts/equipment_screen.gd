@@ -139,6 +139,16 @@ func _panel(parent: Control, at: Vector2, extent: Vector2, color: Color = Color(
     parent.add_child(panel)
     return panel
 
+func _title_panel(parent: Control, at: Vector2, extent: Vector2) -> Panel:
+    var panel := Panel.new()
+    panel.position = at
+    panel.size = extent
+    panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    panel.add_theme_stylebox_override("panel", ClassicUIStyle.title_bar())
+    parent.add_child(panel)
+    return panel
+
+
 func _label(parent: Control, text: String, at: Vector2, extent: Vector2, font_size: int = 16) -> Label:
     var node: Label = ClassicUIStyle.label(text, at, extent, font_size)
     parent.add_child(node)
@@ -170,10 +180,12 @@ func _build() -> void:
     _content = Control.new()
     _content.size = Vector2(1184, 660)
     _root.add_child(_content)
-    _panel(_content, Vector2.ZERO, _content.size, Color("45b7dd"))
-    _label(_content, "◈  TAMER INFORMATION", Vector2(22, 11), Vector2(550, 38), 25)
-    _label(_content, "อุปกรณ์ / กระเป๋า", Vector2(790, 15), Vector2(290, 30), 17)
-    _close = _button(_content, "×", Vector2(1111, 5), Vector2(64, 56), close_screen)
+    _panel(_content, Vector2.ZERO, _content.size, ClassicUIStyle.GOLD)
+    _title_panel(_content, Vector2(1, 1), Vector2(1182, 50))
+    _title_panel(_content, Vector2(778, 61), Vector2(386, 43))
+    _label(_content, "◈  STATUS INFORMATION  /  ข้อมูลตัวละคร", Vector2(22, 9), Vector2(680, 38), 23)
+    _label(_content, "SET LIST  •  อุปกรณ์ / กระเป๋า", Vector2(790, 67), Vector2(290, 30), 17)
+    _close = _button(_content, "×", Vector2(1111, 5), Vector2(64, 46), close_screen)
     _close.accent = Color("deb969")
     for i: int in range(3):
         var tab: EquipmentButton = _button(_content, ["Tamer", "Digivice", "Skill"][i], Vector2(18 + i * 140, 60), Vector2(134, 48), _select_tab.bind(i))
@@ -205,14 +217,14 @@ func _build() -> void:
     _skill_list = _label(_content, "", Vector2(32, 158), Vector2(714, 320), 19)
     _skill_list.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     _panel(_content, Vector2(18, 528), Vector2(737, 110))
-    _label(_content, "TAMER STATUS", Vector2(31, 534), Vector2(225, 26), 15).modulate = Color("6bd7f2")
-    _label(_content, "EQUIPMENT BONUS", Vector2(280, 534), Vector2(234, 26), 15).modulate = Color("debb77")
-    _label(_content, "APPLIED / PARTNER", Vector2(530, 534), Vector2(220, 26), 15).modulate = Color("6bd7f2")
+    _label(_content, "TAMER STATUS", Vector2(31, 534), Vector2(225, 26), 15).modulate = ClassicUIStyle.GOLD
+    _label(_content, "EQUIPMENT BONUS", Vector2(280, 534), Vector2(234, 26), 15).modulate = ClassicUIStyle.GOLD
+    _label(_content, "APPLIED / PARTNER", Vector2(530, 534), Vector2(220, 26), 15).modulate = ClassicUIStyle.GOLD
     _stats = _label(_content, "", Vector2(31, 562), Vector2(235, 77), 14)
     _bonus = _label(_content, "", Vector2(280, 562), Vector2(243, 77), 14)
     _applied = _label(_content, "", Vector2(530, 562), Vector2(219, 77), 14)
     _panel(_content, Vector2(777, 60), Vector2(388, 578))
-    _bag_count = _label(_content, "", Vector2(793, 74), Vector2(363, 28), 16)
+    _bag_count = _label(_content, "", Vector2(793, 106), Vector2(363, 24), 13)
     _bag_prev = _button(_content, "‹", Vector2(795, 280), Vector2(54, 34), _change_bag_page.bind(-1))
     _bag_page_label = _label(_content, "", Vector2(855, 282), Vector2(230, 30), 13)
     _bag_page_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
