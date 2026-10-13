@@ -14,6 +14,7 @@ signal feedback(message: String)
 signal defeated
 signal recovered
 signal evolution_changed(busy: bool)
+signal growth_changed(stat_points: int, skill_points: int)
 
 @export var tamer: Tamer
 @export var forms: Array[MonsterData] = []
@@ -66,6 +67,17 @@ var max_hp: int:
 var attack_power: int = 0
 var move_speed: float = 0.0
 var active_skills: Array[MonsterSkill] = []
+const STAT_POINT_HP: int = 25
+const STAT_POINT_ATTACK: int = 3
+const STAT_POINT_DEFENSE: int = 2
+const STAT_POINT_SPEED: float = 2.0
+const SKILL_RANK_MAX: int = 5
+const SKILL_DAMAGE_PER_RANK: float = 0.15
+var unspent_stat_points: int = 0
+var unspent_skill_points: int = 0
+var allocated_stats: Dictionary = {"hp": 0, "attack": 0, "defense": 0, "speed": 0}
+# Stores bonus ranks above Rank 1, capped at 4 (Rank 5).
+var skill_levels: Dictionary = {}
 var _attack_animation_locked: bool = false
 var target: WildMonster
 var auto_battle: bool = false
@@ -357,7 +369,7 @@ func _try_skill_resource(skill: MonsterSkill) -> bool:
     skill_cooldowns[skill.id] = skill.cooldown
     _action_target = target
     _action_skill = skill
-    _action_damage = roll_outgoing_damage(skill.roll_damage(attack_power, _damage_rng))
+    _action_damage = roll_outgoing_damage(skill.roll_damage(_skill_base_attack(skill), _damage_rng))
     velocity = Vector2.ZERO
     _attack_animation_locked = true
     if not combat_action.begin(skill.animation_prefix, direction, fallback, skill.release_frame):
@@ -380,7 +392,7 @@ func _apply_skill_hit(skill: MonsterSkill, hit_target: WildMonster = null, saved
         hit_target = target if is_instance_valid(target) else null
     if not is_instance_valid(hit_target) or not hit_target.is_alive():
         return
-    var damage: int = saved_damage if saved_damage >= 0 else skill.roll_damage(attack_power, _damage_rng)
+    var damage: int = saved_damage if saved_damage >= 0 else skill.roll_damage(_skill_base_attack(skill), _damage_rng)
     if skill.projectile_speed > 0.0:
         var projectile: SkillProjectile = PROJECTILE_SCRIPT.new()
         projectile.setup(self, hit_target, skill, damage, world_layer, enemy_layer)
@@ -893,9 +905,94 @@ func recover() -> bool:
         tamer.save_party_progress()
     return true
 
+func get_growth_save_data() -> Dictionary:
+    # บันทึกแต้มและการลงทุนของ Digimon รายตัว ไม่บันทึกลง Resource ที่แชร์กัน
+    return {
+        "stat_points": unspent_stat_points,
+        "skill_points": unspent_skill_points,
+        "stats": allocated_stats.duplicate(true),
+        "skills": skill_levels.duplicate(true)
+    }
+
+
+func restore_growth_data(data: Dictionary) -> void:
+    # เซฟเวอร์ชันเก่าที่ไม่มี growth จะเริ่มจากศูนย์; ตรวจค่าก่อนนำไปคำนวณสเตตัส
+    unspent_stat_points = clampi(int(data.get("stat_points", 0)), 0, 9999)
+    unspent_skill_points = clampi(int(data.get("skill_points", 0)), 0, 9999)
+    allocated_stats = {"hp": 0, "attack": 0, "defense": 0, "speed": 0}
+    var raw_stats: Variant = data.get("stats", {})
+    if raw_stats is Dictionary:
+        for stat: StringName in [&"hp", &"attack", &"defense", &"speed"]:
+            allocated_stats[String(stat)] = clampi(int(raw_stats.get(String(stat), 0)), 0, 999)
+    skill_levels.clear()
+    var raw_skills: Variant = data.get("skills", {})
+    if raw_skills is Dictionary:
+        for key: Variant in raw_skills:
+            var skill_id: String = str(key).strip_edges()
+            if not skill_id.is_empty():
+                skill_levels[skill_id] = clampi(int(raw_skills[key]), 0, SKILL_RANK_MAX - 1)
+    growth_changed.emit(unspent_stat_points, unspent_skill_points)
+
+
+func skill_rank(skill_id: StringName) -> int:
+    return 1 + clampi(int(skill_levels.get(String(skill_id), 0)), 0, SKILL_RANK_MAX - 1)
+
+
+func _skill_base_attack(skill: MonsterSkill) -> int:
+    if skill == null:
+        return attack_power
+    var scale: float = 1.0 + float(skill_rank(skill.id) - 1) * SKILL_DAMAGE_PER_RANK
+    return maxi(1, roundi(float(attack_power) * scale))
+
+
+func spend_stat_point(stat: StringName) -> bool:
+    if unspent_stat_points <= 0 or not allocated_stats.has(String(stat)):
+        feedback.emit("ไม่มีแต้มสเตตัส หรือประเภทค่าสเตตัสไม่ถูกต้อง")
+        return false
+    allocated_stats[String(stat)] = mini(999, int(allocated_stats.get(String(stat), 0)) + 1)
+    unspent_stat_points -= 1
+    refresh_growth_stats()
+    growth_changed.emit(unspent_stat_points, unspent_skill_points)
+    if is_instance_valid(tamer):
+        tamer.save_party_progress()
+    var labels: Dictionary = {"hp": "HP", "attack": "ATK", "defense": "DEF", "speed": "SPD"}
+    feedback.emit("อัป %s สำเร็จ • แต้มสเตตัสเหลือ %d" % [labels.get(String(stat), String(stat)), unspent_stat_points])
+    return true
+
+
+func upgrade_skill(skill_id: StringName) -> bool:
+    if unspent_skill_points <= 0:
+        feedback.emit("แต้มสกิลไม่พอ")
+        return false
+    var found_skill: MonsterSkill
+    for skill: MonsterSkill in active_skills:
+        if skill != null and skill.id == skill_id:
+            found_skill = skill
+            break
+    if found_skill == null:
+        feedback.emit("ร่างปัจจุบันไม่มีสกิลนี้")
+        return false
+    var bonus_rank: int = clampi(int(skill_levels.get(String(skill_id), 0)), 0, SKILL_RANK_MAX - 1)
+    if bonus_rank >= SKILL_RANK_MAX - 1:
+        feedback.emit("สกิลนี้ถึง Rank 5 สูงสุดแล้ว")
+        return false
+    skill_levels[String(skill_id)] = bonus_rank + 1
+    unspent_skill_points -= 1
+    growth_changed.emit(unspent_stat_points, unspent_skill_points)
+    if is_instance_valid(tamer):
+        tamer.save_party_progress()
+    feedback.emit("อัป %s เป็น Rank %d • พลังโจมตีสกิล +%d%%" % [
+        found_skill.display_name, skill_rank(skill_id), (skill_rank(skill_id) - 1) * 15
+    ])
+    return true
+
+
 func _effective_stats() -> Dictionary:
-    # คำนวณร่าง + เลเวล + โบนัส Digivice + Enhancement ใหม่เสมอ ไม่แก้ MonsterData
+    # คำนวณร่าง + เลเวล + แต้มสเตตัส + โบนัส Digivice/Enhancement โดยไม่แก้ Resource ร่วม
     var stats: Dictionary = progress.get_effective_stats()
+    stats.max_hp += int(allocated_stats.get("hp", 0)) * STAT_POINT_HP
+    stats.attack += int(allocated_stats.get("attack", 0)) * STAT_POINT_ATTACK
+    stats.speed += float(allocated_stats.get("speed", 0)) * STAT_POINT_SPEED
     if is_instance_valid(tamer):
         var bonus: Dictionary = tamer.equipment.total_bonuses()
         stats.max_hp += int(bonus.partner_hp)
@@ -910,7 +1007,11 @@ func _effective_stats() -> Dictionary:
     return stats
 
 func refresh_enhancement_stats() -> void:
-    # เพิ่มโบนัสของตัวที่ active ทันทีโดยรักษา HP เดิมและเติมเฉพาะส่วน Max HP ที่เพิ่ม
+    refresh_growth_stats()
+
+
+func refresh_growth_stats() -> void:
+    # คำนวณใหม่จากฐานทุกครั้ง; ถ้า Max HP เพิ่มจะเติมเฉพาะส่วนที่เพิ่ม ไม่ชุบไข่
     if current_form == null:
         return
     var previous_max: int = max_hp
@@ -921,6 +1022,8 @@ func refresh_enhancement_stats() -> void:
         hp = clampi(hp + maxi(0, max_hp - previous_max), 1, max_hp)
         move_speed = float(stats.speed)
         agent.max_speed = move_speed
+    else:
+        hp = mini(hp, max_hp)
     hp_changed.emit(hp, max_hp)
 
 
@@ -938,6 +1041,11 @@ func refresh_equipment_stats() -> void:
     hp_changed.emit(hp, max_hp)
 
 func _on_level_up(new_level: int) -> void:
+    # Digimon ได้ 3 แต้มสเตตัสทุกเลเวล และ 1 แต้มสกิลทุก 3 เลเวล
+    unspent_stat_points = mini(9999, unspent_stat_points + 3)
+    if new_level % 3 == 0:
+        unspent_skill_points = mini(9999, unspent_skill_points + 1)
+    growth_changed.emit(unspent_stat_points, unspent_skill_points)
     # โบนัสสเตตัสเป็นค่าคำนวณใหม่ ร่างไข่จะยัง HP 0 ไม่ชุบด้วย Level Up
     for index: int in range(form_index + 1, forms.size()):
         if new_level == EvolutionRules.minimum_level_for_form_index(index, forms[index]):
@@ -1151,7 +1259,8 @@ func resolve_incoming_damage(amount: int) -> int:
         return 0
     if current_form.evasion_chance > 0.0 and _damage_rng.randf_range(0, 100) < current_form.evasion_chance:
         return 0
-    var damage: int = maxi(1, amount - current_form.defense)
+    var defense_value: int = current_form.defense + int(allocated_stats.get("defense", 0)) * STAT_POINT_DEFENSE
+    var damage: int = maxi(1, amount - defense_value)
     if current_form.block_chance > 0.0 and _damage_rng.randf_range(0, 100) < current_form.block_chance:
         damage = maxi(1, ceili(damage * 0.5))
     return damage
