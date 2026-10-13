@@ -152,6 +152,9 @@ func _apply_tamer_model(model_id: StringName) -> void:
 
 func _apply_partner_state(data: Dictionary, snap: bool) -> void:
     partner_visible = bool(data.get("visible", false))
+    # Apply visibility with the snapshot instead of waiting for _process().
+    # This prevents newly joined partners from appearing one frame late.
+    partner_visual.visible = partner_visible
     var form_id := StringName(str(data.get("form_id", "")))
     if form_id != &"" and form_id != partner_form_id:
         var form := _find_form(form_id)
