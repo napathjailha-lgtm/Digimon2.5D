@@ -164,6 +164,36 @@ func run() -> void:
     roster.initialize(independent_snapshot)
     check(partner.progress.level == 12 and roster.member_level(&"patamon") == 5 and roster.member_level(&"gomamon") == 1, "Save restore preserves independent member progression")
 
+    # Migration covers old saves from the first growth release, even if it already wrote zero growth data.
+    var pre_growth_save: Dictionary = roster.get_save_data().duplicate(true)
+    pre_growth_save.erase("growth_version")
+    for index: int in range(pre_growth_save["members"].size()):
+        var saved_member: Dictionary = pre_growth_save["members"][index]
+        if str(saved_member.get("id", "")) == "tailmon":
+            saved_member["progress"] = {"level": 60, "exp": 0}
+            saved_member["growth"] = {"stat_points": 0, "skill_points": 0,
+                "stats": {"hp": 0, "attack": 0, "defense": 0, "speed": 0}, "skills": {}}
+            pre_growth_save["members"][index] = saved_member
+    roster.initialize(pre_growth_save)
+    check(partner.progress.level == 60, "Legacy save restores the existing Digimon level")
+    check(partner.unspent_stat_points == 177, "Legacy Lv60 Digimon gets retroactive stat points")
+    check(partner.unspent_skill_points == 20, "Legacy Lv60 Digimon gets retroactive skill points")
+    var migrated_save: Dictionary = roster.get_save_data()
+    check(int(migrated_save.get("growth_version", 0)) == PartnerRoster.GROWTH_VERSION,
+        "Growth migration writes a version marker so it will not repeat")
+    roster.initialize(independent_snapshot)
+    check(partner.progress.level == 12 and roster.member_level(&"patamon") == 5,
+        "Restoring the current save after migration preserves existing member levels")
+
+    # Migration subtracts investments already recorded, avoiding duplicate points for players who spent some.
+    var partially_spent_growth: Dictionary = roster._migrate_growth(
+        {"stats": {"attack": 2}, "skills": {"old_skill": 1}},
+        {"level": 60, "exp": 0})
+    check(int(partially_spent_growth["stat_points"]) == 175,
+        "Retroactive stat points subtract already allocated stats")
+    check(int(partially_spent_growth["skill_points"]) == 19,
+        "Retroactive skill points subtract already upgraded ranks")
+
     var ids: Array[StringName] = [&"tailmon", &"patamon", &"gomamon"]
     var mega_names: Array[String] = ["Holydramon", "Seraphimon", "Vikemon"]
     for member: int in range(ids.size()):
