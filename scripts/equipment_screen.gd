@@ -225,11 +225,11 @@ func _build() -> void:
     _applied = _label(_content, "", Vector2(530, 562), Vector2(219, 77), 14)
     _panel(_content, Vector2(777, 60), Vector2(388, 578))
     _bag_count = _label(_content, "", Vector2(793, 106), Vector2(363, 24), 13)
-    _bag_prev = _button(_content, "‹", Vector2(795, 280), Vector2(54, 34), _change_bag_page.bind(-1))
-    _bag_page_label = _label(_content, "", Vector2(855, 282), Vector2(230, 30), 13)
+    _bag_prev = _button(_content, "‹", Vector2(795, 314), Vector2(54, 34), _change_bag_page.bind(-1))
+    _bag_page_label = _label(_content, "", Vector2(855, 316), Vector2(230, 30), 13)
     _bag_page_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-    _bag_next = _button(_content, "›", Vector2(1091, 280), Vector2(54, 34), _change_bag_page.bind(1))
-    _details = _label(_content, "", Vector2(795, 322), Vector2(348, 210), 15)
+    _bag_next = _button(_content, "›", Vector2(1091, 314), Vector2(54, 34), _change_bag_page.bind(1))
+    _details = _label(_content, "", Vector2(795, 354), Vector2(348, 180), 15)
     _details.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     _equip = _button(_content, "สวมใส่", Vector2(793, 545), Vector2(174, 48), _equip_selected)
     _unequip = _button(_content, "ถอดอุปกรณ์", Vector2(975, 545), Vector2(174, 48), _unequip_selected)
@@ -249,7 +249,7 @@ func _build_bag() -> void:
     for i: int in range(tamer.equipment.catalog.items.size()):
         var item: EquipmentItemData = tamer.equipment.catalog.items[i]
         var local_index: int = i % BAG_PAGE_SIZE
-        var button: EquipmentButton = _button(_content, "", Vector2(795 + (local_index % 6) * 59, 112 + (local_index / 6) * 62), Vector2(54, 56), select_bag_item.bind(item.id))
+        var button: EquipmentButton = _button(_content, "", Vector2(795 + (local_index % 6) * 59, 130 + (local_index / 6) * 62), Vector2(54, 56), select_bag_item.bind(item.id))
         button.icon = item.icon
         button.accent = item.rarity_color()
         _bag_buttons[String(item.id)] = button
