@@ -60,6 +60,9 @@ jobs:
       - name: Online client lifecycle regression
         run: python3 tools/check_godot.py --headless --path . res://tests/online_lifecycle_test.tscn
 
+      - name: Online world presence regression
+        run: python3 tools/check_godot.py --headless --path . res://tests/online_world_presence_test.tscn
+
       - name: Boot and menu runtime regression
         run: python3 tools/check_godot.py --headless --path . res://tests/current_runtime_test.tscn
 

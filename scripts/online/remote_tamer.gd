@@ -30,6 +30,8 @@ var partner_facing: String = "down"
 var partner_initialized := false
 var partner_visible := false
 var _tamer_model_id: StringName = &""
+var _last_interaction_ms: int = -1000
+const INTERACTION_DEBOUNCE_MS := 180
 
 func _ready() -> void:
     var hitbox := get_node_or_null("PlayerHitbox") as Area2D
@@ -59,6 +61,13 @@ func contains_screen_point(screen_point: Vector2) -> bool:
 func request_interaction() -> void:
     if peer_id.is_empty():
         return
+    # The Area2D hitbox and OnlineWorldBridge's screen-space hit test can
+    # receive the same mouse/touch event. Debounce at the actor so both paths
+    # share one guard and cannot open two interaction flows for one tap.
+    var now: int = Time.get_ticks_msec()
+    if now - _last_interaction_ms < INTERACTION_DEBOUNCE_MS:
+        return
+    _last_interaction_ms = now
     interaction_requested.emit(peer_id, display_name, guild_name)
 
 
@@ -143,6 +152,9 @@ func _apply_tamer_model(model_id: StringName) -> void:
 
 func _apply_partner_state(data: Dictionary, snap: bool) -> void:
     partner_visible = bool(data.get("visible", false))
+    # Apply visibility with the snapshot instead of waiting for _process().
+    # This prevents newly joined partners from appearing one frame late.
+    partner_visual.visible = partner_visible
     var form_id := StringName(str(data.get("form_id", "")))
     if form_id != &"" and form_id != partner_form_id:
         var form := _find_form(form_id)

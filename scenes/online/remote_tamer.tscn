@@ -92,7 +92,7 @@ theme_override_styles/normal = SubResource("name_bg")
 mouse_filter = 2
 
 
-[node name="ChatBubble" type="Label" parent="."]
+[node name="ChatBubble" type="PanelContainer" parent="."]
 offset_left = -120.0
 offset_top = -198.0
 offset_right = 120.0

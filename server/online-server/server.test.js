@@ -64,9 +64,16 @@ async function fixture(t, heartbeat = 30000) {
           waiters.push(check); check();
         });
       },
-      async hello(letter) {
+      async hello(letter, zone = 'file_island', appearance = {}) {
         const character_key = 'v2:' + letter.repeat(64);
-        this.send({ type: 'hello', protocol_version: 3, character_key, name: letter, zone: 'file_island' });
+        this.send({
+          ...appearance,
+          type: 'hello',
+          protocol_version: 3,
+          character_key,
+          name: letter,
+          zone,
+        });
         return await this.wait('online_ready', m => m.character_key === character_key);
       },
     };
@@ -357,4 +364,67 @@ test('legacy clients cannot evict an upgraded character session', async t => {
   await legacy.wait('identity_error');
   assert.equal((await f.health()).players, 1);
   assert.equal(current.history.some(m => m.type === 'session_replaced'), false);
+});
+
+test('presence sync includes partner state and isolates state/chat by zone', async t => {
+  const f = await fixture(t);
+  const a = await f.peer();
+  const b = await f.peer();
+  const c = await f.peer();
+  const partner = {
+    form_id: 'test_partner_form',
+    name: 'Test Partner',
+    position: { x: 18, y: 36 },
+    velocity: { x: 2, y: 0 },
+    facing: 'right',
+    animation: 'walk_right',
+    scale: { x: 0.3, y: 0.3 },
+    offset: { x: 0, y: -20 },
+    visible: true,
+  };
+
+  await a.hello('a', 'file_island', {
+    position: { x: 12, y: 34 },
+    tamer_model: 'test_tamer',
+    tamer_scale: { x: 0.3, y: 0.3 },
+    tamer_offset: { x: 0, y: -10 },
+    partner,
+  });
+  await b.hello('b', 'file_island');
+
+  const joined = await b.wait('join', m => m.id === a.id);
+  assert.equal(joined.position.x, 12);
+  assert.equal(joined.position.y, 34);
+  assert.equal(joined.tamer_model, 'test_tamer');
+  assert.equal(joined.partner.form_id, 'test_partner_form');
+  assert.equal(joined.partner.visible, true);
+  assert.equal(joined.partner.position.x, 18);
+  assert.equal(joined.partner.position.y, 36);
+
+  const otherZoneStart = c.history.length;
+  await c.hello('c', 'dark_forest');
+  await c.wait('online_count', m => m.zone === 'dark_forest');
+  assert.equal(c.history.some(m => m.type === 'join' && [a.id, b.id].includes(m.id)), false);
+  assert.equal(a.history.some(m => m.type === 'join' && m.id === c.id), false);
+  assert.equal(b.history.some(m => m.type === 'join' && m.id === c.id), false);
+
+  a.send({
+    type: 'state',
+    zone: 'file_island',
+    position: { x: 120, y: 220 },
+    velocity: { x: 30, y: 0 },
+    facing: 'right',
+    tamer_model: 'test_tamer',
+    partner: { ...partner, position: { x: 131, y: 220 }, velocity: { x: 25, y: 0 } },
+  });
+  const state = await b.wait('state', m => m.id === a.id && m.position?.x === 120);
+  assert.equal(state.position.y, 220);
+  assert.equal(state.partner.position.x, 131);
+  assert.equal(state.partner.animation, 'walk_right');
+  assert.equal(state.partner.visible, true);
+  assert.equal(c.history.slice(otherZoneStart).some(m => m.type === 'state' && m.id === a.id), false);
+
+  a.send({ type: 'chat', text: 'hello same zone' });
+  await b.wait('chat', m => m.id === a.id && m.text === 'hello same zone');
+  assert.equal(c.history.slice(otherZoneStart).some(m => m.type === 'chat' && m.id === a.id), false);
 });
