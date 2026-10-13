@@ -93,9 +93,15 @@ func _build() -> void:
     stack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     stack.add_theme_constant_override("separation", 10)
     scroll.add_child(stack)
+    var title_panel := PanelContainer.new()
+    title_panel.custom_minimum_size = Vector2(0, 54)
+    title_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    title_panel.add_theme_stylebox_override("panel", ClassicUIStyle.title_bar())
+    stack.add_child(title_panel)
     var header := HBoxContainer.new()
-    stack.add_child(header)
-    var heading: Label = _label(header, "DIGIMON  /  STATUS", 23, Color("b5eb79"))
+    header.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    title_panel.add_child(header)
+    var heading: Label = _label(header, "DIGIMON  /  STATUS", 23, Color("f0d18b"))
     heading.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     var close := DigimonTouchButton.new()
     close_button = close
