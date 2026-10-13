@@ -287,7 +287,7 @@ func _refresh_bag_page() -> void:
         button.visible = on_page
         if on_page:
             var local_index: int = i - start
-            button.position = Vector2(795 + (local_index % 6) * 59, 112 + (local_index / 6) * 62)
+            button.position = Vector2(795 + (local_index % 6) * 59, 130 + (local_index / 6) * 62)
 
     if is_instance_valid(_bag_page_label):
         _bag_page_label.text = "หน้า %d / %d" % [_bag_page + 1, page_count]
