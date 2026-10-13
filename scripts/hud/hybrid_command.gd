@@ -6,6 +6,8 @@ extends TouchCommand
 @export var empty_slot: bool = false
 ## เปิดเฉพาะปุ่มภาพวาด: ใช้ UV ตัดวงกลม จึงไม่มีขอบสี่เหลี่ยมทับฉาก
 @export var illustrated: bool = false
+## ช่องไอเทมลัดสี่เหลี่ยมแบบ MMORPG; ปุ่มสกิลยังคงเป็นวงกลม
+@export var rectangular_slot: bool = false
 var art_accent := Color("efc47c")
 var _art_points := PackedVector2Array()
 var _art_uvs := PackedVector2Array()
@@ -63,6 +65,9 @@ func set_cooldown(remaining: float, duration: float) -> void:
 func _draw() -> void:
     if plain_text:
         return # Quest tracker มีข้อความและเงาตัวอักษร ไม่มีกล่องทึบบังฉาก
+    if rectangular_slot:
+        _draw_rectangular_slot()
+        return
     var center: Vector2 = size * 0.5
     var radius: float = minf(size.x, size.y) * 0.47
     var rim := Color("eee3c8")
@@ -105,6 +110,26 @@ func _draw() -> void:
             var angle: float = -PI * 0.5 + TAU * fraction * float(index) / segments
             fan.append(center + Vector2(cos(angle), sin(angle)) * (radius - 2))
         draw_colored_polygon(fan, Color(0, 0, 0, 0.62))
+
+func _draw_rectangular_slot() -> void:
+    var rect := Rect2(Vector2(1, 1), size - Vector2(2, 2))
+    var fill := Color(0.12, 0.085, 0.045, 0.94)
+    var rim := Color("d7b56f")
+    if locked:
+        fill.a = 0.68
+        rim.a = 0.55
+    draw_rect(rect, fill, true)
+    draw_rect(rect, rim, false, 2.0)
+    draw_rect(Rect2(Vector2(4, 4), size - Vector2(8, 8)), Color(0.92, 0.81, 0.59, 0.16), false, 1.0)
+    if _finger >= 0 and not locked:
+        draw_rect(rect, Color(0.45, 0.32, 0.12, 0.24), true)
+    if icon != null:
+        var icon_side: float = minf(size.x - 12.0, size.y - 20.0)
+        var icon_rect := Rect2(Vector2((size.x - icon_side) * 0.5, (size.y - icon_side) * 0.5 - 2.0), Vector2.ONE * icon_side)
+        draw_texture_rect(icon, icon_rect, false, Color("9fa2a3") if locked else Color.WHITE)
+    if cooldown_left > 0.0:
+        draw_rect(Rect2(Vector2.ZERO, size), Color(0, 0, 0, 0.48), true)
+
 
 func _draw_illustration(center: Vector2, radius: float) -> void:
     # สร้างรูปทรงเมื่อขนาดเปลี่ยนเท่านั้น ใช้ texture ที่ Godot cache ไว้ร่วมกัน
