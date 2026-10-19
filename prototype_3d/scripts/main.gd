@@ -65,8 +65,18 @@ func _build_world() -> void:
     ground_mesh.size = Vector2(90.0, 90.0)
     ground.mesh = ground_mesh
     ground.material_override = _material(Color(0.16, 0.36, 0.25), 0.95)
-    ground.position.y = -0.12
+    ground.position.y = 0.0
     add_child(ground)
+
+    var ground_body: StaticBody3D = StaticBody3D.new()
+    ground_body.name = "GroundCollision"
+    var ground_shape: CollisionShape3D = CollisionShape3D.new()
+    var ground_box: BoxShape3D = BoxShape3D.new()
+    ground_box.size = Vector3(90.0, 1.0, 90.0)
+    ground_shape.shape = ground_box
+    ground_shape.position.y = -0.5
+    ground_body.add_child(ground_shape)
+    add_child(ground_body)
 
     var rng: RandomNumberGenerator = RandomNumberGenerator.new()
     rng.seed = 20261019
