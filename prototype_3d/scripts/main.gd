@@ -116,6 +116,73 @@ func _build_world() -> void:
         crystal.material_override = _material(Color(0.18, 0.72, 0.96), 0.25, 0.3)
         add_child(crystal)
 
+
+    _build_world_details()
+
+func _build_world_details() -> void:
+    # A visible winding trail makes the third-person perspective and depth easier to read.
+    var trail: MeshInstance3D = MeshInstance3D.new()
+    var trail_mesh: PlaneMesh = PlaneMesh.new()
+    trail_mesh.size = Vector2(5.5, 82.0)
+    trail.mesh = trail_mesh
+    trail.position = Vector3(0.0, 0.025, -3.0)
+    trail.material_override = _material(Color(0.34, 0.27, 0.18), 1.0)
+    add_child(trail)
+
+    # Layered distant hills give the scene a horizon instead of an empty flat plane.
+    for i: int in range(9):
+        var hill: MeshInstance3D = MeshInstance3D.new()
+        var hill_mesh: SphereMesh = SphereMesh.new()
+        hill_mesh.radius = 1.0
+        hill_mesh.height = 2.0
+        hill.mesh = hill_mesh
+        var side: float = -1.0 if i % 2 == 0 else 1.0
+        hill.position = Vector3(side * (27.0 + float(i % 3) * 4.0), 5.0, -38.0 - float(i / 2) * 2.5)
+        hill.scale = Vector3(8.0 + float(i % 3) * 2.0, 7.0 + float(i % 4), 4.0)
+        hill.material_override = _material(Color(0.12, 0.27 + float(i % 3) * 0.025, 0.24), 1.0)
+        add_child(hill)
+
+    var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+    rng.seed = 81723
+    for i: int in range(32):
+        var rock: MeshInstance3D = MeshInstance3D.new()
+        var rock_mesh: SphereMesh = SphereMesh.new()
+        rock_mesh.radius = 0.5
+        rock_mesh.height = 0.8
+        rock.mesh = rock_mesh
+        var x: float = rng.randf_range(-34.0, 34.0)
+        var z: float = rng.randf_range(-32.0, 28.0)
+        if absf(x) < 4.0:
+            x = signf(x) * 5.0
+        rock.position = Vector3(x, 0.25, z)
+        rock.scale = Vector3(rng.randf_range(0.5, 1.8), rng.randf_range(0.35, 0.8), rng.randf_range(0.5, 1.3))
+        rock.rotation_degrees = Vector3(rng.randf_range(-12.0, 12.0), rng.randf_range(0.0, 180.0), rng.randf_range(-12.0, 12.0))
+        rock.material_override = _material(Color(0.28, 0.34, 0.31), 1.0)
+        add_child(rock)
+
+    # Small glowing plants and crystals act as readable landmarks.
+    for i: int in range(14):
+        var plant: Node3D = Node3D.new()
+        plant.position = Vector3(rng.randf_range(-18.0, 18.0), 0.0, rng.randf_range(-22.0, 12.0))
+        var stem: MeshInstance3D = MeshInstance3D.new()
+        var stem_mesh: CylinderMesh = CylinderMesh.new()
+        stem_mesh.top_radius = 0.035
+        stem_mesh.bottom_radius = 0.07
+        stem_mesh.height = 0.55
+        stem.mesh = stem_mesh
+        stem.position.y = 0.27
+        stem.material_override = _material(Color(0.25, 0.68, 0.38))
+        plant.add_child(stem)
+        var glow: MeshInstance3D = MeshInstance3D.new()
+        var glow_mesh: SphereMesh = SphereMesh.new()
+        glow_mesh.radius = 0.16
+        glow_mesh.height = 0.32
+        glow.mesh = glow_mesh
+        glow.position.y = 0.62
+        glow.material_override = _material(Color(0.25, 0.88, 0.72), 0.25, 1.1)
+        plant.add_child(glow)
+        add_child(plant)
+
 func _build_player() -> void:
     player = CharacterBody3D.new()
     player.name = "LocalPlayer"
